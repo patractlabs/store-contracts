@@ -4,7 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod erc20 {
-    use ink_prelude::vec::Vec;
+    use ink_prelude::string::String;
 
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_lang as ink;
@@ -36,11 +36,23 @@ mod erc20 {
     pub trait Erc20 {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
-        fn new(initial_supply: Balance, name: Vec<u8>, symbol: Vec<u8>) -> Self;
+        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u128) -> Self;
 
         /// Returns the total token supply.
         #[ink(message)]
         fn total_supply(&self) -> Balance;
+
+        /// Returns the token name.
+        #[ink(message)]
+        fn token_name(&self) -> String;
+
+        /// Returns the token symbol.
+        #[ink(message)]
+        fn token_symbol(&self) -> String;
+
+        /// Returns the token decimals.
+        #[ink(message)]
+        fn token_decimals(&self) -> u128;
 
         /// Returns the account balance for the specified `owner`.
         #[ink(message)]
@@ -68,12 +80,11 @@ mod erc20 {
     //  functions, this simplifies the implementation of "user permissions".
     #[ink::trait_definition]
     pub trait Ownable {
+        /// Contract owner.
         #[ink(message)]
         fn owner(&self) -> AccountId;
 
-        #[ink(message)]
-        fn only_owner(&self) -> Result<()>;
-
+        /// transfer contract ownership to new owner.
         #[ink(message)]
         fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()>;
     }
@@ -81,27 +92,34 @@ mod erc20 {
     /// Base contract which allows children to implement an emergency stop mechanism.
     #[ink::trait_definition]
     pub trait Pausable {
+        /// Pause contract transaction.
         #[ink(message)]
         fn pause(&mut self) -> Result<()>;
 
+        /// Recover paused contract.
         #[ink(message)]
         fn unpause(&mut self) -> Result<()>;
 
+        /// Return contract pause statue.
         #[ink(message)]
         fn pause_state(&self) -> bool;
     }
 
     #[ink::trait_definition]
     pub trait BlackList {
+        /// Whether the user is blacklisted.
         #[ink(message)]
         fn get_blacklist_status(&self, maker: AccountId) -> bool;
 
+        /// Add illegal user to blacklist.
         #[ink(message)]
         fn add_blacklist(&mut self, evil_user: AccountId) -> Result<()>;
 
+        /// Remove the user from blacklist.
         #[ink(message)]
         fn remove_blacklist(&mut self, cleared_user: AccountId) -> Result<()>;
 
+        /// Destroy blacklisted user funds from total supply.
         #[ink(message)]
         fn destroy_blackfunds(&mut self, blacklisted_user: AccountId) -> Result<()>;
     }
@@ -110,9 +128,9 @@ mod erc20 {
     #[ink(storage)]
     pub struct StandardToken {
         /// Token Name
-        name: Vec<u8>,
+        name: String,
         /// Token symbol
-        symbol: Vec<u8>,
+        symbol: String,
         /// Token decimals
         decimals: u128,
         /// Total token supply.
@@ -195,14 +213,14 @@ mod erc20 {
     impl Erc20 for StandardToken {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
-        fn new(initial_supply: Balance, name: Vec<u8>, symbol: Vec<u8>) -> Self {
+        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u128) -> Self {
             let caller = Self::env().caller();
             let mut balances = StorageHashMap::new();
             balances.insert(caller, initial_supply);
             let instance = Self {
                 name,
                 symbol,
-                decimals: 0,
+                decimals,
                 total_supply: Lazy::new(initial_supply),
                 balances,
                 allowances: StorageHashMap::new(),
@@ -222,6 +240,24 @@ mod erc20 {
         #[ink(message)]
         fn total_supply(&self) -> Balance {
             *self.total_supply
+        }
+
+        /// Returns the token name.
+        #[ink(message)]
+        fn token_name(&self) -> String {
+            self.name.clone()
+        }
+
+        /// Returns the token symbol.
+        #[ink(message)]
+        fn token_symbol(&self) -> String {
+            self.symbol.clone()
+        }
+
+        /// Returns the token decimals.
+        #[ink(message)]
+        fn token_decimals(&self) -> u128 {
+            self.decimals
         }
 
         /// Returns the account balance for the specified `owner`.
@@ -308,19 +344,13 @@ mod erc20 {
     }
 
     impl Ownable for StandardToken {
+        /// Contract owner.
         #[ink(message)]
         fn owner(&self) -> AccountId {
             self.owner
         }
 
-        #[ink(message)]
-        fn only_owner(&self) -> Result<()> {
-            if self.env().caller() != self.owner {
-                return Err(Error::OnlyOwnerAccess);
-            }
-            Ok(())
-        }
-
+        /// transfer contract ownership to new owner.
         #[ink(message)]
         fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()> {
             self.only_owner()?;
@@ -335,6 +365,7 @@ mod erc20 {
     }
 
     impl Pausable for StandardToken {
+        /// Pause contract transaction.
         #[ink(message)]
         fn pause(&mut self) -> Result<()> {
             self.only_owner()?;
@@ -346,6 +377,7 @@ mod erc20 {
             Ok(())
         }
 
+        /// Recover paused contract.
         #[ink(message)]
         fn unpause(&mut self) -> Result<()> {
             self.only_owner()?;
@@ -356,6 +388,7 @@ mod erc20 {
             Ok(())
         }
 
+        /// Return contract pause statue.
         #[ink(message)]
         fn pause_state(&self) -> bool {
             self.pause
@@ -363,11 +396,13 @@ mod erc20 {
     }
 
     impl BlackList for StandardToken {
+        /// Whether the user is blacklisted.
         #[ink(message)]
         fn get_blacklist_status(&self, maker: AccountId) -> bool {
             self.blacklisted.get(&maker).copied().unwrap_or(false)
         }
 
+        /// Add illegal user to blacklist.
         #[ink(message)]
         fn add_blacklist(&mut self, evil_user: AccountId) -> Result<()> {
             self.only_owner()?;
@@ -375,6 +410,7 @@ mod erc20 {
             Ok(())
         }
 
+        /// Remove the user from blacklist.
         #[ink(message)]
         fn remove_blacklist(&mut self, cleared_user: AccountId) -> Result<()> {
             self.only_owner()?;
@@ -382,6 +418,7 @@ mod erc20 {
             Ok(())
         }
 
+        /// Destroy blacklisted user funds from total supply.
         #[ink(message)]
         fn destroy_blackfunds(&mut self, blacklisted_user: AccountId) -> Result<()> {
             self.only_owner()?;
@@ -463,6 +500,13 @@ mod erc20 {
                 to: Some(to),
                 value,
             });
+            Ok(())
+        }
+
+        fn only_owner(&self) -> Result<()> {
+            if self.env().caller() != self.owner {
+                return Err(Error::OnlyOwnerAccess);
+            }
             Ok(())
         }
     }
