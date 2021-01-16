@@ -6,10 +6,7 @@ use ink_lang as ink;
 #[ink::contract]
 mod exchange {
     #[cfg(not(feature = "ink-as-dependency"))]
-    use ink_lang as ink;
-
-    #[cfg(not(feature = "ink-as-dependency"))]
-    use erc20::{Erc20, StandardToken};
+    use erc20::StandardToken;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     #[cfg(not(feature = "ink-as-dependency"))]
