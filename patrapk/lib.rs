@@ -53,6 +53,7 @@ mod patrapk {
         derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
     )]
     pub enum GameStatus {
+        None,
         Join,
         Delete,
         Settle,
@@ -83,7 +84,7 @@ mod patrapk {
     )]
     pub struct GameDetails {
         pub creator: AccountId,
-        pub start_time: BlockNumber,
+        pub start_time: Timestamp,
         pub salt_hash: Hash,
         pub create_choice: Choice,
         pub value: Balance,
@@ -91,6 +92,22 @@ mod patrapk {
         pub joiner: AccountId,
         pub joiner_choice: Choice,
         pub result: GameResult,
+    }
+
+    impl Default for GameDetails {
+        fn default() -> GameDetails {
+            GameDetails {
+                creator: Default::default(),
+                start_time: 0,
+                salt_hash: Default::default(),
+                create_choice: Choice::None,
+                value: 0,
+                status: GameStatus::None,
+                joiner: Default::default(),
+                joiner_choice: Choice::None,
+                result: GameResult::None,
+            }
+        }
     }
 
     #[ink(storage)]
@@ -110,17 +127,12 @@ mod patrapk {
 
         #[ink(message, payable)]
         pub fn create(&mut self, salt_hash: Hash) -> GameID {
-            let game = GameDetails {
-                creator: self.env().caller(),
-                start_time: self.env().block_number(),
-                salt_hash,
-                create_choice: Choice::None,
-                value: self.env().transferred_balance(),
-                status: GameStatus::Join,
-                joiner: Default::default(),
-                joiner_choice: Choice::None,
-                result: GameResult::None,
-            };
+            let mut game = GameDetails::default();
+            game.creator = self.env().caller();
+            game.start_time = self.env().block_timestamp();
+            game.salt_hash = salt_hash;
+            game.value = self.env().transferred_balance();
+            game.status = GameStatus::Join;
             self.counter += 1;
             self.games.insert(self.counter, game);
             self.counter
@@ -188,15 +200,13 @@ mod patrapk {
                     self.env().transfer(game.creator, game.value * 2).unwrap();
                 }
                 // TODO
-                GameResult::JoinerWin => {
-                    let creator_reward = game.value * 2 * 5 / 100;
-                    self.env()
-                        .transfer(game.creator, creator_reward)
-                        .unwrap();
-                    self.env()
-                        .transfer(game.joiner, game.value * 2 - creator_reward)
-                        .unwrap();
-                }
+                // GameResult::JoinerWin => {
+                //     let creator_reward = game.value * 2 * 5 / 100;
+                //     self.env().transfer(game.creator, creator_reward).unwrap();
+                //     self.env()
+                //         .transfer(game.joiner, game.value * 2 - creator_reward)
+                //         .unwrap();
+                // }
                 _ => (),
             }
             self.games.get_mut(&game_id).and_then(|x| {
@@ -214,7 +224,7 @@ mod patrapk {
             if game.status != GameStatus::Settle {
                 return Err(Error::CannotExpire);
             }
-            if self.env().block_number() < game.start_time + 14400 {
+            if self.env().block_timestamp() < game.start_time + 24*3600 {
                 return Err(Error::NotExpired);
             }
             self.env().transfer(game.joiner, game.value * 2).unwrap();
@@ -230,6 +240,11 @@ mod patrapk {
         pub fn game_of(&self, game_id: GameID) -> Result<GameDetails> {
             let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
             Ok(game.clone())
+        }
+
+        #[ink(message)]
+        pub fn game_total(&self) -> u32 {
+            self.counter
         }
     }
 
