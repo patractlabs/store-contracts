@@ -40,7 +40,7 @@ mod factory {
         #[ink(topic)]
         token: AccountId,
         #[ink(topic)]
-        exchange: AccountId,
+        caller: AccountId,
     }
 
     impl Factory for PatraFactory {
@@ -86,7 +86,7 @@ mod factory {
             self.id_to_token.insert(self.token_count, token);
             Self::env().emit_event(NewExchange {
                 token,
-                exchange: exchange_account_id,
+                caller: exchange_account_id,
             });
             exchange_account_id
         }

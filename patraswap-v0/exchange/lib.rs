@@ -81,10 +81,22 @@ mod exchange {
         value: Balance,
     }
 
+    #[ink(event)]
+    pub struct NewExchange {
+        #[ink(topic)]
+        token: AccountId,
+        #[ink(topic)]
+        exchange: AccountId,
+    }
+
     impl PatraExchange {
         #[ink(constructor)]
         pub fn new(token_account: AccountId) -> Self {
             let token: StandardToken = FromAccountId::from_account_id(token_account);
+            Self::env().emit_event(NewExchange {
+                token: token_account,
+                exchange: Self::env().account_id(),
+            });
             Self {
                 name: "Patraswap".parse().unwrap(),
                 symbol: "PAT".parse().unwrap(),
@@ -386,8 +398,8 @@ mod exchange {
             output_reserve: Balance,
         ) -> Balance {
             assert!(input_reserve > 0 && output_reserve > 0);
-            let numerator: Balance = input_amount * output_reserve;
-            let denominator: Balance = input_reserve + input_amount;
+            let numerator: Balance = input_amount.saturating_mul(output_reserve);
+            let denominator: Balance = input_reserve.saturating_add(input_amount);
             numerator / denominator
         }
 
@@ -398,8 +410,8 @@ mod exchange {
             output_reserve: Balance,
         ) -> Balance {
             assert!(input_reserve > 0 && output_reserve > 0);
-            let numerator: Balance = input_reserve * output_amount;
-            let denominator: Balance = output_reserve - output_amount;
+            let numerator: Balance = output_reserve.saturating_mul(output_amount);
+            let denominator: Balance = input_reserve.saturating_sub(output_amount);
             numerator / denominator + 1
         }
     }

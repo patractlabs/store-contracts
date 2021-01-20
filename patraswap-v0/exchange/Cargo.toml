@@ -5,12 +5,12 @@ authors = ["[your_name] <[your_email]>"]
 edition = "2018"
 
 [dependencies]
-ink_primitives = { version = "3.0.0-rc2", git= "https://github.com/paritytech/ink.git", branch = "aj-instantiate-salt", default-features = false }
-ink_metadata = { version = "3.0.0-rc2", git= "https://github.com/paritytech/ink.git", branch = "aj-instantiate-salt", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.0.0-rc2", git= "https://github.com/paritytech/ink.git", branch = "aj-instantiate-salt", default-features = false }
-ink_storage = { version = "3.0.0-rc2", git= "https://github.com/paritytech/ink.git", branch = "aj-instantiate-salt", default-features = false }
-ink_lang = { version = "3.0.0-rc2", git= "https://github.com/paritytech/ink.git", branch = "aj-instantiate-salt", default-features = false }
-ink_prelude = { version = "3.0.0-rc2", git= "https://github.com/paritytech/ink.git", branch = "aj-instantiate-salt", default-features = false }
+ink_primitives = { version = "3.0.0-rc2", git = "https://github.com/patractlabs/ink", branch = "instantiate-salt", default-features = false }
+ink_metadata = { version = "3.0.0-rc2", git = "https://github.com/patractlabs/ink", branch = "instantiate-salt", default-features = false, features = ["derive"], optional = true }
+ink_env = { version = "3.0.0-rc2", git = "https://github.com/patractlabs/ink", branch = "instantiate-salt", default-features = false }
+ink_storage = { version = "3.0.0-rc2", git = "https://github.com/patractlabs/ink", branch = "instantiate-salt", default-features = false }
+ink_lang = { version = "3.0.0-rc2", git = "https://github.com/patractlabs/ink", branch = "instantiate-salt", default-features = false }
+ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/patractlabs/ink", branch = "instantiate-salt", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "1.3", default-features = false, features = ["derive"] }
 scale-info = { version = "0.4.1", default-features = false, features = ["derive"], optional = true }
@@ -40,3 +40,6 @@ std = [
     "erc20/std",
 ]
 ink-as-dependency = []
+
+[profile.release]
+overflow-checks = false

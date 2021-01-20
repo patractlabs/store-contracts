@@ -17,7 +17,12 @@ mod erc20 {
 
     impl StandardToken {
         #[ink(constructor)]
-        pub fn new(_initial_supply: Balance, _name: String, _symbol: String, _decimals: u128) -> Self {
+        pub fn new(
+            _initial_supply: Balance,
+            _name: String,
+            _symbol: String,
+            _decimals: u128,
+        ) -> Self {
             unimplemented!()
         }
 
@@ -50,7 +55,7 @@ mod erc20 {
         /// Returns `0` if the account is non-existent.
         #[ink(message)]
         pub fn balance_of(&self, _owner: AccountId) -> Balance {
-            0
+            unimplemented!()
         }
 
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
