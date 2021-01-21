@@ -1,22 +1,21 @@
 [package]
 name = "exchange"
 version = "0.1.0"
-authors = ["[your_name] <[your_email]>"]
+authors = ["Patract Labs <tyler@patract.io>"]
 edition = "2018"
 
 [dependencies]
-ink_primitives = { version = "3.0.0-rc2", default-features = false }
-ink_metadata = { version = "3.0.0-rc2", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.0.0-rc2", default-features = false }
-ink_storage = { version = "3.0.0-rc2", default-features = false }
-ink_lang = { version = "3.0.0-rc2", default-features = false }
-ink_prelude = { version = "3.0.0-rc2", default-features = false }
+ink_primitives = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_metadata = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false, features = ["derive"], optional = true }
+ink_env = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_storage = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "1.3", default-features = false, features = ["derive"] }
 scale-info = { version = "0.4.1", default-features = false, features = ["derive"], optional = true }
 
-erc20 = { package = "erc20", version = "0.1.0", git = "https://github.com/patractlabs/metis.git", branch = "erc20-stub", default-features = false, features = ["ink-as-dependency"] }
-factory = { package = "trait-factory", version = "0.1.0", path = "../trait-factory", default-features = false, features = ["ink-as-dependency"] }
+erc20 = { version = "0.1.0", path = "../erc20", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 name = "exchange"
@@ -24,6 +23,8 @@ path = "lib.rs"
 crate-type = [
 	# Used for normal contract Wasm blobs.
 	"cdylib",
+    # Used for ABI generation.
+    "rlib",
 ]
 
 [features]
@@ -37,6 +38,8 @@ std = [
     "scale/std",
     "scale-info/std",
     "erc20/std",
-    "factory/std",
 ]
 ink-as-dependency = []
+
+[profile.release]
+overflow-checks = false
