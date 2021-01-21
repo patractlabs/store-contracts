@@ -16,11 +16,62 @@ mod patramaker {
         OnlyOwnerAccess,
         InvalidNewOwner,
     }
-
     pub type Result<T> = core::result::Result<T, Error>;
 
     pub type CdpId = u32;
     pub type USD = u32;
+
+    #[ink(event)]
+    pub struct IssueDAI {
+        #[ink(topic)]
+        cdp_id: CdpId,
+        #[ink(topic)]
+        collateral: Balance,
+        #[ink(topic)]
+        dai: Balance,
+        #[ink(topic)]
+        collateral_ratio: u32,
+    }
+
+    #[ink(event)]
+    pub struct AddCollateral {
+        #[ink(topic)]
+        cdp_id: CdpId,
+        #[ink(topic)]
+        add_collateral: Balance,
+        #[ink(topic)]
+        collateral_ratio: u32,
+    }
+
+    #[ink(event)]
+    pub struct MinusCollateral {
+        #[ink(topic)]
+        cdp_id: CdpId,
+        #[ink(topic)]
+        minus_collateral: Balance,
+        #[ink(topic)]
+        collateral_ratio: u32,
+    }
+
+    #[ink(event)]
+    pub struct Withdraw {
+        #[ink(topic)]
+        cdp_id: CdpId,
+        #[ink(topic)]
+        collateral: Balance,
+        #[ink(topic)]
+        dai: Balance,
+    }
+
+    #[ink(event)]
+    pub struct Liquidate {
+        #[ink(topic)]
+        cdp_id: CdpId,
+        #[ink(topic)]
+        collateral: Balance,
+        #[ink(topic)]
+        keeper_reward: Balance,
+    }
 
     #[derive(
         Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
@@ -30,10 +81,10 @@ mod patramaker {
         derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
     )]
     pub struct CDP {
-        pub owner: AccountId,
+        pub issuer: AccountId,
+        pub collateral_dot: Balance,
         // 1 DAI = 1 USD
-        pub dai: Balance,
-        pub dot: Balance,
+        pub issue_dai: Balance,
         pub collateral_ratio: u32,
         pub valid: bool,
     }
@@ -42,8 +93,6 @@ mod patramaker {
     pub struct PatraMaker {
         cdps: StorageMap<CdpId, CDP>,
         cdp_count: u32,
-        total_collateral_dot: Balance,
-        total_issue_dai: Balance,
         min_collateral_ratio: u32,
         min_liquidation_ratio: u32,
         liquidater_reward_ratio: u32,
@@ -76,7 +125,7 @@ mod patramaker {
         fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()> {
             self.only_owner()?;
 
-            if new_owner != AccountId::from([0x00; 32]) {
+            if new_owner != Default::default() {
                 self.owner = new_owner;
             } else {
                 return Err(Error::InvalidNewOwner);
@@ -92,8 +141,6 @@ mod patramaker {
             Self {
                 cdps: StorageMap::new(),
                 cdp_count: 0,
-                total_collateral_dot: 0,
-                total_issue_dai: 0,
                 min_collateral_ratio: 150,
                 min_liquidation_ratio: 110,
                 liquidater_reward_ratio: 5,
@@ -134,6 +181,7 @@ mod patramaker {
             Ok(())
         }
 
+        /// System params
         #[ink(message)]
         pub fn system_params(&self) -> (u32, u32, u32, u32) {
             (
@@ -144,21 +192,13 @@ mod patramaker {
             )
         }
 
-        #[ink(message)]
-        pub fn total_collateral_dot(&self) -> Balance {
-            self.total_collateral_dot
-        }
-
-        #[ink(message)]
-        pub fn total_issue_dai(&self) -> Balance {
-            self.total_issue_dai
-        }
-
+        /// Query cdp by id
         #[ink(message)]
         pub fn query_cdp(&self, cdp_id: CdpId) -> Option<CDP> {
             self.cdps.get(&cdp_id).cloned().and_then(|cdp| Some(cdp))
         }
 
+        /// Stake collateral and issue dai
         #[ink(message, payable)]
         pub fn issue_dai(&mut self, cr: u32) -> (CdpId, Balance) {
             assert!(cr >= self.min_collateral_ratio);
@@ -166,88 +206,110 @@ mod patramaker {
             let collateral = self.env().transferred_balance();
             let dai = collateral * self.dot_price as u128 * 100 / cr as u128;
             let cdp = CDP {
-                owner: caller,
-                dai,
-                dot: collateral,
+                issuer: caller,
+                collateral_dot: collateral,
+                issue_dai: dai,
                 collateral_ratio: cr,
                 valid: true,
             };
             self.cdp_count += 1;
             self.cdps.insert(self.cdp_count, cdp);
-            self.total_collateral_dot += collateral;
-            self.total_issue_dai += dai;
-
+            self.env().emit_event(IssueDAI {
+                cdp_id: self.cdp_count,
+                collateral,
+                dai,
+                collateral_ratio: cr,
+            });
             (self.cdp_count, dai)
         }
 
+        /// Only issuer can add collateral and update collateral ratio
         #[ink(message, payable)]
         pub fn add_collateral(&mut self, cdp_id: CdpId) {
             assert!(self.cdps.contains_key(&cdp_id));
             let caller = self.env().caller();
             let collateral = self.env().transferred_balance();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.owner == caller);
-            let cr =
-                (collateral + self.total_collateral_dot as u128) * self.dot_price as u128 * 100
-                    / self.total_issue_dai;
-            assert!(cr >= self.min_collateral_ratio.into());
             assert!(cdp.valid);
+            assert!(cdp.issuer == caller);
+            let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
+                / cdp.issue_dai;
+            assert!(cr >= self.min_collateral_ratio.into());
             cdp.collateral_ratio = cr as u32;
-            cdp.dot += collateral;
-            self.total_collateral_dot += collateral;
+            cdp.collateral_dot += collateral;
+            self.env().emit_event(AddCollateral {
+                cdp_id,
+                add_collateral: collateral,
+                collateral_ratio: cr as u32,
+            });
         }
 
-        #[ink(message, payable)]
-        pub fn minus_collateral(&mut self, cdp_id: CdpId) {
-            assert!(self.cdps.contains_key(&cdp_id));
-            let caller = self.env().caller();
-            let collateral = self.env().transferred_balance();
-            let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.owner == caller);
-            let cr = (self.total_collateral_dot - collateral) * self.dot_price as u128 * 100
-                / self.total_issue_dai;
-            assert!(cr >= self.min_collateral_ratio.into());
-            assert!(cdp.valid);
-            cdp.collateral_ratio = cr as u32;
-            cdp.dot -= collateral;
-            self.total_collateral_dot -= collateral;
-        }
-
+        /// Only issuer can minus collateral and update collateral ratio
         #[ink(message)]
-        pub fn withdraw_dot(&mut self, cdp_id: CdpId, amount: Balance) -> Balance {
+        pub fn minus_collateral(&mut self, cdp_id: CdpId, collateral: Balance) {
             assert!(self.cdps.contains_key(&cdp_id));
             let caller = self.env().caller();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.owner == caller);
-            assert!(cdp.collateral_ratio >= self.min_collateral_ratio);
             assert!(cdp.valid);
-            assert!(amount <= cdp.dai);
+            assert!(cdp.issuer == caller);
+            let cr =
+                (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
+            assert!(cr >= self.min_collateral_ratio.into());
+            cdp.collateral_ratio = cr as u32;
+            cdp.collateral_dot -= collateral;
+            self.env().transfer(caller, collateral).unwrap();
+            self.env().emit_event(MinusCollateral {
+                cdp_id,
+                minus_collateral: collateral,
+                collateral_ratio: cr as u32,
+            });
+        }
 
-            let dot = cdp.dot * amount / cdp.dai;
-            cdp.dot -= dot;
-            cdp.dai -= amount;
+        /// Only issuer can withdraw
+        #[ink(message)]
+        pub fn withdraw_dot(&mut self, cdp_id: CdpId, dai: Balance) -> Balance {
+            assert!(self.cdps.contains_key(&cdp_id));
+            let caller = self.env().caller();
+            let cdp = self.cdps.get_mut(&cdp_id).unwrap();
+            assert!(cdp.valid);
+            assert!(cdp.issuer == caller);
+            assert!(cdp.collateral_ratio >= self.min_collateral_ratio);
+            assert!(dai <= cdp.issue_dai);
+            let dot = cdp.collateral_dot * dai / cdp.issue_dai;
+            cdp.collateral_dot -= dot;
+            cdp.issue_dai -= dai;
             self.env().transfer(caller, dot).unwrap();
-            self.total_collateral_dot -= dot;
-            self.total_issue_dai -= amount;
+            self.env().emit_event(Withdraw {
+                cdp_id,
+                collateral: dot,
+                dai,
+            });
             dot
         }
 
+        /// Anyone can invoke collateral liquidation if current collateral ratio lower than minimum
         #[ink(message)]
-        pub fn liquidate_collateral(&mut self, cdp_id: CdpId, amount: Balance) {
+        pub fn liquidate_collateral(&mut self, cdp_id: CdpId, dai: Balance) {
             assert!(self.cdps.contains_key(&cdp_id));
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.collateral_ratio <= self.min_collateral_ratio);
             assert!(cdp.valid);
+            assert!(cdp.collateral_ratio <= self.min_collateral_ratio);
             cdp.valid = false;
-            let owner = cdp.owner;
-            let dot = amount / self.dot_price as u128;
+            let owner = cdp.issuer;
+            let dot = dai / self.dot_price as u128;
+            cdp.issue_dai -= dai;
+            cdp.collateral_dot -= dot;
             self.env().transfer(owner, dot).unwrap();
-            let caller = self.env().caller();
             let keeper_reward =
-                amount * self.liquidater_reward_ratio as u128 / (100 * self.dot_price as u128);
-            self.env().transfer(caller, keeper_reward).unwrap();
-            self.total_issue_dai -= amount;
-            self.total_collateral_dot -= dot;
+                dai * self.liquidater_reward_ratio as u128 / (100 * self.dot_price as u128);
+            self.env()
+                .transfer(self.env().caller(), keeper_reward)
+                .unwrap();
+            self.env().emit_event(Liquidate {
+                cdp_id,
+                collateral: dot,
+                keeper_reward,
+            });
         }
 
         fn only_owner(&self) -> Result<()> {
