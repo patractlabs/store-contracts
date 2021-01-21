@@ -355,21 +355,15 @@ mod exchange {
 
         /// Burn PAT tokens to withdraw ETH and Tokens at current ratio.
         // @param amount Amount of PAT burned.
-        // @param min_tokens Minimum Tokens withdrawn.
         // @return The amount of ETH and Tokens withdrawn.
         #[ink(message)]
-        pub fn remove_liquidity(
-            &mut self,
-            lp_amount: Balance,
-            min_tokens: Balance,
-        ) -> (Balance, Balance) {
+        pub fn remove_liquidity(&mut self, lp_amount: Balance) -> (Balance, Balance) {
             assert!(lp_amount > 0);
             let total_liquidity = self.total_supply;
             assert!(total_liquidity > 0);
             let token_reserve = self.token.balance_of(self.env().account_id());
             let eth_amount = lp_amount * self.env().balance() / total_liquidity;
             let token_amount = lp_amount * token_reserve / total_liquidity;
-            assert!(token_amount >= min_tokens);
             let caller = self.env().caller();
             let from_balance = self.balance_of(caller);
             self.balances.insert(caller, from_balance - lp_amount);
@@ -388,10 +382,17 @@ mod exchange {
             });
             (eth_amount, token_amount)
         }
+
+        /// Returns the PAT total token supply.
+        #[ink(message)]
+        pub fn total_supply(&self) -> Balance {
+            self.total_supply
+        }
     }
 
     impl PatraExchange {
         // Pricing function for converting between ETH and Tokens.
+        #[cfg(not(feature = "ink-as-dependency"))]
         fn get_input_price(
             input_amount: Balance,
             input_reserve: Balance,
@@ -404,6 +405,7 @@ mod exchange {
         }
 
         // Pricing function for converting between ETH and Tokens.
+        #[cfg(not(feature = "ink-as-dependency"))]
         fn get_output_price(
             output_amount: Balance,
             input_reserve: Balance,

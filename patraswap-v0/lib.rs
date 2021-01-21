@@ -76,7 +76,7 @@ mod factory {
             PatraExchange::new(token)
                 .endowment(total_balance / 2)
                 .code_hash(self.exchange_template)
-                .salt(salt)
+                .salt_bytes(salt)
                 .instantiate()
                 .expect("failed at instantiating the `exchange` contract");
 
