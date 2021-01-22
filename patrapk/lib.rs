@@ -5,7 +5,7 @@ use ink_lang as ink;
 #[ink::contract]
 mod patrapk {
     use ink_env::hash::Blake2x256;
-    use ink_prelude::string::String;
+    use ink_prelude::{format, string::String, vec::Vec};
     use ink_storage::{
         collections::HashMap as StorageMap,
         traits::{PackedLayout, SpreadLayout},
@@ -84,7 +84,7 @@ mod patrapk {
     )]
     pub struct GameDetails {
         pub creator: AccountId,
-        pub start_time: Timestamp,
+        pub start_block: BlockNumber,
         pub salt_hash: Hash,
         pub create_choice: Choice,
         pub value: Balance,
@@ -98,7 +98,7 @@ mod patrapk {
         fn default() -> GameDetails {
             GameDetails {
                 creator: Default::default(),
-                start_time: 0,
+                start_block: 0,
                 salt_hash: Default::default(),
                 create_choice: Choice::None,
                 value: 0,
@@ -108,6 +108,16 @@ mod patrapk {
                 result: GameResult::None,
             }
         }
+    }
+
+    #[ink(event)]
+    pub struct Reveal {
+        #[ink(topic)]
+        expected_salt_hash: Hash,
+        #[ink(topic)]
+        actual_salt_hash: Hash,
+        #[ink(topic)]
+        winner: GameResult,
     }
 
     #[ink(storage)]
@@ -125,11 +135,12 @@ mod patrapk {
             }
         }
 
+        // salt_hash = Hash("salt-rock/paper/scissors")
         #[ink(message, payable)]
         pub fn create(&mut self, salt_hash: Hash) -> GameID {
             let mut game = GameDetails::default();
             game.creator = self.env().caller();
-            game.start_time = self.env().block_timestamp();
+            game.start_block = self.env().block_number();
             game.salt_hash = salt_hash;
             game.value = self.env().transferred_balance();
             game.status = GameStatus::Join;
@@ -180,16 +191,25 @@ mod patrapk {
         }
 
         #[ink(message)]
-        pub fn reveal(&mut self, salt: String, choice: Choice, game_id: GameID) -> Result<()> {
+        pub fn reveal(&mut self, game_id: GameID, salt: String) -> Result<()> {
             let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
             if game.status != GameStatus::Settle {
                 return Err(Error::CannotReveal);
             }
-            // TODO
-            let salt_hash = self.env().hash_bytes::<Blake2x256>(salt.as_bytes());
-            if Hash::from(salt_hash) != game.salt_hash {
+            let salt_hash = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.as_bytes()));
+            let expected_salt_hash = game.salt_hash;
+            if salt_hash != expected_salt_hash {
                 return Err(Error::InvalidSalt);
             }
+            let ret: Vec<_> = salt.split('-').collect();
+            assert_eq!(ret.len(), 2);
+            let choice = match ret[1] {
+                "rock" => Choice::Rock,
+                "paper" => Choice::Paper,
+                "scissors" => Choice::Scissors,
+                _ => Choice::None,
+            };
+
             let result = Self::judgment(choice, game.joiner_choice).unwrap();
             match result {
                 GameResult::Draw => {
@@ -199,14 +219,13 @@ mod patrapk {
                 GameResult::CreatorWin => {
                     self.env().transfer(game.creator, game.value * 2).unwrap();
                 }
-                // TODO
-                // GameResult::JoinerWin => {
-                //     let creator_reward = game.value * 2 * 5 / 100;
-                //     self.env().transfer(game.creator, creator_reward).unwrap();
-                //     self.env()
-                //         .transfer(game.joiner, game.value * 2 - creator_reward)
-                //         .unwrap();
-                // }
+                GameResult::JoinerWin => {
+                    let creator_reward = game.value * 2 * 5 / 100;
+                    self.env().transfer(game.creator, creator_reward).unwrap();
+                    self.env()
+                        .transfer(game.joiner, game.value * 2 - creator_reward)
+                        .unwrap();
+                }
                 _ => (),
             }
             self.games.get_mut(&game_id).and_then(|x| {
@@ -215,6 +234,12 @@ mod patrapk {
                 x.result = result;
                 Some(x)
             });
+            self.env().emit_event(Reveal {
+                expected_salt_hash,
+                actual_salt_hash: salt_hash,
+                winner: result,
+            });
+
             Ok(())
         }
 
@@ -224,7 +249,8 @@ mod patrapk {
             if game.status != GameStatus::Settle {
                 return Err(Error::CannotExpire);
             }
-            if self.env().block_timestamp() < game.start_time + 24*3600 {
+            // 1 Day
+            if self.env().block_number() < game.start_block + 14400 {
                 return Err(Error::NotExpired);
             }
             self.env().transfer(game.joiner, game.value * 2).unwrap();
@@ -234,6 +260,19 @@ mod patrapk {
                 Some(x)
             });
             Ok(())
+        }
+
+        #[ink(message)]
+        pub fn salt_hash(&self, salt: String, choice: Choice) -> Hash {
+            let choice_str = match choice {
+                Choice::Rock => "rock",
+                Choice::Paper => "paper",
+                Choice::Scissors => "scissors",
+                _ => "",
+            };
+
+            let salt = format!("{}-{}", salt, choice_str);
+            Hash::from(self.env().hash_bytes::<Blake2x256>(salt.as_bytes()))
         }
 
         #[ink(message)]
