@@ -4,10 +4,13 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod patramaker {
+    use dai::DAI;
+    use ink_env::call::FromAccountId;
     use ink_lang as ink;
     use ink_storage::{
         collections::HashMap as StorageMap,
         traits::{PackedLayout, SpreadLayout},
+        Lazy,
     };
 
     #[derive(Debug, PartialEq, Eq, scale::Encode)]
@@ -29,8 +32,6 @@ mod patramaker {
         collateral: Balance,
         #[ink(topic)]
         dai: Balance,
-        #[ink(topic)]
-        collateral_ratio: u32,
     }
 
     #[ink(event)]
@@ -91,6 +92,7 @@ mod patramaker {
 
     #[ink(storage)]
     pub struct PatraMaker {
+        dai_token: Lazy<DAI>,
         cdps: StorageMap<CdpId, CDP>,
         cdp_count: u32,
         min_collateral_ratio: u32,
@@ -136,9 +138,20 @@ mod patramaker {
 
     impl PatraMaker {
         #[ink(constructor)]
-        pub fn new() -> Self {
+        pub fn new(dai_contract: AccountId) -> Self {
+            assert_ne!(dai_contract, Default::default());
             let caller = Self::env().caller();
+            let dai_token: DAI = FromAccountId::from_account_id(dai_contract);
+            // let salt = 0_u32.to_le_bytes();
+            // let total_balance = Self::env().balance();
+            // let dai_token = DAI::new()
+            //     .endowment(total_balance / 2)
+            //     .code_hash(dai_contract)
+            //     .salt_bytes(salt)
+            //     .instantiate()
+            //     .expect("failed at instantiating the dai token contract");
             Self {
+                dai_token: Lazy::new(dai_token),
                 cdps: StorageMap::new(),
                 cdp_count: 0,
                 min_collateral_ratio: 150,
@@ -214,11 +227,11 @@ mod patramaker {
             };
             self.cdp_count += 1;
             self.cdps.insert(self.cdp_count, cdp);
+            self.dai_token.mint(caller, dai).unwrap();
             self.env().emit_event(IssueDAI {
                 cdp_id: self.cdp_count,
                 collateral,
                 dai,
-                collateral_ratio: cr,
             });
             (self.cdp_count, dai)
         }
@@ -279,6 +292,7 @@ mod patramaker {
             cdp.collateral_dot -= dot;
             cdp.issue_dai -= dai;
             self.env().transfer(caller, dot).unwrap();
+            self.dai_token.burn(caller, dai).unwrap();
             self.env().emit_event(Withdraw {
                 cdp_id,
                 collateral: dot,
@@ -294,22 +308,37 @@ mod patramaker {
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             assert!(cdp.valid);
             assert!(cdp.collateral_ratio <= self.min_collateral_ratio);
+            assert!(cdp.issue_dai >= dai);
             cdp.valid = false;
             let owner = cdp.issuer;
             let dot = dai / self.dot_price as u128;
             cdp.issue_dai -= dai;
-            cdp.collateral_dot -= dot;
-            self.env().transfer(owner, dot).unwrap();
             let keeper_reward =
                 dai * self.liquidater_reward_ratio as u128 / (100 * self.dot_price as u128);
-            self.env()
-                .transfer(self.env().caller(), keeper_reward)
-                .unwrap();
+            cdp.collateral_dot = cdp.collateral_dot - dot - keeper_reward;
+            let mut rest_dot = 0_u128;
+            if cdp.issue_dai == 0 && cdp.collateral_dot > 0 {
+                rest_dot = cdp.collateral_dot;
+                cdp.collateral_dot = 0;
+            }
+            self.env().transfer(owner, dot).unwrap();
+            let caller = self.env().caller();
+            self.env().transfer(caller, keeper_reward).unwrap();
+            self.dai_token.burn(owner, dai).unwrap();
+            if rest_dot > 0 {
+                self.env().transfer(owner, rest_dot).unwrap();
+            }
             self.env().emit_event(Liquidate {
                 cdp_id,
                 collateral: dot,
                 keeper_reward,
             });
+        }
+
+        /// Returns the total dai token supply.
+        #[ink(message)]
+        pub fn total_supply(&self) -> Balance {
+            self.dai_token.total_supply()
         }
 
         fn only_owner(&self) -> Result<()> {
