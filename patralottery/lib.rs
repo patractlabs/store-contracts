@@ -4,7 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod patralottery {
-    // use ink_env::AccountId;
+    use core::fmt::Write;
     use ink_prelude::{string::String, vec, vec::Vec};
     use ink_storage::{
         collections::HashMap as StorageMap,
@@ -50,7 +50,7 @@ mod patralottery {
         derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
     )]
     pub struct Tickets {
-        pub num: String,
+        pub num: Vec<u32>,
         pub amount: u32,
         pub reward: Balance,
         pub rank: Rank,
@@ -77,7 +77,7 @@ mod patralottery {
         }
 
         #[ink(message, payable)]
-        pub fn bug_tickets(&mut self, num: String, amount: u32) {
+        pub fn bug_tickets(&mut self, num: Vec<u32>, amount: u32) {
             let caller = self.env().caller();
             let spend = self.env().transferred_balance();
             assert_eq!(spend, DOTS * amount as u128);
@@ -106,13 +106,11 @@ mod patralottery {
         }
 
         #[ink(message)]
-        pub fn draw_lottery(&mut self, epoch: EpochID) {
-            assert_eq!(epoch, self.current_epoch);
-            let win_str = "1 2 3";
-            let win_num: Vec<i32> = win_str
-                .split_whitespace()
-                .map(|s| s.parse().expect("parse error"))
-                .collect();
+        pub fn draw_lottery(&mut self) {
+            let epoch = 0_u32;
+            // assert_eq!(epoch, self.current_epoch);
+            let random = self.env().random("".as_bytes());
+            let win_num = self.get_winning_number(random);
 
             let caller = self.env().caller();
             // 0.1 DOT
@@ -170,25 +168,48 @@ mod patralottery {
             }
         }
 
-        fn rank(numbers: String, win_num: Vec<i32>) -> Rank {
-            let nums: Vec<i32> = numbers
-                .split_whitespace()
-                .map(|s| s.parse().expect("parse error"))
-                .collect();
+        fn rank(numbers: Vec<u32>, win_num: Vec<u32>) -> Rank {
             assert_eq!(numbers.len(), 3);
-
-            let mut count = 0_u8;
-            for (i, v) in win_num.iter().enumerate() {
-                if nums[i] == *v {
-                    count += 1;
-                }
-            }
+            let count = win_num
+                .iter()
+                .zip(numbers.iter())
+                .filter(|(x, y)| **x == **y)
+                .count();
             match count {
                 3 => Rank::FirstPrize,
                 2 => Rank::SecondPrize,
                 1 => Rank::ThirdPrize,
                 _ => Rank::None,
             }
+        }
+
+        pub fn get_winning_number(&self, random: Hash) -> Vec<u32> {
+            let mut seed = String::new();
+            for byte in random.as_ref() {
+                write!(&mut seed, "{:x}", byte).expect("Unable to write");
+            }
+            let mut win: Vec<u32> = vec![];
+            for (n, v) in seed.chars().filter_map(|x| x.to_digit(10)).enumerate() {
+                if n < 3 {
+                    win.push(v);
+                }
+            }
+            win
+        }
+
+        #[ink(message)]
+        pub fn winning_number(&self) -> (String, Vec<u32>) {
+            let mut seed = String::new();
+            for byte in self.env().random("123".as_bytes()).as_ref() {
+                write!(&mut seed, "{:x}", byte).expect("Unable to write");
+            }
+            let mut win: Vec<u32> = vec![];
+            for (n, v) in seed.chars().filter_map(|x| x.to_digit(10)).enumerate() {
+                if n < 3 {
+                    win.push(v);
+                }
+            }
+            (seed, win)
         }
     }
 }
