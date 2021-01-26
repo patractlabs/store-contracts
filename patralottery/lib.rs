@@ -1,9 +1,55 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use ink_env::Environment;
 use ink_lang as ink;
+pub enum CustomEnvironment {}
 
-#[ink::contract]
+#[derive(Debug, PartialEq, scale::Decode)]
+pub struct Randomness {
+    pub epoch: u64,
+    pub randomness: <ink_env::DefaultEnvironment as Environment>::Hash,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, scale::Encode, scale::Decode)]
+pub enum ErrorCode {
+    InvalidKey,
+}
+
+impl ink_env::chain_extension::FromStatusCode for ErrorCode {
+    fn from_status_code(status_code: u32) -> Result<(), Self> {
+        match status_code {
+            0 => Ok(()),
+            1 => Err(Self::InvalidKey),
+            _ => panic!("encountered unknown status code"),
+        }
+    }
+}
+
+/// Custom chain extension to read to and write from the runtime.
+#[ink::chain_extension]
+pub trait BabeRandomness {
+    type ErrorCode = ErrorCode;
+
+    /// Reads from runtime storage.
+    #[ink(extension = 0x02000000, returns_result = false)]
+    fn read(key: &[u8]) -> Randomness;
+}
+
+impl Environment for CustomEnvironment {
+    const MAX_EVENT_TOPICS: usize = <ink_env::DefaultEnvironment as Environment>::MAX_EVENT_TOPICS;
+
+    type AccountId = <ink_env::DefaultEnvironment as Environment>::AccountId;
+    type Balance = <ink_env::DefaultEnvironment as Environment>::Balance;
+    type Hash = <ink_env::DefaultEnvironment as Environment>::Hash;
+    type BlockNumber = <ink_env::DefaultEnvironment as Environment>::BlockNumber;
+    type Timestamp = <ink_env::DefaultEnvironment as Environment>::Timestamp;
+
+    type ChainExtension = BabeRandomness;
+}
+
+#[ink::contract(env = crate::CustomEnvironment)]
 mod patralottery {
+    use crate::Randomness;
     use core::fmt::Write;
     use ink_prelude::{string::String, vec, vec::Vec};
     use ink_storage::{
@@ -13,7 +59,7 @@ mod patralottery {
 
     pub const DOTS: Balance = 1_000_000_000_000;
 
-    pub type EpochID = u32;
+    pub type EpochID = u64;
 
     #[derive(
         Debug, PartialEq, Eq, scale::Encode, scale::Decode, Clone, Copy, SpreadLayout, PackedLayout,
@@ -107,8 +153,9 @@ mod patralottery {
 
         #[ink(message)]
         pub fn draw_lottery(&mut self) {
-            let epoch = 0_u32;
-            // assert_eq!(epoch, self.current_epoch);
+            let ret: Randomness = self.env().extension().read("".as_bytes()).unwrap();
+            let epoch = ret.epoch;
+            assert_eq!(epoch, self.current_epoch);
             let random = self.env().random("".as_bytes());
             let win_num = self.get_winning_number(random);
 
@@ -200,7 +247,8 @@ mod patralottery {
         #[ink(message)]
         pub fn winning_number(&self) -> (String, Vec<u32>) {
             let mut seed = String::new();
-            for byte in self.env().random("123".as_bytes()).as_ref() {
+            let ret: Randomness = self.env().extension().read("".as_bytes()).unwrap();
+            for byte in ret.randomness.as_ref() {
                 write!(&mut seed, "{:x}", byte).expect("Unable to write");
             }
             let mut win: Vec<u32> = vec![];
