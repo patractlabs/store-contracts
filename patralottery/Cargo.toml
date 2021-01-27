@@ -12,6 +12,8 @@ ink_storage = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink"
 ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
+ink-babe-random = { version = "0.1.0", git = "https://github.com/tylerztl/ink-babe-random", default-features = false}
+
 scale = { package = "parity-scale-codec", version = "1.3", default-features = false, features = ["derive"] }
 scale-info = { version = "0.4.1", default-features = false, features = ["derive"], optional = true }
 
@@ -31,6 +33,7 @@ std = [
     "ink_storage/std",
     "ink_primitives/std",
     "ink_prelude/std",
+    "ink-babe-random/std",
     "scale/std",
     "scale-info/std",
 ]
