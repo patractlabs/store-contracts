@@ -7,7 +7,8 @@
 
 [ethereum contract address](https://etherscan.io/address/0xdac17f958d2ee523a2206206994597c13d831ec7)
 
-### MakerDAO
+### Patra Maker
+
 https://github.com/makerdao
 
 ### OneClickAsset
@@ -30,4 +31,29 @@ https://pixelchain.art/editor
 
 ### Lottery
 (BABE随机数)，选择三位数的数字，如果当前babe随机数的后几位符合，就拿走奖池一半奖金，错了就留到奖池。
+
+# Get started
+
+## Development Tools
+Details visit: [Redspot](https://redspot.patract.io/zh-CN/tutorial/#get-started)
+
+### ERC20 Example
+```
+cd erc20
+```
+
+#### Compile
+```
+npx redspot compile
+```
+
+#### Deploy
+```
+npx redspot run scripts/deploy.ts
+```
+
+#### Test
+```
+npx redspot test
+```
 
