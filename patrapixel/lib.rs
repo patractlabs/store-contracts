@@ -4,7 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod patrapixel {
-    use ink_prelude::string::String;
+    use ink_prelude::{string::String, vec, vec::Vec};
     use ink_storage::collections::HashMap as StorageHashMap;
 
     pub type TokenId = u32;
@@ -32,7 +32,7 @@ mod patrapixel {
         symbol: String,
         total_supply: u32,
         token_owner: StorageHashMap<TokenId, AccountId>,
-        list_of_owner_tokens: StorageHashMap<AccountId, u32>,
+        list_of_owner_tokens: StorageHashMap<AccountId, Vec<TokenId>>,
         referenced_metadata: StorageHashMap<TokenId, String>,
     }
 
@@ -63,8 +63,8 @@ mod patrapixel {
 
         /// Get and return the balance of token held by _owner.
         #[ink(message)]
-        pub fn balance_of(&self, owner: AccountId) -> u32 {
-            self.list_of_owner_tokens.get(&owner).copied().unwrap_or(0)
+        pub fn balance_of(&self, owner: AccountId) -> Option<Vec<TokenId>> {
+            self.list_of_owner_tokens.get(&owner).cloned()
         }
 
         /// Get and returns a metadata of tokenId
@@ -78,19 +78,13 @@ mod patrapixel {
 
         /// Mint a new token with metadata
         #[ink(message)]
-        pub fn mint_with_metadata(
-            &mut self,
-            owner: AccountId,
-            token_id: TokenId,
-            metadata: String,
-        ) -> Result<(), Error> {
-            if self.token_owner.contains_key(&token_id) {
-                return Err(Error::TokenExists);
-            }
-            self.set_token_owner(token_id, owner)?;
-            self.add_token_to_owners_list(owner);
-            self.insert_token_metadata(token_id, metadata)?;
+        pub fn mint_with_metadata(&mut self, metadata: String) -> Result<(), Error> {
+            let owner = self.env().caller();
             self.total_supply += 1;
+            let token_id = self.total_supply;
+            self.set_token_owner(token_id, owner)?;
+            self.add_token_to_owners_list(owner, token_id);
+            self.insert_token_metadata(token_id, metadata)?;
             self.env().emit_event(Minted { owner, token_id });
             Ok(())
         }
@@ -102,12 +96,12 @@ mod patrapixel {
             }
         }
 
-        fn add_token_to_owners_list(&mut self, owner: AccountId) {
+        fn add_token_to_owners_list(&mut self, owner: AccountId, token_id: TokenId) {
             if self.list_of_owner_tokens.contains_key(&owner) {
-                let tokens_count = self.list_of_owner_tokens.get_mut(&owner).unwrap();
-                *tokens_count = 1;
+                let tokens = self.list_of_owner_tokens.get_mut(&owner).unwrap();
+                tokens.push(token_id);
             } else {
-                self.list_of_owner_tokens.insert(owner, 1);
+                self.list_of_owner_tokens.insert(owner, vec![token_id]);
             }
         }
 
