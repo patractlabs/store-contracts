@@ -37,6 +37,11 @@ https://pixelchain.art/editor
 ## Development Tools
 Details visit: [Redspot](https://redspot.patract.io/zh-CN/tutorial/#get-started)
 
+### Run a local node
+```
+jupiter-dev --dev --execution=Native --tmp
+```
+
 ### ERC20 Example
 ```
 cd erc20
