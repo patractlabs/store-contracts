@@ -25,14 +25,13 @@ impl ink_env::chain_extension::FromStatusCode for ErrorCode {
     }
 }
 
-/// Custom chain extension to read to and write from the runtime.
 #[ink::chain_extension]
 pub trait BabeRandomness {
     type ErrorCode = ErrorCode;
 
     /// Reads from runtime storage.
     #[ink(extension = 0x02000000, returns_result = false)]
-    fn read(key: &[u8]) -> Randomness;
+    fn random(subject: &[u8]) -> Randomness;
 }
 
 impl Environment for CustomEnvironment {
@@ -75,6 +74,26 @@ mod patralottery {
         ThirdPrize,
     }
 
+    #[ink(event)]
+    pub struct BuyTickets {
+	    #[ink(topic)]
+	    ticket_num: Vec<u32>,
+        #[ink(topic)]
+        amount: u32,
+        #[ink(topic)]
+        epoch: EpochID,
+    }
+
+	#[ink(event)]
+	pub struct DrawLottery {
+		#[ink(topic)]
+		epoch: EpochID,
+		#[ink(topic)]
+		randomness: Hash,
+		#[ink(topic)]
+		win_num: Vec<u32>,
+	}
+
     #[derive(
         Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
     )]
@@ -86,6 +105,7 @@ mod patralottery {
         pub random: Hash,
         pub win_num: String,
         pub buyers: Vec<AccountId>,
+        pub end: bool,
     }
 
     #[derive(
@@ -107,18 +127,18 @@ mod patralottery {
         epochs: StorageMap<EpochID, Lottery>,
         players: StorageMap<(EpochID, AccountId), Vec<Tickets>>,
         reward_pool: Balance,
-        current_epoch: EpochID,
+        epoch: EpochID,
     }
 
     impl PatraLottery {
-        /// Constructor that initializes the `bool` value to the given `init_value`.
         #[ink(constructor)]
         pub fn new() -> Self {
+            let ret: Randomness = Self::env().extension().random("".as_bytes()).unwrap();
             Self {
                 epochs: StorageMap::new(),
                 players: StorageMap::new(),
                 reward_pool: 0,
-                current_epoch: 0,
+                epoch: ret.epoch + 1,
             }
         }
 
@@ -131,33 +151,50 @@ mod patralottery {
             self.reward_pool += spend;
 
             let ticket = Tickets {
-                num,
+                num: num.clone(),
                 amount,
                 reward: 0,
                 rank: Rank::None,
             };
-
-            if let Some(tic) = self.players.get_mut(&(self.current_epoch, caller)) {
+            if let Some(tic) = self.players.get_mut(&(self.epoch, caller)) {
                 tic.push(ticket);
             } else {
-                self.players
-                    .insert((self.current_epoch, caller), vec![ticket]);
+                self.players.insert((self.epoch, caller), vec![ticket]);
             }
 
-            if let Some(ep) = self.epochs.get_mut(&self.current_epoch) {
+            if let Some(ep) = self.epochs.get_mut(&self.epoch) {
                 if !ep.buyers.contains(&caller) {
                     ep.buyers.push(caller)
                 }
+            } else {
+                self.epochs.insert(
+                    self.epoch,
+                    Lottery {
+                        random: Default::default(),
+                        win_num: String::from(""),
+                        buyers: vec![caller],
+                        end: false,
+                    },
+                );
             }
+
+            self.env().emit_event(BuyTickets {
+	            ticket_num: num,
+	            amount,
+                epoch: self.epoch,
+            })
         }
 
         #[ink(message)]
         pub fn draw_lottery(&mut self) {
-            let ret: Randomness = self.env().extension().read("".as_bytes()).unwrap();
+            let ret: Randomness = self.env().extension().random("".as_bytes()).unwrap();
             let epoch = ret.epoch;
-            assert_eq!(epoch, self.current_epoch);
-            let random = self.env().random("".as_bytes());
-            let win_num = self.get_winning_number(random);
+            assert_eq!(epoch, self.epoch - 1);
+	        let info =  self.epochs.get_mut(&epoch).unwrap();
+	        assert!(!info.end);
+	        info.end = true;
+
+            let (_hex_random, win_num) = Self::get_winning_number(ret.randomness);
 
             let caller = self.env().caller();
             // 0.1 DOT
@@ -174,7 +211,6 @@ mod patralottery {
                             match rank {
                                 Rank::FirstPrize => {
                                     first_count += tic.amount;
-                                    // TODO
                                     first_palyers.insert(*buyer, tic.amount);
                                 }
                                 Rank::SecondPrize => {
@@ -213,6 +249,11 @@ mod patralottery {
                     }
                 }
             }
+	        self.env().emit_event(DrawLottery{
+		        epoch,
+		        randomness:ret.randomness,
+		        win_num,
+	        })
         }
 
         fn rank(numbers: Vec<u32>, win_num: Vec<u32>) -> Rank {
@@ -230,25 +271,17 @@ mod patralottery {
             }
         }
 
-        pub fn get_winning_number(&self, random: Hash) -> Vec<u32> {
+        #[ink(message)]
+        pub fn winning_number(&self, subject: Vec<u8>) -> (String, Vec<u32>) {
+            let ret: Randomness = self.env().extension().random(subject.as_slice()).unwrap();
+            Self::get_winning_number(ret.randomness)
+        }
+    }
+
+    impl PatraLottery {
+        pub fn get_winning_number(random: Hash) -> (String, Vec<u32>) {
             let mut seed = String::new();
             for byte in random.as_ref() {
-                write!(&mut seed, "{:x}", byte).expect("Unable to write");
-            }
-            let mut win: Vec<u32> = vec![];
-            for (n, v) in seed.chars().filter_map(|x| x.to_digit(10)).enumerate() {
-                if n < 3 {
-                    win.push(v);
-                }
-            }
-            win
-        }
-
-        #[ink(message)]
-        pub fn winning_number(&self) -> (String, Vec<u32>) {
-            let mut seed = String::new();
-            let ret: Randomness = self.env().extension().read("".as_bytes()).unwrap();
-            for byte in ret.randomness.as_ref() {
                 write!(&mut seed, "{:x}", byte).expect("Unable to write");
             }
             let mut win: Vec<u32> = vec![];
