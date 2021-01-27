@@ -146,7 +146,8 @@ mod patralottery {
         pub fn bug_tickets(&mut self, num: Vec<u32>, amount: u32) {
             let caller = self.env().caller();
             let spend = self.env().transferred_balance();
-            assert_eq!(spend, DOTS * amount as u128);
+            // assert_eq!(spend, DOTS * amount as u128);
+	        assert_eq!(num.len(), 3);
 
             self.reward_pool += spend;
 
