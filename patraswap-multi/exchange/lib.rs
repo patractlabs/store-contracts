@@ -351,12 +351,13 @@ mod exchange {
             assert!(lp_amount > 0);
             let total_liquidity = *self.lpt_total_supply;
             assert!(total_liquidity > 0);
+            let caller = self.env().caller();
+            assert!(self.to_token_contract.balance_of(caller) >= lp_amount);
             let exchange_account = self.env().account_id();
             let from_token_reserve = self.from_token_contract.balance_of(exchange_account);
             let to_token_reserve = self.to_token_contract.balance_of(exchange_account);
             let from_amount = lp_amount * from_token_reserve / total_liquidity;
             let to_amount = lp_amount * to_token_reserve / total_liquidity;
-            let caller = self.env().caller();
             assert!(self
                 .from_token_contract
                 .transfer(caller, from_amount)
