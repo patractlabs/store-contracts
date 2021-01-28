@@ -9,14 +9,12 @@ mod factory {
     use exchange::PatraExchange;
     use ink_prelude::vec::Vec;
     use ink_storage::collections::HashMap as StorageHashMap;
-    use lpt::LPT;
 
     #[ink(storage)]
     pub struct PatraFactory {
         exchange_template: Hash,
-        lpt_template: Hash,
+        lpt: AccountId,
         token_count: u128,
-        // TODO
         swap_pairs: Vec<SwapPair>,
         token_to_exchange: StorageHashMap<SwapPair, AccountId>,
         id_to_token: StorageHashMap<u128, SwapPair>,
@@ -30,7 +28,7 @@ mod factory {
         fn new() -> Self;
 
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash, lpt: Hash);
+        fn initialize_factory(&mut self, template: Hash, lpt: AccountId);
 
         #[ink(message)]
         fn create_exchange(&mut self, from_token: AccountId, to_token: AccountId) -> AccountId;
@@ -58,7 +56,7 @@ mod factory {
         fn new() -> Self {
             Self {
                 exchange_template: Default::default(),
-                lpt_template: Default::default(),
+                lpt: Default::default(),
                 token_count: 0,
                 swap_pairs: Vec::new(),
                 token_to_exchange: StorageHashMap::new(),
@@ -68,12 +66,12 @@ mod factory {
 
         // Can't call initializeFactory on factory twice
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash, lpt: Hash) {
+        fn initialize_factory(&mut self, template: Hash, lpt: AccountId) {
             assert_eq!(self.exchange_template, Default::default());
             assert_ne!(template, Default::default());
             // exchange template contract code hash
             self.exchange_template = template;
-            self.lpt_template = lpt;
+            self.lpt = lpt;
         }
 
         #[ink(message)]
@@ -91,19 +89,9 @@ mod factory {
 
             let salt = 0_u32.to_le_bytes();
             let total_balance = Self::env().balance();
-            // instantiate LP token
-            let lpt_params = LPT::new()
-                .endowment(total_balance / 10)
-                .code_hash(self.lpt_template)
-                .salt_bytes(salt)
-                .params();
-            let lpt_account_id = self
-                .env()
-                .instantiate_contract(&lpt_params)
-                .expect("failed at instantiating the `lpt` contract");
 
             // instantiate exchange
-            let exchange_params = PatraExchange::new(from_token, to_token, lpt_account_id)
+            let exchange_params = PatraExchange::new(from_token, to_token, self.lpt)
                 .endowment(total_balance / 10)
                 .code_hash(self.exchange_template)
                 .salt_bytes(salt)
@@ -115,6 +103,7 @@ mod factory {
 
             self.token_to_exchange
                 .insert((from_token, to_token), exchange_account_id);
+            self.swap_pairs.push((from_token, to_token));
             self.token_count += 1;
             self.id_to_token
                 .insert(self.token_count, (from_token, to_token));

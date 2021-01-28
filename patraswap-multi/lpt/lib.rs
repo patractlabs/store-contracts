@@ -24,7 +24,6 @@ mod erc20 {
     /// The ERC-20 result type.
     pub type Result<T> = core::result::Result<T, Error>;
 
-    /// Basic version of StandardToken, with no allowances.
     #[ink(storage)]
     pub struct LPT {
         /// Token Name
