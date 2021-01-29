@@ -12,8 +12,10 @@ ink_storage = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink"
 ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
-scale = { package = "parity-scale-codec", version = "1.3", default-features = false, features = ["derive"] }
-scale-info = { version = "0.4.1", default-features = false, features = ["derive"], optional = true }
+scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
+scale-info = { version = "0.5", default-features = false, features = ["derive"], optional = true }
+
+patra_env = { package = "patra_env", version = "0.1.0", git = "https://github.com/patractlabs/metis", branch = "patraenv", default-features = false }
 
 [lib]
 name = "patrapk"
@@ -33,16 +35,9 @@ std = [
     "ink_prelude/std",
     "scale/std",
     "scale-info/std",
+    "patra_env/std",
 ]
 ink-as-dependency = []
 
 [profile.release]
 overflow-checks = false
-
-[patch."https://github.com/paritytech/ink"]
-ink_primitives = { git = "https://github.com/patractlabs/ink", branch = "master" }
-ink_metadata = { git = "https://github.com/patractlabs/ink", branch = "master" }
-ink_env = { git = "https://github.com/patractlabs/ink", branch = "master" }
-ink_storage = { git = "https://github.com/patractlabs/ink", branch = "master" }
-ink_lang = { git = "https://github.com/patractlabs/ink", branch = "master" }
-ink_prelude = { git = "https://github.com/patractlabs/ink", branch = "master" }

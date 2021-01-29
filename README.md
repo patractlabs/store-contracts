@@ -52,13 +52,12 @@ cd erc20
 npx redspot compile
 ```
 
+#### Test
+```
+npx redspot test --no-compile
+```
+
 #### Deploy
 ```
 npx redspot run scripts/deploy.ts
 ```
-
-#### Test
-```
-npx redspot test
-```
-

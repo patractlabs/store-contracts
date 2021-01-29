@@ -1,8 +1,9 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use ink_lang as ink;
+use patra_env::PatraEnvironment;
 
-#[ink::contract]
+#[ink::contract(env = crate::PatraEnvironment)]
 mod patrapk {
     use ink_env::hash::Blake2x256;
     use ink_prelude::{format, string::String};

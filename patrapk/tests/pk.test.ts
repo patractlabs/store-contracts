@@ -6,7 +6,7 @@ const {getContractFactory, getRandomSigner} = patract;
 
 const {api, getSigners} = network;
 
-describe('ERC20', () => {
+describe('PatraPK', () => {
   after(() => {
     return api.disconnect();
   });
