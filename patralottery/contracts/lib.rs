@@ -13,7 +13,7 @@ mod patralottery {
         traits::{PackedLayout, SpreadLayout},
     };
 
-    pub const DOTS: Balance = 1_000_000_000_000;
+    pub const DOTS: Balance = 10_000_000_000;
 
     pub type EpochID = u64;
 
@@ -100,10 +100,10 @@ mod patralottery {
         }
 
         #[ink(message, payable)]
-        pub fn bug_tickets(&mut self, num: Vec<u32>, amount: u32) {
+        pub fn buy_tickets(&mut self, num: Vec<u32>, amount: u32) {
             let caller = self.env().caller();
             let spend = self.env().transferred_balance();
-            // assert_eq!(spend, DOTS * amount as u128);
+            assert!(spend >= DOTS * amount as u128);
 	        assert_eq!(num.len(), 3);
 
             self.reward_pool += spend;
