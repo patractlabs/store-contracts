@@ -5,7 +5,7 @@ use ink_lang as ink;
 #[ink::contract]
 mod patrapk {
     use ink_env::hash::Blake2x256;
-    use ink_prelude::{format, string::String, vec::Vec};
+    use ink_prelude::{format, string::String};
     use ink_storage::{
         collections::HashMap as StorageMap,
         traits::{PackedLayout, SpreadLayout},
@@ -75,6 +75,52 @@ mod patrapk {
         JoinerWin,
     }
 
+    #[ink(event)]
+    pub struct PKCreate {
+        #[ink(topic)]
+        creator: AccountId,
+        #[ink(topic)]
+        salt_hash: Hash,
+        #[ink(topic)]
+        value: Balance,
+    }
+
+    #[ink(event)]
+    pub struct PKDelete {
+        #[ink(topic)]
+        game_id: GameID,
+        #[ink(topic)]
+        creator: AccountId,
+    }
+
+    #[ink(event)]
+    pub struct PKJoin {
+        #[ink(topic)]
+        game_id: GameID,
+        #[ink(topic)]
+        joiner: AccountId,
+        #[ink(topic)]
+        joiner_choice: Choice,
+    }
+
+    #[ink(event)]
+    pub struct PKReveal {
+        #[ink(topic)]
+        game_id: GameID,
+        #[ink(topic)]
+        result: GameResult,
+    }
+
+    #[ink(event)]
+    pub struct PKExpire {
+        #[ink(topic)]
+        game_id: GameID,
+        #[ink(topic)]
+        status: GameStatus,
+        #[ink(topic)]
+        result: GameResult,
+    }
+
     #[derive(
         Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
     )]
@@ -110,16 +156,6 @@ mod patrapk {
         }
     }
 
-    #[ink(event)]
-    pub struct Reveal {
-        #[ink(topic)]
-        expected_salt_hash: Hash,
-        #[ink(topic)]
-        actual_salt_hash: Hash,
-        #[ink(topic)]
-        winner: GameResult,
-    }
-
     #[ink(storage)]
     pub struct Patrapk {
         games: StorageMap<GameID, GameDetails>,
@@ -145,14 +181,20 @@ mod patrapk {
             game.value = self.env().transferred_balance();
             game.status = GameStatus::Join;
             self.counter += 1;
-            self.games.insert(self.counter, game);
+            self.games.insert(self.counter, game.clone());
+            self.env().emit_event(PKCreate {
+                creator: game.creator,
+                salt_hash,
+                value: game.value,
+            });
             self.counter
         }
 
         #[ink(message)]
         pub fn delete(&mut self, game_id: GameID) -> Result<()> {
             let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
-            if game.creator != self.env().caller() {
+            let caller = self.env().caller();
+            if game.creator != caller {
                 return Err(Error::NotCreator);
             }
             if game.status != GameStatus::Join {
@@ -162,6 +204,10 @@ mod patrapk {
             self.games.get_mut(&game_id).and_then(|x| {
                 x.status = GameStatus::Delete;
                 Some(x)
+            });
+            self.env().emit_event(PKDelete {
+                game_id,
+                creator: caller,
             });
             Ok(())
         }
@@ -184,6 +230,12 @@ mod patrapk {
                     game.status = GameStatus::Settle;
                     game.joiner = caller;
                     game.joiner_choice = choice;
+
+                    self.env().emit_event(PKJoin {
+                        game_id,
+                        joiner: caller,
+                        joiner_choice: choice,
+                    });
                     Ok(())
                 }
                 None => Err(Error::GameNotFound),
@@ -191,24 +243,16 @@ mod patrapk {
         }
 
         #[ink(message)]
-        pub fn reveal(&mut self, game_id: GameID, salt: String) -> Result<()> {
+        pub fn reveal(&mut self, game_id: GameID, salt: String, choice: Choice) -> Result<()> {
             let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
             if game.status != GameStatus::Settle {
                 return Err(Error::CannotReveal);
             }
-            let salt_hash = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.as_bytes()));
+            let salt_hash = self.salt_hash(salt, choice);
             let expected_salt_hash = game.salt_hash;
             if salt_hash != expected_salt_hash {
                 return Err(Error::InvalidSalt);
             }
-            let ret: Vec<_> = salt.split('-').collect();
-            assert_eq!(ret.len(), 2);
-            let choice = match ret[1] {
-                "rock" => Choice::Rock,
-                "paper" => Choice::Paper,
-                "scissors" => Choice::Scissors,
-                _ => Choice::None,
-            };
 
             let result = Self::judgment(choice, game.joiner_choice).unwrap();
             match result {
@@ -234,11 +278,7 @@ mod patrapk {
                 x.result = result;
                 Some(x)
             });
-            self.env().emit_event(Reveal {
-                expected_salt_hash,
-                actual_salt_hash: salt_hash,
-                winner: result,
-            });
+            self.env().emit_event(PKReveal { game_id, result });
 
             Ok(())
         }
@@ -258,6 +298,11 @@ mod patrapk {
                 x.status = GameStatus::Expire;
                 x.result = GameResult::JoinerWin;
                 Some(x)
+            });
+            self.env().emit_event(PKExpire {
+                game_id,
+                status: GameStatus::Expire,
+                result: GameResult::JoinerWin,
             });
             Ok(())
         }

@@ -412,8 +412,8 @@ mod exchange {
             output_reserve: Balance,
         ) -> Balance {
             assert!(input_reserve > 0 && output_reserve > 0);
-            let numerator: Balance = output_reserve.saturating_mul(output_amount);
-            let denominator: Balance = input_reserve.saturating_sub(output_amount);
+            let numerator: Balance = input_reserve.saturating_mul(output_amount);
+            let denominator: Balance = output_reserve.saturating_sub(output_amount);
             numerator / denominator + 1
         }
     }

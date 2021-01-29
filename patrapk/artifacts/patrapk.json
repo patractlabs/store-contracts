@@ -1,0 +1,970 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "0xde4293dc1b9229648cb5c45bf9d82388d0812ad5789f63bf471ec5d99bd471c5",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.51.0-nightly"
+  },
+  "contract": {
+    "name": "patrapk",
+    "version": "0.1.0",
+    "authors": [
+      "tyler <tyler@patract.io>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [],
+        "docs": [],
+        "name": [
+          "new"
+        ],
+        "selector": "0xd183512b"
+      }
+    ],
+    "docs": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "creator",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 7
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "salt_hash",
+            "type": {
+              "displayName": [
+                "Hash"
+              ],
+              "type": 10
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 12
+            }
+          }
+        ],
+        "docs": [],
+        "name": "PKCreate"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "creator",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 7
+            }
+          }
+        ],
+        "docs": [],
+        "name": "PKDelete"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "joiner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 7
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "joiner_choice",
+            "type": {
+              "displayName": [
+                "Choice"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [],
+        "name": "PKJoin"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "result",
+            "type": {
+              "displayName": [
+                "GameResult"
+              ],
+              "type": 14
+            }
+          }
+        ],
+        "docs": [],
+        "name": "PKReveal"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "status",
+            "type": {
+              "displayName": [
+                "GameStatus"
+              ],
+              "type": 13
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "result",
+            "type": {
+              "displayName": [
+                "GameResult"
+              ],
+              "type": 14
+            }
+          }
+        ],
+        "docs": [],
+        "name": "PKExpire"
+      }
+    ],
+    "messages": [
+      {
+        "args": [
+          {
+            "name": "salt_hash",
+            "type": {
+              "displayName": [
+                "Hash"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "create"
+        ],
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "GameID"
+          ],
+          "type": 2
+        },
+        "selector": "0x744789ad"
+      },
+      {
+        "args": [
+          {
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "delete"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 15
+        },
+        "selector": "0xa51b6d49"
+      },
+      {
+        "args": [
+          {
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "name": "choice",
+            "type": {
+              "displayName": [
+                "Choice"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "join"
+        ],
+        "payable": true,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 15
+        },
+        "selector": "0x669b4856"
+      },
+      {
+        "args": [
+          {
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          },
+          {
+            "name": "salt",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 18
+            }
+          },
+          {
+            "name": "choice",
+            "type": {
+              "displayName": [
+                "Choice"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "reveal"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 15
+        },
+        "selector": "0x4c2b8e66"
+      },
+      {
+        "args": [
+          {
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "expire"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 15
+        },
+        "selector": "0xea63d23e"
+      },
+      {
+        "args": [
+          {
+            "name": "salt",
+            "type": {
+              "displayName": [
+                "String"
+              ],
+              "type": 18
+            }
+          },
+          {
+            "name": "choice",
+            "type": {
+              "displayName": [
+                "Choice"
+              ],
+              "type": 11
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "salt_hash"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Hash"
+          ],
+          "type": 10
+        },
+        "selector": "0x8ca7314c"
+      },
+      {
+        "args": [
+          {
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "game_of"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Result"
+          ],
+          "type": 19
+        },
+        "selector": "0x94656e1c"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "game_total"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u32"
+          ],
+          "type": 2
+        },
+        "selector": "0x7bf544d6"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                              "ty": 1
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                                      "ty": 2
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0100000001000000000000000000000000000000000000000000000000000000",
+                                          "ty": 3
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0200000000000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                          "ty": 5
+                        }
+                      },
+                      "offset": "0x0100000001000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
+            }
+          },
+          "name": "games"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+              "ty": 2
+            }
+          },
+          "name": "counter"
+        }
+      ]
+    }
+  },
+  "types": [
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "last_vacant",
+              "type": 2
+            },
+            {
+              "name": "len",
+              "type": 2
+            },
+            {
+              "name": "len_entries",
+              "type": 2
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Header"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u32"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 4
+                }
+              ],
+              "name": "Vacant"
+            },
+            {
+              "fields": [
+                {
+                  "type": 2
+                }
+              ],
+              "name": "Occupied"
+            }
+          ]
+        }
+      },
+      "params": [
+        2
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Entry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "next",
+              "type": 2
+            },
+            {
+              "name": "prev",
+              "type": 2
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "VacantEntry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 6
+            },
+            {
+              "name": "key_index",
+              "type": 2
+            }
+          ]
+        }
+      },
+      "params": [
+        6
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "creator",
+              "type": 7
+            },
+            {
+              "name": "start_block",
+              "type": 2
+            },
+            {
+              "name": "salt_hash",
+              "type": 10
+            },
+            {
+              "name": "create_choice",
+              "type": 11
+            },
+            {
+              "name": "value",
+              "type": 12
+            },
+            {
+              "name": "status",
+              "type": 13
+            },
+            {
+              "name": "joiner",
+              "type": 7
+            },
+            {
+              "name": "joiner_choice",
+              "type": 11
+            },
+            {
+              "name": "result",
+              "type": 14
+            }
+          ]
+        }
+      },
+      "path": [
+        "patrapk",
+        "patrapk",
+        "GameDetails"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "type": 8
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_env",
+        "types",
+        "AccountId"
+      ]
+    },
+    {
+      "def": {
+        "array": {
+          "len": 32,
+          "type": 9
+        }
+      }
+    },
+    {
+      "def": {
+        "primitive": "u8"
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "type": 8
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_env",
+        "types",
+        "Hash"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "None"
+            },
+            {
+              "discriminant": 1,
+              "name": "Rock"
+            },
+            {
+              "discriminant": 2,
+              "name": "Paper"
+            },
+            {
+              "discriminant": 3,
+              "name": "Scissors"
+            }
+          ]
+        }
+      },
+      "path": [
+        "patrapk",
+        "patrapk",
+        "Choice"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u128"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "None"
+            },
+            {
+              "discriminant": 1,
+              "name": "Join"
+            },
+            {
+              "discriminant": 2,
+              "name": "Delete"
+            },
+            {
+              "discriminant": 3,
+              "name": "Settle"
+            },
+            {
+              "discriminant": 4,
+              "name": "End"
+            },
+            {
+              "discriminant": 5,
+              "name": "Expire"
+            }
+          ]
+        }
+      },
+      "path": [
+        "patrapk",
+        "patrapk",
+        "GameStatus"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "None"
+            },
+            {
+              "discriminant": 1,
+              "name": "Draw"
+            },
+            {
+              "discriminant": 2,
+              "name": "CreatorWin"
+            },
+            {
+              "discriminant": 3,
+              "name": "JoinerWin"
+            }
+          ]
+        }
+      },
+      "path": [
+        "patrapk",
+        "patrapk",
+        "GameResult"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 16
+                }
+              ],
+              "name": "Ok"
+            },
+            {
+              "fields": [
+                {
+                  "type": 17
+                }
+              ],
+              "name": "Err"
+            }
+          ]
+        }
+      },
+      "params": [
+        16,
+        17
+      ],
+      "path": [
+        "Result"
+      ]
+    },
+    {
+      "def": {
+        "tuple": []
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "discriminant": 0,
+              "name": "GameCreator"
+            },
+            {
+              "discriminant": 1,
+              "name": "NotCreator"
+            },
+            {
+              "discriminant": 2,
+              "name": "CannotJoin"
+            },
+            {
+              "discriminant": 3,
+              "name": "CannotReveal"
+            },
+            {
+              "discriminant": 4,
+              "name": "CannotDelete"
+            },
+            {
+              "discriminant": 5,
+              "name": "CannotExpire"
+            },
+            {
+              "discriminant": 6,
+              "name": "NotExpired"
+            },
+            {
+              "discriminant": 7,
+              "name": "InvalidStake"
+            },
+            {
+              "discriminant": 8,
+              "name": "InvalidSalt"
+            },
+            {
+              "discriminant": 9,
+              "name": "InvalidChoice"
+            },
+            {
+              "discriminant": 10,
+              "name": "GameNotFound"
+            }
+          ]
+        }
+      },
+      "path": [
+        "patrapk",
+        "patrapk",
+        "Error"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "str"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 6
+                }
+              ],
+              "name": "Ok"
+            },
+            {
+              "fields": [
+                {
+                  "type": 17
+                }
+              ],
+              "name": "Err"
+            }
+          ]
+        }
+      },
+      "params": [
+        6,
+        17
+      ],
+      "path": [
+        "Result"
+      ]
+    }
+  ]
+}
