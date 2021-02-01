@@ -5,16 +5,17 @@ authors = ["[your_name] <[your_email]>"]
 edition = "2018"
 
 [dependencies]
-ink_primitives = { version = "3.0.0-rc2", default-features = false }
-ink_metadata = { version = "3.0.0-rc2", default-features = false, features = ["derive"], optional = true }
-ink_env = { version = "3.0.0-rc2", default-features = false }
-ink_storage = { version = "3.0.0-rc2", default-features = false }
-ink_lang = { version = "3.0.0-rc2", default-features = false }
-ink_prelude = { version = "3.0.0-rc2", default-features = false }
+ink_primitives = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_metadata = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false, features = ["derive"], optional = true }
+ink_env = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_storage = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
+ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
-scale = { package = "parity-scale-codec", version = "1.3", default-features = false, features = ["derive"] }
-scale-info = { version = "0.4", default-features = false, features = ["derive"], optional = true }
+scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
+scale-info = { version = "0.5", default-features = false, features = ["derive"], optional = true }
 
+ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", branch = "ownership",  default-features = false }
 
 [lib]
 name = "erc20"
@@ -34,5 +35,6 @@ std = [
     "scale/std",
     "scale-info",
     "scale-info/std",
+    "ownership/std",
 ]
 ink-as-dependency = []

@@ -12,6 +12,8 @@ mod erc20 {
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_storage::{collections::HashMap as StorageHashMap, lazy::Lazy};
 
+    use ownership::Ownable;
+
     /// The ERC-20 error types.
     #[derive(Debug, PartialEq, Eq, scale::Encode)]
     #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
@@ -74,19 +76,6 @@ mod erc20 {
         /// the `value` amount.
         #[ink(message)]
         fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()>;
-    }
-
-    /// The Ownable contract has an owner address, and provides basic authorization control
-    /// functions, this simplifies the implementation of "user permissions".
-    #[ink::trait_definition]
-    pub trait Ownable {
-        /// Contract owner.
-        #[ink(message)]
-        fn owner(&self) -> AccountId;
-
-        /// transfer contract ownership to new owner.
-        #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()>;
     }
 
     /// Base contract which allows children to implement an emergency stop mechanism.
@@ -344,23 +333,34 @@ mod erc20 {
     }
 
     impl Ownable for StandardToken {
+        #[ink(constructor)]
+        fn new() -> Self {
+            unimplemented!()
+        }
+
         /// Contract owner.
         #[ink(message)]
         fn owner(&self) -> AccountId {
             self.owner
         }
 
+        #[ink(message)]
+        fn only_owner(&self) {
+            assert_eq!(self.env().caller(), self.owner);
+        }
+
         /// transfer contract ownership to new owner.
         #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()> {
-            self.only_owner()?;
+        fn transfer_ownership(&mut self, new_owner: AccountId) {
+            self.only_owner();
+            assert_ne!(new_owner, Default::default());
+            self.owner = new_owner;
+        }
 
-            if new_owner != AccountId::from([0x00; 32]) {
-                self.owner = new_owner;
-            } else {
-                return Err(Error::InvalidNewOwner);
-            }
-            Ok(())
+        #[ink(message)]
+        fn renounce_ownership(&mut self) {
+            self.only_owner();
+            self.owner = Default::default();
         }
     }
 
@@ -368,7 +368,7 @@ mod erc20 {
         /// Pause contract transaction.
         #[ink(message)]
         fn pause(&mut self) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
 
             if !self.pause {
                 self.pause = true;
@@ -380,7 +380,7 @@ mod erc20 {
         /// Recover paused contract.
         #[ink(message)]
         fn unpause(&mut self) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
             if self.pause {
                 self.pause = false;
                 self.env().emit_event(Unpause {})
@@ -405,7 +405,7 @@ mod erc20 {
         /// Add illegal user to blacklist.
         #[ink(message)]
         fn add_blacklist(&mut self, evil_user: AccountId) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
             self.blacklisted.insert(evil_user, true);
             Ok(())
         }
@@ -413,7 +413,7 @@ mod erc20 {
         /// Remove the user from blacklist.
         #[ink(message)]
         fn remove_blacklist(&mut self, cleared_user: AccountId) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
             self.blacklisted.take(&cleared_user);
             Ok(())
         }
@@ -421,7 +421,7 @@ mod erc20 {
         /// Destroy blacklisted user funds from total supply.
         #[ink(message)]
         fn destroy_blackfunds(&mut self, blacklisted_user: AccountId) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
             if !self.get_blacklist_status(blacklisted_user) {
                 return Err(Error::NotBlacklistedUser);
             }
@@ -441,7 +441,7 @@ mod erc20 {
         /// these tokens are deposited into the owner address
         #[ink(message)]
         pub fn issue(&mut self, amount: Balance) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
             if amount <= 0 {
                 return Err(Error::InvalidAmount);
             }
@@ -459,7 +459,7 @@ mod erc20 {
         /// or the call will fail.
         #[ink(message)]
         pub fn redeem(&mut self, amount: Balance) -> Result<()> {
-            self.only_owner()?;
+            self.only_owner();
             if *self.total_supply < amount {
                 return Err(Error::InsufficientSupply);
             }
@@ -500,13 +500,6 @@ mod erc20 {
                 to: Some(to),
                 value,
             });
-            Ok(())
-        }
-
-        fn only_owner(&self) -> Result<()> {
-            if self.env().caller() != self.owner {
-                return Err(Error::OnlyOwnerAccess);
-            }
             Ok(())
         }
     }
