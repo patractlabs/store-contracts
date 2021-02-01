@@ -7,15 +7,22 @@ mod factory {
     use ink_lang as ink;
 
     use exchange::PatraExchange;
+    use ink_env::hash::Blake2x256;
+    use ink_prelude::vec::Vec;
     use ink_storage::collections::HashMap as StorageHashMap;
+    use scale::Encode;
 
     #[ink(storage)]
     pub struct PatraFactory {
         exchange_template: Hash,
+        lpt: AccountId,
         token_count: u128,
-        token_to_exchange: StorageHashMap<AccountId, AccountId>,
-        id_to_token: StorageHashMap<u128, AccountId>,
+        swap_pairs: Vec<SwapPair>,
+        token_to_exchange: StorageHashMap<SwapPair, AccountId>,
+        id_to_token: StorageHashMap<u128, SwapPair>,
     }
+
+    pub type SwapPair = (AccountId, AccountId);
 
     #[ink::trait_definition]
     pub trait Factory {
@@ -23,16 +30,24 @@ mod factory {
         fn new() -> Self;
 
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash);
+        fn initialize_factory(&mut self, template: Hash, lpt: AccountId);
 
         #[ink(message)]
-        fn create_exchange(&mut self, token: AccountId) -> AccountId;
+        fn create_exchange(
+            &mut self,
+            from_token: AccountId,
+            to_token: AccountId,
+            salt_op: Option<Hash>,
+        ) -> AccountId;
 
         #[ink(message)]
-        fn get_exchange(&self, token: AccountId) -> AccountId;
+        fn get_exchange(&self, from_token: AccountId, to_token: AccountId) -> Option<AccountId>;
 
         #[ink(message)]
-        fn get_token_with_id(&self, token_id: u128) -> AccountId;
+        fn get_token_with_id(&self, token_id: u128) -> Option<SwapPair>;
+
+        #[ink(message)]
+        fn get_swap_pairs(&self) -> Vec<SwapPair>;
     }
 
     #[ink(event)]
@@ -48,7 +63,9 @@ mod factory {
         fn new() -> Self {
             Self {
                 exchange_template: Default::default(),
+                lpt: Default::default(),
                 token_count: 0,
+                swap_pairs: Vec::new(),
                 token_to_exchange: StorageHashMap::new(),
                 id_to_token: StorageHashMap::new(),
             }
@@ -56,55 +73,79 @@ mod factory {
 
         // Can't call initializeFactory on factory twice
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash) {
-            let zero_hash = Hash::from([0; 32]);
-            assert_eq!(self.exchange_template, zero_hash);
-            assert_ne!(template, zero_hash);
+        fn initialize_factory(&mut self, template: Hash, lpt: AccountId) {
+            assert_eq!(self.exchange_template, Default::default());
+            assert_ne!(template, Default::default());
             // exchange template contract code hash
             self.exchange_template = template;
+            self.lpt = lpt;
         }
 
         #[ink(message)]
-        fn create_exchange(&mut self, token: AccountId) -> AccountId {
-            assert_ne!(token, AccountId::from([0; 32]));
+        fn create_exchange(
+            &mut self,
+            from_token: AccountId,
+            to_token: AccountId,
+            salt_op: Option<Hash>,
+        ) -> AccountId {
+            for item in self.swap_pairs.iter() {
+                if (item.0 == from_token && item.1 == to_token)
+                    || item.0 == to_token && item.1 == from_token
+                {
+                    assert!(false)
+                }
+            }
+            assert_ne!(from_token, AccountId::from([0; 32]));
             assert_ne!(self.exchange_template, Hash::from([0; 32]));
-            assert!(!self.token_to_exchange.contains_key(&token));
+            assert!(!self.token_to_exchange.contains_key(&(from_token, to_token)));
+
+            let salt;
+            if salt_op.is_none() {
+                let mut from = from_token.encode();
+                from.extend(to_token.encode());
+                salt = Hash::from(self.env().hash_bytes::<Blake2x256>(from.as_slice()));
+            } else {
+                salt = salt_op.unwrap();
+            }
+            let total_balance = Self::env().balance();
 
             // instantiate exchange
-            let salt = 0_u32.to_le_bytes();
-            let total_balance = Self::env().balance();
-            PatraExchange::new(token)
-                .endowment(total_balance / 2)
+            let exchange_params = PatraExchange::new(from_token, to_token, self.lpt)
+                .endowment(total_balance / 10)
                 .code_hash(self.exchange_template)
                 .salt_bytes(salt)
-                .instantiate()
+                .params();
+            let exchange_account_id = self
+                .env()
+                .instantiate_contract(&exchange_params)
                 .expect("failed at instantiating the `exchange` contract");
 
-            let exchange_account_id = self.env().caller();
-            self.token_to_exchange.insert(token, exchange_account_id);
+            self.token_to_exchange
+                .insert((from_token, to_token), exchange_account_id);
+            self.swap_pairs.push((from_token, to_token));
             self.token_count += 1;
-            self.id_to_token.insert(self.token_count, token);
+            self.id_to_token
+                .insert(self.token_count, (from_token, to_token));
             Self::env().emit_event(NewExchange {
-                token,
+                token: from_token,
                 caller: exchange_account_id,
             });
             exchange_account_id
         }
 
         #[ink(message)]
-        fn get_exchange(&self, token: AccountId) -> AccountId {
-            self.token_to_exchange
-                .get(&token)
-                .copied()
-                .unwrap_or(AccountId::from([0; 32]))
+        fn get_exchange(&self, from_token: AccountId, to_token: AccountId) -> Option<AccountId> {
+            self.token_to_exchange.get(&(from_token, to_token)).cloned()
         }
 
         #[ink(message)]
-        fn get_token_with_id(&self, token_id: u128) -> AccountId {
-            self.id_to_token
-                .get(&token_id)
-                .copied()
-                .unwrap_or(AccountId::from([0; 32]))
+        fn get_token_with_id(&self, token_id: u128) -> Option<SwapPair> {
+            self.id_to_token.get(&token_id).copied()
+        }
+
+        #[ink(message)]
+        fn get_swap_pairs(&self) -> Vec<SwapPair> {
+            self.swap_pairs.clone()
         }
     }
 }

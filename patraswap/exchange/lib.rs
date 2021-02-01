@@ -9,46 +9,56 @@ mod exchange {
     use erc20::StandardToken;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
-    #[cfg(not(feature = "ink-as-dependency"))]
     use ink_prelude::string::String;
     #[cfg(not(feature = "ink-as-dependency"))]
-    use ink_storage::{collections::HashMap as StorageHashMap, Lazy};
+    use ink_storage::Lazy;
+    #[cfg(not(feature = "ink-as-dependency"))]
+    use lpt::LPT;
+
+    #[derive(Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode)]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
+    )]
+    pub struct ExchangeInfo {
+        pub from_name: String,
+        pub to_name: String,
+        pub from_token_pool: Balance,
+        pub to_token_pool: Balance,
+        pub lp_token_supply: Balance,
+        pub own_lp_token: Balance,
+    }
 
     #[ink(storage)]
     pub struct PatraExchange {
-        // Patraswap
-        name: String,
-        // PAT
-        symbol: String,
-        // 18
-        decimals: u128,
-        // total number of PAT in existence.
-        total_supply: Balance,
-        // PAT balance of an account (LP token)
-        balances: StorageHashMap<AccountId, Balance>,
+        // total number of LPT in existence.
+        lpt_total_supply: Lazy<Balance>,
         // address of the ERC20 token traded on this contract
-        token: Lazy<StandardToken>,
-        token_account: AccountId,
+        from_token_contract: Lazy<StandardToken>,
+        to_token_contract: Lazy<StandardToken>,
+        lp_token_contract: Lazy<LPT>,
+        from_token: AccountId,
+        to_token: AccountId,
     }
 
     #[ink(event)]
-    pub struct TokenPurchase {
+    pub struct FromTokenPurchase {
         #[ink(topic)]
         buyer: AccountId,
         #[ink(topic)]
-        dot_sold: Balance,
+        sold: Balance,
         #[ink(topic)]
-        tokens_bought: Balance,
+        bought: Balance,
     }
 
     #[ink(event)]
-    pub struct DotPurchase {
+    pub struct ToTokenPurchase {
         #[ink(topic)]
         buyer: AccountId,
         #[ink(topic)]
-        tokens_sold: Balance,
+        sold: Balance,
         #[ink(topic)]
-        dot_bought: Balance,
+        bought: Balance,
     }
 
     #[ink(event)]
@@ -56,9 +66,9 @@ mod exchange {
         #[ink(topic)]
         sender: AccountId,
         #[ink(topic)]
-        dot_amount: Balance,
+        from_amount: Balance,
         #[ink(topic)]
-        token_amount: Balance,
+        to_amount: Balance,
     }
 
     #[ink(event)]
@@ -66,290 +76,270 @@ mod exchange {
         #[ink(topic)]
         sender: AccountId,
         #[ink(topic)]
-        dot_amount: Balance,
+        from_amount: Balance,
         #[ink(topic)]
-        token_amount: Balance,
-    }
-
-    #[ink(event)]
-    pub struct Transfer {
-        #[ink(topic)]
-        from: AccountId,
-        #[ink(topic)]
-        to: AccountId,
-        #[ink(topic)]
-        value: Balance,
+        to_amount: Balance,
     }
 
     #[ink(event)]
     pub struct NewExchange {
         #[ink(topic)]
-        token: AccountId,
+        from_token: AccountId,
+        #[ink(topic)]
+        to_token: AccountId,
         #[ink(topic)]
         exchange: AccountId,
     }
 
     impl PatraExchange {
         #[ink(constructor)]
-        pub fn new(token_account: AccountId) -> Self {
-            let token: StandardToken = FromAccountId::from_account_id(token_account);
+        pub fn new(from_token: AccountId, to_token: AccountId, lpt: AccountId) -> Self {
+            let from_token_contract: StandardToken = FromAccountId::from_account_id(from_token);
+            let to_token_contract: StandardToken = FromAccountId::from_account_id(to_token);
+            let lp_token_contract: LPT = FromAccountId::from_account_id(lpt);
             Self::env().emit_event(NewExchange {
-                token: token_account,
+                from_token,
+                to_token,
                 exchange: Self::env().account_id(),
             });
             Self {
-                name: "Patraswap".parse().unwrap(),
-                symbol: "PAT".parse().unwrap(),
-                decimals: 18,
-                total_supply: 0,
-                balances: StorageHashMap::new(),
-                token: Lazy::new(token),
-                token_account,
+                lpt_total_supply: Lazy::new(0),
+                from_token_contract: Lazy::new(from_token_contract),
+                to_token_contract: Lazy::new(to_token_contract),
+                lp_token_contract: Lazy::new(lp_token_contract),
+                from_token,
+                to_token,
             }
         }
 
-        #[ink(message, payable)]
-        pub fn dot_to_token_swap_input(&mut self) -> Balance {
+        #[ink(message)]
+        pub fn swap_from_to_input(&mut self, from_sold: Balance) -> Balance {
             let caller = self.env().caller();
-            self.dot_to_token_input(self.env().transferred_balance(), caller, caller)
+            self.token_from_to_input(from_sold, caller, caller)
         }
 
-        #[ink(message, payable)]
-        pub fn dot_to_token_swap_output(&mut self, tokens_bought: Balance) -> Balance {
+        #[ink(message)]
+        pub fn swap_to_from_input(&mut self, to_sold: Balance) -> Balance {
             let caller = self.env().caller();
-            return self.dot_to_token_output(
-                tokens_bought,
-                self.env().transferred_balance(),
-                caller,
-                caller,
-            );
+            self.token_to_from_input(to_sold, caller, caller)
         }
 
         #[ink(message)]
-        pub fn token_to_dot_swap_input(&mut self, tokens_sold: Balance) -> Balance {
+        pub fn swap_to_from_output(&mut self, from_bought: Balance) -> Balance {
             let caller = self.env().caller();
-            self.token_to_dot_input(tokens_sold, caller, caller)
+            return self.token_to_from_output(from_bought, caller, caller);
         }
 
         #[ink(message)]
-        pub fn token_to_dot_swap_output(&mut self, dot_bought: Balance) -> Balance {
+        pub fn swap_from_to_output(&mut self, to_bought: Balance) -> Balance {
             let caller = self.env().caller();
-            self.token_to_dot_output(dot_bought, caller, caller)
+            self.token_to_dot_output(to_bought, caller, caller)
         }
 
+        /// Public price function for from swap to Token trades with an exact input.
         #[ink(message)]
-        pub fn token_to_token_swap_input(
-            &mut self,
-            _tokens_sold: Balance,
-            _min_tokens_bought: Balance,
-            _min_dot_bought: Balance,
-            _token_addr: AccountId,
-        ) -> Balance {
-            unimplemented!()
+        pub fn get_from_swap_to_input_price(&self, from_sold: Balance) -> Balance {
+            assert!(from_sold > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            Self::get_input_price(from_sold, from_reserve, to_reserve)
         }
 
+        /// Public price function for to swap from Token trades with an exact input.
         #[ink(message)]
-        pub fn token_to_token_swap_output(
-            &mut self,
-            _tokens_bought: Balance,
-            _max_tokens_sold: Balance,
-            _max_dot_sold: Balance,
-            _token_addr: AccountId,
-        ) -> Balance {
-            unimplemented!()
-        }
-
-        /// Public price function for Token to DOT trades with an exact input.
-        #[ink(message)]
-        pub fn get_token_to_dot_input_price(&self, tokens_sold: Balance) -> Balance {
-            assert!(tokens_sold > 0);
-            let token_reserve: Balance = self.token.balance_of(self.env().account_id());
-            Self::get_input_price(tokens_sold, token_reserve, self.env().balance())
-        }
-
-        /// Public price function for DOT to Token trades with an exact input.
-        #[ink(message)]
-        pub fn get_dot_to_token_input_price(&self, dot_sold: Balance) -> Balance {
-            assert!(dot_sold > 0);
-            let token_reserve: Balance = self.token.balance_of(self.env().account_id());
-            Self::get_input_price(dot_sold, self.env().balance(), token_reserve)
+        pub fn get_to_swap_from_input_price(&self, to_sold: Balance) -> Balance {
+            assert!(to_sold > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            Self::get_input_price(to_sold, to_reserve, from_reserve)
         }
 
         /// Public price function for DOT to Token trades with an exact output.
         #[ink(message)]
-        pub fn get_dot_to_token_output_price(&self, tokens_bought: Balance) -> Balance {
-            assert!(tokens_bought > 0);
-            let token_reserve: Balance = self.token.balance_of(self.env().account_id());
-            let dot_sold: Balance =
-                Self::get_output_price(tokens_bought, self.env().balance(), token_reserve);
-            return dot_sold;
+        pub fn get_from_swap_to_output_price(&self, to_bought: Balance) -> Balance {
+            assert!(to_bought > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            Self::get_output_price(to_bought, from_reserve, to_reserve)
         }
 
         /// Public price function for Token to DOT trades with an exact output.
         #[ink(message)]
-        pub fn get_token_to_dot_output_price(&self, dot_bought: Balance) -> Balance {
-            assert!(dot_bought > 0);
-            let token_reserve: Balance = self.token.balance_of(self.env().account_id());
-            Self::get_output_price(dot_bought, token_reserve, self.env().balance())
+        pub fn get_to_swap_from_output_price(&self, from_bought: Balance) -> Balance {
+            assert!(from_bought > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            Self::get_output_price(from_bought, to_reserve, from_reserve)
         }
 
-        fn dot_to_token_input(
+        fn token_to_from_input(
             &mut self,
-            dot_sold: Balance,
+            to_sold: Balance,
             buyer: AccountId,
             recipient: AccountId,
         ) -> Balance {
-            assert!(dot_sold > 0);
-            let token_reserve: Balance = self.token.balance_of(self.env().account_id());
-            let tokens_bought: Balance =
-                Self::get_input_price(dot_sold, self.env().balance() - dot_sold, token_reserve);
-            assert!(self.token.transfer(recipient, tokens_bought).is_ok());
-            self.env().emit_event(TokenPurchase {
-                buyer,
-                dot_sold,
-                tokens_bought,
-            });
-            tokens_bought
-        }
-
-        fn dot_to_token_output(
-            &mut self,
-            tokens_bought: Balance,
-            max_dot: Balance,
-            buyer: AccountId,
-            recipient: AccountId,
-        ) -> Balance {
-            assert!(tokens_bought > 0 && max_dot > 0);
-            let token_reserve: Balance = self.token.balance_of(self.env().account_id());
-            let dot_sold: Balance = Self::get_output_price(
-                tokens_bought,
-                self.env().balance() - max_dot,
-                token_reserve,
-            );
-            assert!(dot_sold > max_dot);
-            let dot_refund: Balance = max_dot - dot_sold;
-            if dot_refund > 0 {
-                assert!(self.env().transfer(buyer, dot_refund).is_ok());
-            }
-            assert!(self.token.transfer(recipient, tokens_bought).is_ok());
-            self.env().emit_event(TokenPurchase {
-                buyer,
-                dot_sold,
-                tokens_bought,
-            });
-            dot_sold
-        }
-
-        fn token_to_dot_input(
-            &mut self,
-            tokens_sold: Balance,
-            buyer: AccountId,
-            recipient: AccountId,
-        ) -> Balance {
-            assert!(tokens_sold > 0);
-            let contract_account = self.env().account_id();
-            let token_reserve: Balance = self.token.balance_of(contract_account);
-            let dot_bought: Balance =
-                Self::get_input_price(tokens_sold, token_reserve, self.env().balance());
-            assert!(self.env().transfer(recipient, dot_bought).is_ok());
+            assert!(to_sold > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            let from_bought: Balance = Self::get_input_price(to_sold, to_reserve, from_reserve);
             assert!(self
-                .token
-                .transfer_from(buyer, contract_account, tokens_sold)
+                .to_token_contract
+                .transfer_from(buyer, exchange_account, to_sold)
                 .is_ok());
-            self.env().emit_event(DotPurchase {
+            assert!(self
+                .from_token_contract
+                .transfer(recipient, from_bought)
+                .is_ok());
+            self.env().emit_event(FromTokenPurchase {
                 buyer,
-                tokens_sold,
-                dot_bought,
+                sold: to_sold,
+                bought: from_bought,
             });
-            dot_bought
+            from_bought
+        }
+
+        fn token_to_from_output(
+            &mut self,
+            from_bought: Balance,
+            buyer: AccountId,
+            recipient: AccountId,
+        ) -> Balance {
+            assert!(from_bought > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            let to_sold: Balance = Self::get_output_price(from_bought, to_reserve, from_reserve);
+            assert!(self
+                .to_token_contract
+                .transfer_from(buyer, exchange_account, to_sold)
+                .is_ok());
+            assert!(self
+                .from_token_contract
+                .transfer(recipient, from_bought)
+                .is_ok());
+            self.env().emit_event(FromTokenPurchase {
+                buyer,
+                sold: to_sold,
+                bought: from_bought,
+            });
+            to_sold
+        }
+
+        fn token_from_to_input(
+            &mut self,
+            from_sold: Balance,
+            buyer: AccountId,
+            recipient: AccountId,
+        ) -> Balance {
+            assert!(from_sold > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            let to_bought: Balance = Self::get_input_price(from_sold, from_reserve, to_reserve);
+            assert!(self
+                .from_token_contract
+                .transfer_from(buyer, exchange_account, from_sold)
+                .is_ok());
+            assert!(self
+                .to_token_contract
+                .transfer(recipient, to_bought)
+                .is_ok());
+            self.env().emit_event(ToTokenPurchase {
+                buyer,
+                sold: from_sold,
+                bought: to_bought,
+            });
+            to_bought
         }
 
         fn token_to_dot_output(
             &mut self,
-            dot_bought: Balance,
+            to_bought: Balance,
             buyer: AccountId,
             recipient: AccountId,
         ) -> Balance {
-            assert!(dot_bought > 0);
-            let contract_account = self.env().account_id();
-            let token_reserve: Balance = self.token.balance_of(contract_account);
-            let tokens_sold: Balance =
-                Self::get_output_price(dot_bought, token_reserve, self.env().balance());
-            assert!(self.env().transfer(recipient, dot_bought).is_ok());
+            assert!(to_bought > 0);
+            let exchange_account = self.env().account_id();
+            let from_reserve: Balance = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve: Balance = self.to_token_contract.balance_of(exchange_account);
+            let from_sold: Balance = Self::get_output_price(to_bought, from_reserve, to_reserve);
             assert!(self
-                .token
-                .transfer_from(buyer, contract_account, tokens_sold)
+                .from_token_contract
+                .transfer_from(buyer, exchange_account, from_sold)
                 .is_ok());
-            self.env().emit_event(DotPurchase {
+            assert!(self
+                .to_token_contract
+                .transfer(recipient, to_bought)
+                .is_ok());
+            self.env().emit_event(ToTokenPurchase {
                 buyer,
-                tokens_sold,
-                dot_bought,
+                sold: from_sold,
+                bought: to_bought,
             });
-            tokens_sold
-        }
-
-        fn balance_of(&self, owner: AccountId) -> Balance {
-            self.balances.get(&owner).copied().unwrap_or(0)
+            from_sold
         }
     }
 
     impl PatraExchange {
         /// Deposit DOT and Tokens (self.token) at current ratio to mint PAT tokens.
-        // @param max_tokens Maximum number of tokens deposited. Deposits max amount if total PAT supply is 0.
         // @return The amount of PAT minted.
-        #[ink(message, payable)]
-        pub fn add_liquidity(&mut self, max_tokens: Balance) -> Balance {
+        // 等比例添加
+        #[ink(message)]
+        pub fn add_liquidity(&mut self, from_tokens: Balance, to_tokens: Balance) -> Balance {
             let caller = self.env().caller();
-            let value: Balance = self.env().transferred_balance();
-            let contract_account = self.env().account_id();
-            assert!(max_tokens > 0 && value > 0);
-            let total_liquidity: Balance = self.total_supply;
+            let exchange_account = self.env().account_id();
+            assert!(from_tokens > 0 && to_tokens > 0);
+            // total number of LPT in existence.
+            let total_liquidity: Balance = *self.lpt_total_supply;
             if total_liquidity > 0 {
-                let dot_reserve = self.env().balance() - value;
-                let token_reserve = self.token.balance_of(self.env().account_id());
-                let token_amount = value * token_reserve / dot_reserve + 1;
-                let liquidity_minted = value * total_liquidity / dot_reserve;
-                assert!(max_tokens >= token_amount);
-                let from_balance = self.balance_of(caller);
-                self.balances
-                    .insert(caller, from_balance + liquidity_minted);
-                self.total_supply = total_liquidity + liquidity_minted;
+                let from_reserve = self.from_token_contract.balance_of(exchange_account);
+                let to_reserve = self.to_token_contract.balance_of(exchange_account);
+                let token_amount = from_tokens * to_reserve / from_reserve + 1;
+                let liquidity_minted = from_tokens * total_liquidity / from_reserve;
+                // important
+                assert!(to_tokens >= token_amount);
                 assert!(self
-                    .token
-                    .transfer_from(caller, contract_account, token_amount)
+                    .from_token_contract
+                    .transfer_from(caller, exchange_account, from_tokens)
                     .is_ok());
+                assert!(self
+                    .to_token_contract
+                    .transfer_from(caller, exchange_account, token_amount)
+                    .is_ok());
+                assert!(self
+                    .lp_token_contract
+                    .mint(caller, liquidity_minted)
+                    .is_ok());
+                *self.lpt_total_supply += liquidity_minted;
                 self.env().emit_event(AddLiquidity {
                     sender: caller,
-                    dot_amount: value,
-                    token_amount,
-                });
-                self.env().emit_event(Transfer {
-                    from: AccountId::from([0; 32]),
-                    to: caller,
-                    value: liquidity_minted,
+                    from_amount: from_tokens,
+                    to_amount: token_amount,
                 });
                 liquidity_minted
             } else {
-                assert!(self.env().transferred_balance() >= 10000);
-                let token_amount: Balance = max_tokens;
-                let initial_liquidity: Balance = self.env().balance();
-                self.total_supply = initial_liquidity;
-                self.balances.insert(caller, initial_liquidity);
                 assert!(self
-                    .token
-                    .transfer_from(caller, contract_account, token_amount)
+                    .from_token_contract
+                    .transfer_from(caller, exchange_account, from_tokens)
                     .is_ok());
+                assert!(self
+                    .to_token_contract
+                    .transfer_from(caller, exchange_account, to_tokens)
+                    .is_ok());
+                // PAT balance of an account (LP token)
+                assert!(self.lp_token_contract.mint(caller, from_tokens).is_ok());
+                *self.lpt_total_supply += from_tokens;
                 self.env().emit_event(AddLiquidity {
                     sender: caller,
-                    dot_amount: value,
-                    token_amount,
+                    from_amount: from_tokens,
+                    to_amount: to_tokens,
                 });
-                self.env().emit_event(Transfer {
-                    from: AccountId::from([0; 32]),
-                    to: caller,
-                    value: initial_liquidity,
-                });
-                initial_liquidity
+                from_tokens
             }
         }
 
@@ -359,34 +349,68 @@ mod exchange {
         #[ink(message)]
         pub fn remove_liquidity(&mut self, lp_amount: Balance) -> (Balance, Balance) {
             assert!(lp_amount > 0);
-            let total_liquidity = self.total_supply;
+            let total_liquidity = *self.lpt_total_supply;
             assert!(total_liquidity > 0);
-            let token_reserve = self.token.balance_of(self.env().account_id());
-            let dot_amount = lp_amount * self.env().balance() / total_liquidity;
-            let token_amount = lp_amount * token_reserve / total_liquidity;
             let caller = self.env().caller();
-            let from_balance = self.balance_of(caller);
-            self.balances.insert(caller, from_balance - lp_amount);
-            self.total_supply = total_liquidity - lp_amount;
-            assert!(self.env().transfer(caller, dot_amount).is_ok());
-            assert!(self.token.transfer(caller, token_amount).is_ok());
+            assert!(self.to_token_contract.balance_of(caller) >= lp_amount);
+            let exchange_account = self.env().account_id();
+            let from_token_reserve = self.from_token_contract.balance_of(exchange_account);
+            let to_token_reserve = self.to_token_contract.balance_of(exchange_account);
+            let from_amount = lp_amount * from_token_reserve / total_liquidity;
+            let to_amount = lp_amount * to_token_reserve / total_liquidity;
+            assert!(self
+                .from_token_contract
+                .transfer(caller, from_amount)
+                .is_ok());
+            assert!(self.to_token_contract.transfer(caller, to_amount).is_ok());
+            assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
+            *self.lpt_total_supply -= lp_amount;
             self.env().emit_event(RemoveLiquidity {
                 sender: caller,
-                dot_amount,
-                token_amount,
+                from_amount,
+                to_amount,
             });
-            self.env().emit_event(Transfer {
-                from: caller,
-                to: AccountId::from([0; 32]),
-                value: lp_amount,
-            });
-            (dot_amount, token_amount)
+            (from_amount, to_amount)
         }
 
-        /// Returns the PAT total token supply.
         #[ink(message)]
-        pub fn total_supply(&self) -> Balance {
-            self.total_supply
+        pub fn estimated_add_liquidity(&self, from_tokens: Balance, to_tokens: Balance) -> Balance {
+            let exchange_account = self.env().account_id();
+            assert!(from_tokens > 0 && to_tokens > 0);
+            let total_liquidity: Balance = *self.lpt_total_supply;
+            if total_liquidity > 0 {
+                let from_reserve = self.from_token_contract.balance_of(exchange_account);
+                from_tokens * total_liquidity / from_reserve
+            } else {
+                from_tokens
+            }
+        }
+
+        #[ink(message)]
+        pub fn estimated_remove_liquidity(&self, lp_amount: Balance) -> (Balance, Balance) {
+            assert!(lp_amount > 0);
+            let total_liquidity = *self.lpt_total_supply;
+            assert!(total_liquidity > 0);
+            let exchange_account = self.env().account_id();
+            let from_token_reserve = self.from_token_contract.balance_of(exchange_account);
+            let to_token_reserve = self.to_token_contract.balance_of(exchange_account);
+            let from_amount = lp_amount * from_token_reserve / total_liquidity;
+            let to_amount = lp_amount * to_token_reserve / total_liquidity;
+            (from_amount, to_amount)
+        }
+
+        #[ink(message)]
+        pub fn exchange_info(&self) -> ExchangeInfo {
+            let caller = self.env().caller();
+            let exchange_account = self.env().account_id();
+            ExchangeInfo {
+                from_name: self.from_token_contract.token_name(),
+                to_name: self.to_token_contract.token_name(),
+                from_token_pool: self.from_token_contract.balance_of(exchange_account),
+                to_token_pool: self.to_token_contract.balance_of(exchange_account),
+                lp_token_supply: *self.lpt_total_supply,
+                own_lp_token: self.lp_token_contract.balance_of(caller),
+            }
         }
     }
 

@@ -23,34 +23,4 @@ describe('PatraPixel', () => {
 
     return { sender, contractFactory, contract, abi, receiver, Alice, one };
   }
-
-  it('Mint new pixel with metadata', async () => {
-    const { contract } = await setup();
-
-    await expect(contract.tx.mintWithMetadata('my pixel')).to.emit(
-      contract,
-      'Minted'
-    );
-  });
-
-  it('Balance increase by mint new pixel', async () => {
-    const { contract, sender } = await setup();
-
-    await contract.tx.mintWithMetadata('my pixel');
-
-    const result = await contract.query.balanceOf(sender.address);
-
-    await expect(result.output).to.equal([1]);
-  });
-
-  it('Total supply increase by mint new pixel', async () => {
-    const { contract, sender } = await setup();
-
-    await contract.tx.mintWithMetadata('my pixel 1');
-    await contract.tx.mintWithMetadata('my pixel 2');
-
-    const result = await contract.query.totalSupply();
-
-    await expect(result.output).to.equal(2);
-  });
 });
