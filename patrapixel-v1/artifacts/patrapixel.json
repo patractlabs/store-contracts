@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x65325f511e8133634ca1c896283efaa87d857ba04739db6bd8dc0b80e47de099",
+    "hash": "0xc924ed28e6a9e33a8f6d2c22c79b661c4eb51527341d8ac2cf755bbd768da610",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.51.0-nightly"
   },
@@ -30,160 +30,76 @@
           {
             "docs": [],
             "indexed": true,
-            "name": "owner",
+            "name": "creator",
             "type": {
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
-            }
-          },
-          {
-            "docs": [],
-            "indexed": true,
-            "name": "token_id",
-            "type": {
-              "displayName": [
-                "TokenId"
-              ],
-              "type": 2
+              "type": 8
             }
           }
         ],
         "docs": [],
-        "name": "Minted"
+        "name": "PixelUpdate"
       }
     ],
     "messages": [
       {
-        "args": [
-          {
-            "name": "token_id",
-            "type": {
-              "displayName": [
-                "TokenId"
-              ],
-              "type": 2
-            }
-          }
-        ],
-        "docs": [
-          " Get and returns the address currently marked as the owner of tokenID."
-        ],
-        "mutates": false,
-        "name": [
-          "owner_of"
-        ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "Option"
-          ],
-          "type": 14
-        },
-        "selector": "0xf7860ada"
-      },
-      {
         "args": [],
         "docs": [
-          " Get and return the total supply of token held by this contract."
+          " Get and returns pixel metadata"
         ],
         "mutates": false,
         "name": [
-          "total_supply"
+          "metadata"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "u32"
+            "Vec"
           ],
           "type": 2
         },
-        "selector": "0xdcb736b5"
+        "selector": "0xe8b3b3a6"
       },
       {
-        "args": [
-          {
-            "name": "owner",
-            "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 7
-            }
-          }
-        ],
-        "docs": [
-          " Get and return the balance of token held by _owner."
-        ],
+        "args": [],
+        "docs": [],
         "mutates": false,
         "name": [
-          "balance_of"
+          "pool"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "Option"
+            "Balance"
           ],
-          "type": 15
+          "type": 4
         },
-        "selector": "0x56e929b2"
+        "selector": "0x2949e16b"
       },
       {
         "args": [
           {
-            "name": "token_id",
+            "name": "points",
             "type": {
               "displayName": [
-                "TokenId"
+                "Vec"
               ],
-              "type": 2
+              "type": 5
             }
           }
         ],
         "docs": [
-          " Get and returns a metadata of tokenId"
-        ],
-        "mutates": false,
-        "name": [
-          "token_metadata"
-        ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "Result"
-          ],
-          "type": 16
-        },
-        "selector": "0x34aff121"
-      },
-      {
-        "args": [
-          {
-            "name": "metadata",
-            "type": {
-              "displayName": [
-                "String"
-              ],
-              "type": 1
-            }
-          }
-        ],
-        "docs": [
-          " Mint a new token with metadata"
+          " update pixel with metadata"
         ],
         "mutates": true,
         "name": [
-          "mint_with_metadata"
+          "update"
         ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "Result"
-          ],
-          "type": 18
-        },
-        "selector": "0x49248f99"
+        "payable": true,
+        "returnType": null,
+        "selector": "0xdb775a5c"
       }
     ]
   },
@@ -203,259 +119,19 @@
           "layout": {
             "cell": {
               "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-              "ty": 1
+              "ty": 2
             }
           },
-          "name": "symbol"
+          "name": "metadata"
         },
         {
           "layout": {
             "cell": {
               "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-              "ty": 2
+              "ty": 4
             }
           },
-          "name": "total_supply"
-        },
-        {
-          "layout": {
-            "struct": {
-              "fields": [
-                {
-                  "layout": {
-                    "struct": {
-                      "fields": [
-                        {
-                          "layout": {
-                            "cell": {
-                              "key": "0x0300000000000000000000000000000000000000000000000000000000000000",
-                              "ty": 3
-                            }
-                          },
-                          "name": "header"
-                        },
-                        {
-                          "layout": {
-                            "struct": {
-                              "fields": [
-                                {
-                                  "layout": {
-                                    "cell": {
-                                      "key": "0x0400000000000000000000000000000000000000000000000000000000000000",
-                                      "ty": 2
-                                    }
-                                  },
-                                  "name": "len"
-                                },
-                                {
-                                  "layout": {
-                                    "array": {
-                                      "cellsPerElem": 1,
-                                      "layout": {
-                                        "cell": {
-                                          "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
-                                          "ty": 4
-                                        }
-                                      },
-                                      "len": 4294967295,
-                                      "offset": "0x0500000000000000000000000000000000000000000000000000000000000000"
-                                    }
-                                  },
-                                  "name": "elems"
-                                }
-                              ]
-                            }
-                          },
-                          "name": "entries"
-                        }
-                      ]
-                    }
-                  },
-                  "name": "keys"
-                },
-                {
-                  "layout": {
-                    "hash": {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0500000001000000000000000000000000000000000000000000000000000000",
-                          "ty": 6
-                        }
-                      },
-                      "offset": "0x0400000001000000000000000000000000000000000000000000000000000000",
-                      "strategy": {
-                        "hasher": "Blake2x256",
-                        "postfix": "",
-                        "prefix": "0x696e6b20686173686d6170"
-                      }
-                    }
-                  },
-                  "name": "values"
-                }
-              ]
-            }
-          },
-          "name": "token_owner"
-        },
-        {
-          "layout": {
-            "struct": {
-              "fields": [
-                {
-                  "layout": {
-                    "struct": {
-                      "fields": [
-                        {
-                          "layout": {
-                            "cell": {
-                              "key": "0x0500000001000000000000000000000000000000000000000000000000000000",
-                              "ty": 3
-                            }
-                          },
-                          "name": "header"
-                        },
-                        {
-                          "layout": {
-                            "struct": {
-                              "fields": [
-                                {
-                                  "layout": {
-                                    "cell": {
-                                      "key": "0x0600000001000000000000000000000000000000000000000000000000000000",
-                                      "ty": 2
-                                    }
-                                  },
-                                  "name": "len"
-                                },
-                                {
-                                  "layout": {
-                                    "array": {
-                                      "cellsPerElem": 1,
-                                      "layout": {
-                                        "cell": {
-                                          "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
-                                          "ty": 10
-                                        }
-                                      },
-                                      "len": 4294967295,
-                                      "offset": "0x0700000001000000000000000000000000000000000000000000000000000000"
-                                    }
-                                  },
-                                  "name": "elems"
-                                }
-                              ]
-                            }
-                          },
-                          "name": "entries"
-                        }
-                      ]
-                    }
-                  },
-                  "name": "keys"
-                },
-                {
-                  "layout": {
-                    "hash": {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
-                          "ty": 11
-                        }
-                      },
-                      "offset": "0x0600000002000000000000000000000000000000000000000000000000000000",
-                      "strategy": {
-                        "hasher": "Blake2x256",
-                        "postfix": "",
-                        "prefix": "0x696e6b20686173686d6170"
-                      }
-                    }
-                  },
-                  "name": "values"
-                }
-              ]
-            }
-          },
-          "name": "list_of_owner_tokens"
-        },
-        {
-          "layout": {
-            "struct": {
-              "fields": [
-                {
-                  "layout": {
-                    "struct": {
-                      "fields": [
-                        {
-                          "layout": {
-                            "cell": {
-                              "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
-                              "ty": 3
-                            }
-                          },
-                          "name": "header"
-                        },
-                        {
-                          "layout": {
-                            "struct": {
-                              "fields": [
-                                {
-                                  "layout": {
-                                    "cell": {
-                                      "key": "0x0800000002000000000000000000000000000000000000000000000000000000",
-                                      "ty": 2
-                                    }
-                                  },
-                                  "name": "len"
-                                },
-                                {
-                                  "layout": {
-                                    "array": {
-                                      "cellsPerElem": 1,
-                                      "layout": {
-                                        "cell": {
-                                          "key": "0x0800000003000000000000000000000000000000000000000000000000000000",
-                                          "ty": 4
-                                        }
-                                      },
-                                      "len": 4294967295,
-                                      "offset": "0x0900000002000000000000000000000000000000000000000000000000000000"
-                                    }
-                                  },
-                                  "name": "elems"
-                                }
-                              ]
-                            }
-                          },
-                          "name": "entries"
-                        }
-                      ]
-                    }
-                  },
-                  "name": "keys"
-                },
-                {
-                  "layout": {
-                    "hash": {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0900000003000000000000000000000000000000000000000000000000000000",
-                          "ty": 13
-                        }
-                      },
-                      "offset": "0x0800000003000000000000000000000000000000000000000000000000000000",
-                      "strategy": {
-                        "hasher": "Blake2x256",
-                        "postfix": "",
-                        "prefix": "0x696e6b20686173686d6170"
-                      }
-                    }
-                  },
-                  "name": "values"
-                }
-              ]
-            }
-          },
-          "name": "referenced_metadata"
+          "name": "pool"
         }
       ]
     }
@@ -468,6 +144,38 @@
     },
     {
       "def": {
+        "sequence": {
+          "type": 3
+        }
+      }
+    },
+    {
+      "def": {
+        "primitive": "u8"
+      }
+    },
+    {
+      "def": {
+        "primitive": "u128"
+      }
+    },
+    {
+      "def": {
+        "sequence": {
+          "type": 6
+        }
+      }
+    },
+    {
+      "def": {
+        "tuple": [
+          7,
+          3
+        ]
+      }
+    },
+    {
+      "def": {
         "primitive": "u32"
       }
     },
@@ -476,113 +184,7 @@
         "composite": {
           "fields": [
             {
-              "name": "last_vacant",
-              "type": 2
-            },
-            {
-              "name": "len",
-              "type": 2
-            },
-            {
-              "name": "len_entries",
-              "type": 2
-            }
-          ]
-        }
-      },
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "Header"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "fields": [
-                {
-                  "type": 5
-                }
-              ],
-              "name": "Vacant"
-            },
-            {
-              "fields": [
-                {
-                  "type": 2
-                }
-              ],
-              "name": "Occupied"
-            }
-          ]
-        }
-      },
-      "params": [
-        2
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "Entry"
-      ]
-    },
-    {
-      "def": {
-        "composite": {
-          "fields": [
-            {
-              "name": "next",
-              "type": 2
-            },
-            {
-              "name": "prev",
-              "type": 2
-            }
-          ]
-        }
-      },
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "VacantEntry"
-      ]
-    },
-    {
-      "def": {
-        "composite": {
-          "fields": [
-            {
-              "name": "value",
-              "type": 7
-            },
-            {
-              "name": "key_index",
-              "type": 2
-            }
-          ]
-        }
-      },
-      "params": [
-        7
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "hashmap",
-        "ValueEntry"
-      ]
-    },
-    {
-      "def": {
-        "composite": {
-          "fields": [
-            {
-              "type": 8
+              "type": 9
             }
           ]
         }
@@ -597,249 +199,8 @@
       "def": {
         "array": {
           "len": 32,
-          "type": 9
+          "type": 3
         }
-      }
-    },
-    {
-      "def": {
-        "primitive": "u8"
-      }
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "fields": [
-                {
-                  "type": 5
-                }
-              ],
-              "name": "Vacant"
-            },
-            {
-              "fields": [
-                {
-                  "type": 7
-                }
-              ],
-              "name": "Occupied"
-            }
-          ]
-        }
-      },
-      "params": [
-        7
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "stash",
-        "Entry"
-      ]
-    },
-    {
-      "def": {
-        "composite": {
-          "fields": [
-            {
-              "name": "value",
-              "type": 12
-            },
-            {
-              "name": "key_index",
-              "type": 2
-            }
-          ]
-        }
-      },
-      "params": [
-        12
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "hashmap",
-        "ValueEntry"
-      ]
-    },
-    {
-      "def": {
-        "sequence": {
-          "type": 2
-        }
-      }
-    },
-    {
-      "def": {
-        "composite": {
-          "fields": [
-            {
-              "name": "value",
-              "type": 1
-            },
-            {
-              "name": "key_index",
-              "type": 2
-            }
-          ]
-        }
-      },
-      "params": [
-        1
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "hashmap",
-        "ValueEntry"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "name": "None"
-            },
-            {
-              "fields": [
-                {
-                  "type": 7
-                }
-              ],
-              "name": "Some"
-            }
-          ]
-        }
-      },
-      "params": [
-        7
-      ],
-      "path": [
-        "Option"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "name": "None"
-            },
-            {
-              "fields": [
-                {
-                  "type": 12
-                }
-              ],
-              "name": "Some"
-            }
-          ]
-        }
-      },
-      "params": [
-        12
-      ],
-      "path": [
-        "Option"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "fields": [
-                {
-                  "type": 1
-                }
-              ],
-              "name": "Ok"
-            },
-            {
-              "fields": [
-                {
-                  "type": 17
-                }
-              ],
-              "name": "Err"
-            }
-          ]
-        }
-      },
-      "params": [
-        1,
-        17
-      ],
-      "path": [
-        "Result"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "discriminant": 0,
-              "name": "NotOwner"
-            },
-            {
-              "discriminant": 1,
-              "name": "TokenExists"
-            },
-            {
-              "discriminant": 2,
-              "name": "TokenNotFound"
-            },
-            {
-              "discriminant": 3,
-              "name": "CannotInsert"
-            }
-          ]
-        }
-      },
-      "path": [
-        "patrapixel",
-        "patrapixel",
-        "Error"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "fields": [
-                {
-                  "type": 19
-                }
-              ],
-              "name": "Ok"
-            },
-            {
-              "fields": [
-                {
-                  "type": 17
-                }
-              ],
-              "name": "Err"
-            }
-          ]
-        }
-      },
-      "params": [
-        19,
-        17
-      ],
-      "path": [
-        "Result"
-      ]
-    },
-    {
-      "def": {
-        "tuple": []
       }
     }
   ]

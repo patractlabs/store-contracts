@@ -7,8 +7,10 @@ mod factory {
     use ink_lang as ink;
 
     use exchange::PatraExchange;
+    use ink_env::hash::Blake2x256;
     use ink_prelude::vec::Vec;
     use ink_storage::collections::HashMap as StorageHashMap;
+    use scale::Encode;
 
     #[ink(storage)]
     pub struct PatraFactory {
@@ -31,7 +33,12 @@ mod factory {
         fn initialize_factory(&mut self, template: Hash, lpt: AccountId);
 
         #[ink(message)]
-        fn create_exchange(&mut self, from_token: AccountId, to_token: AccountId) -> AccountId;
+        fn create_exchange(
+            &mut self,
+            from_token: AccountId,
+            to_token: AccountId,
+            salt_op: Option<Hash>,
+        ) -> AccountId;
 
         #[ink(message)]
         fn get_exchange(&self, from_token: AccountId, to_token: AccountId) -> Option<AccountId>;
@@ -75,7 +82,12 @@ mod factory {
         }
 
         #[ink(message)]
-        fn create_exchange(&mut self, from_token: AccountId, to_token: AccountId) -> AccountId {
+        fn create_exchange(
+            &mut self,
+            from_token: AccountId,
+            to_token: AccountId,
+            salt_op: Option<Hash>,
+        ) -> AccountId {
             for item in self.swap_pairs.iter() {
                 if (item.0 == from_token && item.1 == to_token)
                     || item.0 == to_token && item.1 == from_token
@@ -87,7 +99,14 @@ mod factory {
             assert_ne!(self.exchange_template, Hash::from([0; 32]));
             assert!(!self.token_to_exchange.contains_key(&(from_token, to_token)));
 
-            let salt = 0_u32.to_le_bytes();
+            let salt;
+            if salt_op.is_none() {
+                let mut from = from_token.encode();
+                from.extend(to_token.encode());
+                salt = Hash::from(self.env().hash_bytes::<Blake2x256>(from.as_slice()));
+            } else {
+                salt = salt_op.unwrap();
+            }
             let total_balance = Self::env().balance();
 
             // instantiate exchange

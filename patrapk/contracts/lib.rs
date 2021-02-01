@@ -132,6 +132,7 @@ mod patrapk {
     pub struct GameDetails {
         pub creator: AccountId,
         pub start_block: BlockNumber,
+        pub salt: String,
         pub salt_hash: Hash,
         pub create_choice: Choice,
         pub value: Balance,
@@ -146,6 +147,7 @@ mod patrapk {
             GameDetails {
                 creator: Default::default(),
                 start_block: 0,
+                salt: "".parse().unwrap(),
                 salt_hash: Default::default(),
                 create_choice: Choice::None,
                 value: 0,
@@ -249,7 +251,7 @@ mod patrapk {
             if game.status != GameStatus::Settle {
                 return Err(Error::CannotReveal);
             }
-            let salt_hash = self.salt_hash(salt, choice);
+            let salt_hash = self.salt_hash(salt.clone(), choice);
             let expected_salt_hash = game.salt_hash;
             if salt_hash != expected_salt_hash {
                 return Err(Error::InvalidSalt);
@@ -277,6 +279,7 @@ mod patrapk {
                 x.create_choice = choice;
                 x.status = GameStatus::End;
                 x.result = result;
+                x.salt = salt;
                 Some(x)
             });
             self.env().emit_event(PKReveal { game_id, result });
@@ -345,6 +348,12 @@ mod patrapk {
                 (Choice::Scissors, Choice::Rock)
                 | (Choice::Rock, Choice::Paper)
                 | (Choice::Paper, Choice::Scissors) => Some(GameResult::JoinerWin),
+                (Choice::Rock, Choice::None)
+                | (Choice::Paper, Choice::None)
+                | (Choice::Scissors, Choice::None) => Some(GameResult::CreatorWin),
+                (Choice::None, Choice::Rock)
+                | (Choice::None, Choice::Paper)
+                | (Choice::None, Choice::Scissors) => Some(GameResult::JoinerWin),
                 _ => None,
             }
         }

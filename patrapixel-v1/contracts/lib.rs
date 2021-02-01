@@ -18,6 +18,7 @@ mod patrapixel {
     pub struct Patrapixel {
         name: String,
         metadata: Vec<u8>,
+        pool: Balance,
     }
 
     impl Patrapixel {
@@ -26,6 +27,7 @@ mod patrapixel {
             Self {
                 name: "PatraPixel".parse().unwrap(),
                 metadata: vec![0; 160 * 90],
+                pool: 0,
             }
         }
 
@@ -35,16 +37,23 @@ mod patrapixel {
             self.metadata.clone()
         }
 
+        #[ink(message)]
+        pub fn pool(&self) -> Balance {
+            self.pool
+        }
+
         /// update pixel with metadata
         #[ink(message, payable)]
         pub fn update(&mut self, points: Vec<(u32, u8)>) {
             assert!(points.len() > 0);
-            assert!(self.env().transferred_balance() >= points.len() as u128 * DOTS);
+            let cost = self.env().transferred_balance();
+            assert!(cost >= points.len() as u128 * DOTS);
             points.iter().for_each(|x| {
                 if let Some(v) = self.metadata.get_mut(x.0 as usize) {
                     *v = x.1;
                 }
             });
+            self.pool += cost;
             self.env().emit_event(PixelUpdate {
                 creator: self.env().caller(),
             });
