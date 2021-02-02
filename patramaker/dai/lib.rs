@@ -41,7 +41,7 @@ mod erc20 {
         /// from another account.
         allowances: StorageHashMap<(AccountId, AccountId), Balance>,
 
-        wards: StorageHashMap<AccountId, bool>,
+        owner: AccountId,
     }
 
     /// Event emitted when a token transfer occurs.
@@ -87,17 +87,14 @@ mod erc20 {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
         pub fn new() -> Self {
-            let caller = Self::env().caller();
-            let mut wards = StorageHashMap::new();
-            wards.insert(caller, true);
             Self {
                 name: "Dai Stablecoin".parse().unwrap(),
                 symbol: "DAI".parse().unwrap(),
-                decimals: 18,
+                decimals: 10,
                 total_supply: Lazy::new(0),
                 balances: StorageHashMap::new(),
                 allowances: StorageHashMap::new(),
-                wards,
+                owner: Self::env().caller(),
             }
         }
 
@@ -208,6 +205,7 @@ mod erc20 {
         /// these tokens are deposited into the owner address
         #[ink(message)]
         pub fn mint(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+            self.only_owner();
             assert!(amount > 0);
 
             let user_balance = self.balance_of(user);
@@ -223,6 +221,7 @@ mod erc20 {
         /// or the call will fail.
         #[ink(message)]
         pub fn burn(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+            self.only_owner();
             if *self.total_supply < amount {
                 return Err(Error::InsufficientSupply);
             }
@@ -264,6 +263,23 @@ mod erc20 {
                 value,
             });
             Ok(())
+        }
+
+        #[ink(message)]
+        pub fn owner(&self) -> AccountId {
+            self.owner
+        }
+
+        #[ink(message)]
+        pub fn only_owner(&self) {
+            assert_eq!(self.env().caller(), self.owner);
+        }
+
+        #[ink(message)]
+        pub fn transfer_ownership(&mut self, new_owner: AccountId) {
+            self.only_owner();
+            assert_ne!(new_owner, Default::default());
+            self.owner = new_owner;
         }
     }
 }

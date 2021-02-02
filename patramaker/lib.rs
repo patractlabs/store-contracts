@@ -6,20 +6,13 @@ use ink_lang as ink;
 mod patramaker {
     use dai::DAI;
     use ink_env::call::FromAccountId;
-    use ink_lang as ink;
+    use ink_prelude::vec::Vec;
     use ink_storage::{
         collections::HashMap as StorageMap,
         traits::{PackedLayout, SpreadLayout},
         Lazy,
     };
-
-    #[derive(Debug, PartialEq, Eq, scale::Encode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-    pub enum Error {
-        OnlyOwnerAccess,
-        InvalidNewOwner,
-    }
-    pub type Result<T> = core::result::Result<T, Error>;
+    use ownership::Ownable;
 
     pub type CdpId = u32;
     pub type USD = u32;
@@ -88,6 +81,7 @@ mod patramaker {
         pub issue_dai: Balance,
         pub collateral_ratio: u32,
         pub valid: bool,
+        pub create_date: Timestamp,
     }
 
     #[ink(storage)]
@@ -102,37 +96,34 @@ mod patramaker {
         owner: AccountId,
     }
 
-    /// The Ownable contract has an owner address, and provides basic authorization control
-    /// functions, this simplifies the implementation of "user permissions".
-    #[ink::trait_definition]
-    pub trait Ownable {
-        /// Contract owner.
-        #[ink(message)]
-        fn owner(&self) -> AccountId;
-
-        /// transfer contract ownership to new owner.
-        #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()>;
-    }
-
     impl Ownable for PatraMaker {
-        /// Contract owner.
+        #[ink(constructor)]
+        fn new() -> Self {
+            unimplemented!()
+        }
+
         #[ink(message)]
         fn owner(&self) -> AccountId {
             self.owner
         }
 
+        #[ink(message)]
+        fn only_owner(&self) {
+            assert_eq!(self.env().caller(), self.owner);
+        }
+
         /// transfer contract ownership to new owner.
         #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: AccountId) -> Result<()> {
-            self.only_owner()?;
+        fn transfer_ownership(&mut self, new_owner: AccountId) {
+            self.only_owner();
+            assert_ne!(new_owner, Default::default());
+            self.owner = new_owner;
+        }
 
-            if new_owner != Default::default() {
-                self.owner = new_owner;
-            } else {
-                return Err(Error::InvalidNewOwner);
-            }
-            Ok(())
+        #[ink(message)]
+        fn renounce_ownership(&mut self) {
+            self.only_owner();
+            self.owner = Default::default();
         }
     }
 
@@ -164,34 +155,30 @@ mod patramaker {
 
         /// Adjust Min Collateral Ratio only admin
         #[ink(message)]
-        pub fn adjust_mcr(&mut self, mcr: u32) -> Result<()> {
-            self.only_owner()?;
+        pub fn adjust_mcr(&mut self, mcr: u32) {
+            self.only_owner();
             self.min_collateral_ratio = mcr;
-            Ok(())
         }
 
         // Adjust Min Liquidation Ratio only admin
         #[ink(message)]
-        pub fn adjust_mlr(&mut self, mlr: u32) -> Result<()> {
-            self.only_owner()?;
+        pub fn adjust_mlr(&mut self, mlr: u32) {
+            self.only_owner();
             self.min_liquidation_ratio = mlr;
-            Ok(())
         }
 
         /// Adjust Liquidater Reward Ratio only admin
         #[ink(message)]
-        pub fn adjust_lrr(&mut self, lrr: u32) -> Result<()> {
-            self.only_owner()?;
+        pub fn adjust_lrr(&mut self, lrr: u32) {
+            self.only_owner();
             self.liquidater_reward_ratio = lrr;
-            Ok(())
         }
 
         /// Adjust dot price only admin
         #[ink(message)]
-        pub fn adjust_dot_price(&mut self, price: USD) -> Result<()> {
-            self.only_owner()?;
+        pub fn adjust_dot_price(&mut self, price: USD) {
+            self.only_owner();
             self.dot_price = price;
-            Ok(())
         }
 
         /// System params
@@ -224,6 +211,7 @@ mod patramaker {
                 issue_dai: dai,
                 collateral_ratio: cr,
                 valid: true,
+                create_date: self.env().block_timestamp(),
             };
             self.cdp_count += 1;
             self.cdps.insert(self.cdp_count, cdp);
@@ -335,17 +323,20 @@ mod patramaker {
             });
         }
 
-        /// Returns the total dai token supply.
+        /// Returns the total issuers、total collateral、total issue dai.
         #[ink(message)]
-        pub fn total_supply(&self) -> Balance {
-            self.dai_token.total_supply()
-        }
-
-        fn only_owner(&self) -> Result<()> {
-            if self.env().caller() != self.owner {
-                return Err(Error::OnlyOwnerAccess);
+        pub fn total_supply(&self) -> (u32, Balance, Balance) {
+            let mut issuers = Vec::new();
+            let mut total_collateral: Balance = 0;
+            let mut total_issue_dai: Balance = 0;
+            for (_k, v) in self.cdps.iter() {
+                if !issuers.contains(&v.issuer) {
+                    issuers.push(v.issuer);
+                }
+                total_collateral += v.collateral_dot;
+                total_issue_dai += v.issue_dai;
             }
-            Ok(())
+            (issuers.len() as u32, total_collateral, total_issue_dai)
         }
     }
 }
