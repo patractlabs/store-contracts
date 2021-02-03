@@ -7,6 +7,7 @@ mod factory {
     use ink_lang as ink;
 
     use exchange::PatraExchange;
+    use exchange2::PatraExchange as PatraExchange2;
     use ink_env::hash::Blake2x256;
     use ink_prelude::vec::Vec;
     use ink_storage::collections::HashMap as StorageHashMap;
@@ -15,6 +16,7 @@ mod factory {
     #[ink(storage)]
     pub struct PatraFactory {
         exchange_template: Hash,
+        exchange_template2: Hash,
         lpt: AccountId,
         token_count: u128,
         swap_pairs: Vec<SwapPair>,
@@ -30,13 +32,20 @@ mod factory {
         fn new() -> Self;
 
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash, lpt: AccountId);
+        fn initialize_factory(&mut self, template: Hash, template2: Hash, lpt: AccountId);
 
         #[ink(message)]
         fn create_exchange(
             &mut self,
             from_token: AccountId,
             to_token: AccountId,
+            salt_op: Option<Hash>,
+        ) -> AccountId;
+
+        #[ink(message)]
+        fn create_exchange_with_dot(
+            &mut self,
+            token: AccountId,
             salt_op: Option<Hash>,
         ) -> AccountId;
 
@@ -63,6 +72,7 @@ mod factory {
         fn new() -> Self {
             Self {
                 exchange_template: Default::default(),
+                exchange_template2: Default::default(),
                 lpt: Default::default(),
                 token_count: 0,
                 swap_pairs: Vec::new(),
@@ -73,11 +83,12 @@ mod factory {
 
         // Can't call initializeFactory on factory twice
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash, lpt: AccountId) {
+        fn initialize_factory(&mut self, template: Hash, template2: Hash, lpt: AccountId) {
             assert_eq!(self.exchange_template, Default::default());
             assert_ne!(template, Default::default());
             // exchange template contract code hash
             self.exchange_template = template;
+            self.exchange_template2 = template2;
             self.lpt = lpt;
         }
 
@@ -107,12 +118,63 @@ mod factory {
             } else {
                 salt = salt_op.unwrap();
             }
-            let total_balance = Self::env().balance();
 
             // instantiate exchange
             let exchange_params = PatraExchange::new(from_token, to_token, self.lpt)
-                .endowment(total_balance / 10)
+                .endowment(100)
                 .code_hash(self.exchange_template)
+                .salt_bytes(salt)
+                .params();
+            let exchange_account_id = self
+                .env()
+                .instantiate_contract(&exchange_params)
+                .expect("failed at instantiating the `exchange` contract");
+
+            self.token_to_exchange
+                .insert((from_token, to_token), exchange_account_id);
+            self.swap_pairs.push((from_token, to_token));
+            self.token_count += 1;
+            self.id_to_token
+                .insert(self.token_count, (from_token, to_token));
+            Self::env().emit_event(NewExchange {
+                token: from_token,
+                caller: exchange_account_id,
+            });
+            exchange_account_id
+        }
+
+        /// Create ERC20 Token => DOT
+        #[ink(message)]
+        fn create_exchange_with_dot(
+            &mut self,
+            from_token: AccountId,
+            salt_op: Option<Hash>,
+        ) -> AccountId {
+            assert_ne!(self.exchange_template2, Hash::from([0; 32]));
+            assert_ne!(from_token, Default::default());
+            let to_token = Default::default();
+            for item in self.swap_pairs.iter() {
+                if (item.0 == from_token && item.1 == to_token)
+                    || item.0 == to_token && item.1 == from_token
+                {
+                    assert!(false)
+                }
+            }
+            assert!(!self.token_to_exchange.contains_key(&(from_token, to_token)));
+
+            let salt;
+            if salt_op.is_none() {
+                let mut from = from_token.encode();
+                from.extend(to_token.encode());
+                salt = Hash::from(self.env().hash_bytes::<Blake2x256>(from.as_slice()));
+            } else {
+                salt = salt_op.unwrap();
+            }
+
+            // instantiate exchange
+            let exchange_params = PatraExchange2::new(from_token, self.lpt)
+                .endowment(100)
+                .code_hash(self.exchange_template2)
                 .salt_bytes(salt)
                 .params();
             let exchange_account_id = self
