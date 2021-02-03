@@ -62,7 +62,77 @@ mod patralottery {
         pub random: Hash,
         pub win_num: Vec<u32>,
         pub buyers: Vec<AccountId>,
+        pub pool_in: Balance,
+        pub pool_out: Balance,
         pub end: bool,
+    }
+
+    #[derive(
+        Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
+    )]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
+    )]
+    pub struct MyLottery {
+        pub epoch_id: EpochID,
+        pub random: Hash,
+        pub my_num: Vec<u32>,
+        pub tickets: u32,
+        pub reward: Balance,
+    }
+
+    #[derive(
+        Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
+    )]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
+    )]
+    pub struct EpochHistory {
+        pub epoch_id: EpochID,
+        pub random: Hash,
+        pub my_num: Vec<u32>,
+        pub buyer: u32,
+        pub pool_in: Balance,
+        pub pool_out: Balance,
+    }
+
+    #[derive(
+        Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
+    )]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
+    )]
+    pub struct EpochInfo {
+        pub epoch_id: EpochID,
+        pub start_slot: u64,
+        pub duration: u64,
+        pub current_block: u32,
+        pub reward_pool: Balance,
+    }
+
+    #[derive(
+        Debug,
+        PartialEq,
+        Eq,
+        Clone,
+        Default,
+        scale::Encode,
+        scale::Decode,
+        SpreadLayout,
+        PackedLayout,
+    )]
+    #[cfg_attr(
+        feature = "std",
+        derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
+    )]
+    pub struct BiggestWinner {
+        pub winner: AccountId,
+        pub win_num: Vec<u32>,
+        pub tickets: u32,
+        pub reward: Balance,
     }
 
     #[derive(
@@ -84,24 +154,19 @@ mod patralottery {
         epochs: StorageMap<EpochID, Lottery>,
         players: StorageMap<(EpochID, AccountId), Vec<Tickets>>,
         buyers: StorageMap<AccountId, Vec<EpochID>>,
+        winners: StorageMap<EpochID, BiggestWinner>,
         reward_pool: Balance,
-        epoch: EpochID,
-        start_slot: u64,
-        duration: u64,
     }
 
     impl PatraLottery {
         #[ink(constructor)]
         pub fn new() -> Self {
-            let ret: Randomness = Self::env().extension().random("".as_bytes()).unwrap();
             Self {
                 epochs: StorageMap::new(),
                 players: StorageMap::new(),
                 buyers: StorageMap::new(),
+                winners: StorageMap::new(),
                 reward_pool: 0,
-                epoch: ret.epoch + 1,
-                start_slot: ret.start_slot,
-                duration: ret.duration,
             }
         }
 
@@ -118,6 +183,7 @@ mod patralottery {
 
             // update epochs
             if let Some(epoch) = self.epochs.get_mut(&epoch_id) {
+                epoch.pool_in += spend;
                 if !epoch.buyers.contains(&caller) {
                     epoch.buyers.push(caller);
                 }
@@ -128,6 +194,8 @@ mod patralottery {
                         random: Default::default(),
                         win_num: vec![],
                         buyers: vec![caller],
+                        pool_in: spend,
+                        pool_out: 0,
                         end: false,
                     },
                 );
@@ -140,10 +208,10 @@ mod patralottery {
                 reward: 0,
                 rank: Rank::None,
             };
-            if let Some(tic) = self.players.get_mut(&(self.epoch, caller)) {
+            if let Some(tic) = self.players.get_mut(&(epoch_id, caller)) {
                 tic.push(ticket);
             } else {
-                self.players.insert((self.epoch, caller), vec![ticket]);
+                self.players.insert((epoch_id, caller), vec![ticket]);
             }
 
             // update buyers
@@ -167,81 +235,103 @@ mod patralottery {
             let ret: Randomness = self.env().extension().random("".as_bytes()).unwrap();
             let epoch = ret.epoch;
             assert_eq!(epoch, epoch_id);
-            let info = self.epochs.get_mut(&epoch).unwrap();
-            assert!(!info.end);
+            assert!(self.epochs.get(&epoch).is_some());
+            let lottery = self.epochs.get_mut(&epoch).unwrap();
+            assert!(!lottery.end);
 
             let (_hex_random, win_num) = Self::get_winning_number(ret.randomness);
-            info.end = true;
-            info.random = ret.randomness;
-            info.win_num = win_num.clone();
+            lottery.end = true;
+            lottery.random = ret.randomness;
+            lottery.win_num = win_num.clone();
 
             // claim reward
-            let caller = self.env().caller();
+            let caller = Self::env().caller();
             // 0.1 DOT
-            self.env().transfer(caller, DOTS / 10).unwrap();
+            Self::env().transfer(caller, DOTS / 10).unwrap();
             self.reward_pool -= DOTS / 10;
+            lottery.pool_out += DOTS / 10;
 
-            if let Some(lottery) = self.epochs.get(&epoch) {
-                let mut first_count = 0_u32;
-                let mut first_palyers: Vec<AccountId> = Vec::new();
-                for buyer in lottery.buyers.iter() {
-                    if let Some(player) = self.players.get_mut(&(epoch, *buyer)) {
-                        for tic in player {
-                            let rank = Self::rank(tic.num.clone(), win_num.clone());
-                            match rank {
-                                Rank::FirstPrize => {
-                                    tic.rank = Rank::FirstPrize;
-                                    first_count += tic.amount;
-                                    first_palyers.push(*buyer);
-                                }
-                                Rank::SecondPrize => {
-                                    tic.rank = Rank::SecondPrize;
-                                    let reward = DOTS * 10 * tic.amount as u128;
-                                    if self.reward_pool > 0 {
-                                        if self.reward_pool > reward {
-                                            Self::env().transfer(*buyer, reward).unwrap();
-                                            tic.reward = reward;
-                                        } else {
-                                            Self::env().transfer(*buyer, self.reward_pool).unwrap();
-                                            tic.reward = self.reward_pool;
-                                        }
-                                        self.reward_pool = self.reward_pool.saturating_sub(reward);
+            let mut first_count = 0_u32;
+            let mut first_palyers: Vec<AccountId> = Vec::new();
+            let mut biggest_winner: BiggestWinner = Default::default();
+            for buyer in lottery.buyers.iter() {
+                if let Some(player) = self.players.get_mut(&(epoch, *buyer)) {
+                    for tic in player {
+                        let rank = Self::rank(tic.num.clone(), win_num.clone());
+                        match rank {
+                            Rank::FirstPrize => {
+                                tic.rank = Rank::FirstPrize;
+                                first_count += tic.amount;
+                                first_palyers.push(*buyer);
+                            }
+                            Rank::SecondPrize => {
+                                tic.rank = Rank::SecondPrize;
+                                let reward = DOTS * 10 * tic.amount as u128;
+                                if self.reward_pool > 0 {
+                                    if self.reward_pool > reward {
+                                        tic.reward = reward;
+                                    } else {
+                                        tic.reward = self.reward_pool;
                                     }
                                 }
-                                Rank::ThirdPrize => {
-                                    tic.rank = Rank::ThirdPrize;
-                                    let reward = DOTS * 2 * tic.amount as u128;
-                                    if self.reward_pool > 0 {
-                                        if self.reward_pool > reward {
-                                            Self::env().transfer(*buyer, reward).unwrap();
-                                            tic.reward = reward;
-                                        } else {
-                                            Self::env().transfer(*buyer, self.reward_pool).unwrap();
-                                            tic.reward = self.reward_pool;
-                                        }
-                                        self.reward_pool = self.reward_pool.saturating_sub(reward);
+                            }
+                            Rank::ThirdPrize => {
+                                tic.rank = Rank::ThirdPrize;
+                                let reward = DOTS * 2 * tic.amount as u128;
+                                if self.reward_pool > 0 {
+                                    if self.reward_pool > reward {
+                                        tic.reward = reward;
+                                    } else {
+                                        tic.reward = self.reward_pool;
                                     }
                                 }
-                                _ => (),
                             }
+                            _ => (),
                         }
-                    }
-                }
 
-                if self.reward_pool > 0 {
-                    let reward = self.reward_pool / first_count as u128;
-                    for player in first_palyers.iter() {
-                        let tickets = self.players.get_mut(&(epoch_id, *player)).unwrap();
-                        for tic in tickets.iter_mut() {
-                            if tic.rank == Rank::FirstPrize {
-                                Self::env().transfer(*player, reward).unwrap();
-                                tic.reward = reward;
+                        if tic.reward > 0 {
+                            Self::env().transfer(*buyer, tic.reward).unwrap();
+                            if tic.reward > biggest_winner.reward {
+                                biggest_winner = BiggestWinner {
+                                    winner: *buyer,
+                                    win_num: tic.num.clone(),
+                                    tickets: tic.amount,
+                                    reward: tic.reward,
+                                }
                             }
+                            self.reward_pool = self.reward_pool.saturating_sub(tic.reward);
+                            lottery.pool_out += tic.reward;
                         }
                     }
-                    self.reward_pool = 0;
                 }
             }
+
+            if self.reward_pool > 0 {
+                let reward = self.reward_pool / first_count as u128;
+                for player in first_palyers.iter() {
+                    let tickets = self.players.get_mut(&(epoch_id, *player)).unwrap();
+                    for tic in tickets.iter_mut() {
+                        let money = reward * tic.amount as u128;
+                        if tic.rank == Rank::FirstPrize {
+                            Self::env().transfer(*player, money).unwrap();
+                            tic.reward = money;
+                        }
+                        if tic.reward > biggest_winner.reward {
+                            biggest_winner = BiggestWinner {
+                                winner: *player,
+                                win_num: tic.num.clone(),
+                                tickets: tic.amount,
+                                reward: tic.reward,
+                            }
+                        }
+                    }
+                }
+                lottery.pool_out += self.reward_pool;
+                self.reward_pool = 0;
+            }
+
+            self.winners.insert(epoch_id, biggest_winner);
+
             self.env().emit_event(DrawLottery {
                 epoch,
                 randomness: ret.randomness,
@@ -249,6 +339,74 @@ mod patralottery {
             })
         }
 
+        /// Return the account bought lotteries for the specified `owner`.
+        #[ink(message)]
+        pub fn lotteries_of(&self, owner: AccountId) -> Vec<MyLottery> {
+            let mut my_lotteries = vec![];
+            if let Some(epochs) = self.buyers.get(&owner) {
+                for ep in epochs.iter() {
+                    let lottery = self.epochs.get(ep).unwrap();
+                    let tickets = self.players.get(&(*ep, owner)).unwrap();
+                    for tic in tickets.iter() {
+                        my_lotteries.push(MyLottery {
+                            epoch_id: *ep,
+                            random: lottery.random,
+                            my_num: tic.num.clone(),
+                            tickets: tic.amount,
+                            reward: tic.reward,
+                        });
+                    }
+                }
+            }
+            my_lotteries
+        }
+
+        #[ink(message)]
+        pub fn epoch_history(&self, epoch_id: EpochID) -> Option<EpochHistory> {
+            if let Some(lottery) = self.epochs.get(&epoch_id) {
+                Some(EpochHistory {
+                    epoch_id,
+                    random: lottery.random,
+                    my_num: lottery.win_num.clone(),
+                    buyer: lottery.buyers.len() as u32,
+                    pool_in: lottery.pool_in,
+                    pool_out: lottery.pool_out,
+                })
+            } else {
+                None
+            }
+        }
+
+        #[ink(message)]
+        pub fn latest_epoch(&self) -> EpochInfo {
+            let ret: Randomness = self.env().extension().random("".as_bytes()).unwrap();
+            // TODO
+            EpochInfo {
+                epoch_id: ret.epoch + 1,
+                start_slot: ret.start_slot,
+                duration: ret.duration,
+                current_block: self.env().block_number(),
+                reward_pool: self.reward_pool,
+            }
+        }
+
+        #[ink(message)]
+        pub fn biggest_winner(&self, epoch_id: EpochID) -> Option<BiggestWinner> {
+            if let Some(winner) = self.winners.get(&epoch_id) {
+                Some(winner.clone())
+            } else {
+                None
+            }
+        }
+
+        #[ink(message)]
+        pub fn winning_number(&self, subject: Vec<u8>) -> (String, Vec<u32>) {
+            let ret: Randomness = self.env().extension().random(subject.as_slice()).unwrap();
+            Self::get_winning_number(ret.randomness)
+        }
+    }
+
+    impl PatraLottery {
         fn rank(numbers: Vec<u32>, win_num: Vec<u32>) -> Rank {
             assert_eq!(numbers.len(), 3);
             let count = win_num
@@ -264,14 +422,6 @@ mod patralottery {
             }
         }
 
-        #[ink(message)]
-        pub fn winning_number(&self, subject: Vec<u8>) -> (String, Vec<u32>) {
-            let ret: Randomness = self.env().extension().random(subject.as_slice()).unwrap();
-            Self::get_winning_number(ret.randomness)
-        }
-    }
-
-    impl PatraLottery {
         pub fn get_winning_number(random: Hash) -> (String, Vec<u32>) {
             let mut seed = String::new();
             for byte in random.as_ref() {
