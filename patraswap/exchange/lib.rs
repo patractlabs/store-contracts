@@ -42,17 +42,7 @@ mod exchange {
     }
 
     #[ink(event)]
-    pub struct FromTokenPurchase {
-        #[ink(topic)]
-        buyer: AccountId,
-        #[ink(topic)]
-        sold: Balance,
-        #[ink(topic)]
-        bought: Balance,
-    }
-
-    #[ink(event)]
-    pub struct ToTokenPurchase {
+    pub struct TokenSwap {
         #[ink(topic)]
         buyer: AccountId,
         #[ink(topic)]
@@ -133,7 +123,7 @@ mod exchange {
         #[ink(message)]
         pub fn swap_from_to_output(&mut self, to_bought: Balance) -> Balance {
             let caller = self.env().caller();
-            self.token_to_dot_output(to_bought, caller, caller)
+            self.token_from_to_output(to_bought, caller, caller)
         }
 
         /// Public price function for from swap to Token trades with an exact input.
@@ -195,7 +185,7 @@ mod exchange {
                 .from_token_contract
                 .transfer(recipient, from_bought)
                 .is_ok());
-            self.env().emit_event(FromTokenPurchase {
+            self.env().emit_event(TokenSwap {
                 buyer,
                 sold: to_sold,
                 bought: from_bought,
@@ -222,7 +212,7 @@ mod exchange {
                 .from_token_contract
                 .transfer(recipient, from_bought)
                 .is_ok());
-            self.env().emit_event(FromTokenPurchase {
+            self.env().emit_event(TokenSwap {
                 buyer,
                 sold: to_sold,
                 bought: from_bought,
@@ -249,7 +239,7 @@ mod exchange {
                 .to_token_contract
                 .transfer(recipient, to_bought)
                 .is_ok());
-            self.env().emit_event(ToTokenPurchase {
+            self.env().emit_event(TokenSwap {
                 buyer,
                 sold: from_sold,
                 bought: to_bought,
@@ -257,7 +247,7 @@ mod exchange {
             to_bought
         }
 
-        fn token_to_dot_output(
+        fn token_from_to_output(
             &mut self,
             to_bought: Balance,
             buyer: AccountId,
@@ -276,7 +266,7 @@ mod exchange {
                 .to_token_contract
                 .transfer(recipient, to_bought)
                 .is_ok());
-            self.env().emit_event(ToTokenPurchase {
+            self.env().emit_event(TokenSwap {
                 buyer,
                 sold: from_sold,
                 bought: to_bought,
