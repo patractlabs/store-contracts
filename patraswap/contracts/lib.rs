@@ -121,7 +121,7 @@ mod factory {
 
             // instantiate exchange
             let exchange_params = PatraExchange::new(from_token, to_token, self.lpt)
-                .endowment(100)
+                .endowment(1000000000000)
                 .code_hash(self.exchange_template)
                 .salt_bytes(salt)
                 .params();
@@ -173,7 +173,7 @@ mod factory {
 
             // instantiate exchange
             let exchange_params = PatraExchange2::new(from_token, self.lpt)
-                .endowment(100)
+                .endowment(1000000000000)
                 .code_hash(self.exchange_template2)
                 .salt_bytes(salt)
                 .params();
