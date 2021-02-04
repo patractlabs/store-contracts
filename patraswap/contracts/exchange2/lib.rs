@@ -21,8 +21,10 @@ mod exchange {
         derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
     )]
     pub struct ExchangeInfo {
-        pub from_name: String,
-        pub to_name: String,
+        pub from_symbol: String,
+        pub from_decimals: u8,
+        pub to_symbol: String,
+        pub to_decimals: u8,
         pub from_token_pool: Balance,
         pub to_token_pool: Balance,
         pub lp_token_supply: Balance,
@@ -368,8 +370,10 @@ mod exchange {
             let caller = self.env().caller();
             let exchange_account = self.env().account_id();
             ExchangeInfo {
-                from_name: self.token_contract.token_name(),
-                to_name: "DOT".parse().unwrap(),
+                from_symbol: self.token_contract.token_symbol(),
+                from_decimals: self.token_contract.token_decimals() as u8,
+                to_symbol: "DOT".parse().unwrap(),
+                to_decimals: 10,
                 from_token_pool: self.token_contract.balance_of(exchange_account),
                 to_token_pool: self.dot_balance(),
                 lp_token_supply: *self.lpt_total_supply,

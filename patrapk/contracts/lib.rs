@@ -194,15 +194,12 @@ mod patrapk {
         }
 
         #[ink(message)]
-        pub fn delete(&mut self, game_id: GameID) -> Result<()> {
-            let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
+        pub fn delete(&mut self, game_id: GameID) {
+            let game = self.games.get(&game_id).unwrap();
             let caller = self.env().caller();
-            if game.creator != caller {
-                return Err(Error::NotCreator);
-            }
-            if game.status != GameStatus::Join {
-                return Err(Error::CannotDelete);
-            }
+            assert_eq!(game.creator, caller, "Not creator");
+            assert_eq!(game.status, GameStatus::Join, "Cannot delete");
+
             self.env().transfer(game.creator, game.value).unwrap();
             self.games.get_mut(&game_id).and_then(|x| {
                 x.status = GameStatus::Delete;
@@ -212,50 +209,36 @@ mod patrapk {
                 game_id,
                 creator: caller,
             });
-            Ok(())
         }
 
         #[ink(message, payable)]
-        pub fn join(&mut self, game_id: GameID, choice: Choice) -> Result<()> {
+        pub fn join(&mut self, game_id: GameID, choice: Choice) {
             let caller = self.env().caller();
             let value = self.env().transferred_balance();
-            match self.games.get_mut(&game_id) {
-                Some(game) => {
-                    if game.creator == caller {
-                        return Err(Error::GameCreator);
-                    }
-                    if game.status != GameStatus::Join {
-                        return Err(Error::CannotJoin);
-                    }
-                    if value != game.value {
-                        return Err(Error::InvalidStake);
-                    }
-                    game.status = GameStatus::Settle;
-                    game.joiner = caller;
-                    game.joiner_choice = choice;
+            let game = self.games.get_mut(&game_id).unwrap();
 
-                    self.env().emit_event(PKJoin {
-                        game_id,
-                        joiner: caller,
-                        joiner_choice: choice,
-                    });
-                    Ok(())
-                }
-                None => Err(Error::GameNotFound),
-            }
+            assert_ne!(game.creator, caller, "Game creator");
+            assert_eq!(game.status, GameStatus::Join, "Cannot delete");
+            assert_eq!(value, game.value, "Invalid stake");
+
+            game.status = GameStatus::Settle;
+            game.joiner = caller;
+            game.joiner_choice = choice;
+
+            self.env().emit_event(PKJoin {
+                game_id,
+                joiner: caller,
+                joiner_choice: choice,
+            });
         }
 
         #[ink(message)]
-        pub fn reveal(&mut self, game_id: GameID, salt: String, choice: Choice) -> Result<()> {
-            let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
-            if game.status != GameStatus::Settle {
-                return Err(Error::CannotReveal);
-            }
+        pub fn reveal(&mut self, game_id: GameID, salt: String, choice: Choice) {
+            let game = self.games.get(&game_id).unwrap();
+            assert_eq!(game.status, GameStatus::Settle, "Cannot Reveal");
             let salt_hash = self.salt_hash(salt.clone(), choice);
             let expected_salt_hash = game.salt_hash;
-            if salt_hash != expected_salt_hash {
-                return Err(Error::InvalidSalt);
-            }
+            assert_eq!(salt_hash, expected_salt_hash, "Invalid Salt");
 
             let result = Self::judgment(choice, game.joiner_choice).unwrap();
             match result {
@@ -283,20 +266,18 @@ mod patrapk {
                 Some(x)
             });
             self.env().emit_event(PKReveal { game_id, result });
-
-            Ok(())
         }
 
         #[ink(message)]
-        pub fn expire(&mut self, game_id: GameID) -> Result<()> {
-            let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
-            if game.status != GameStatus::Settle {
-                return Err(Error::CannotExpire);
-            }
+        pub fn expire(&mut self, game_id: GameID) {
+            let game = self.games.get(&game_id).unwrap();
+            assert_eq!(game.status, GameStatus::Settle, "Cannot Expire");
             // 1 Day
-            if self.env().block_number() < game.start_block + 14400 {
-                return Err(Error::NotExpired);
-            }
+            assert!(
+                self.env().block_number() >= game.start_block + 14400,
+                "Not Expired"
+            );
+
             self.env().transfer(game.joiner, game.value * 2).unwrap();
             self.games.get_mut(&game_id).and_then(|x| {
                 x.status = GameStatus::Expire;
@@ -308,7 +289,6 @@ mod patrapk {
                 status: GameStatus::Expire,
                 result: GameResult::JoinerWin,
             });
-            Ok(())
         }
 
         #[ink(message)]

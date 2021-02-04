@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x6b6696d241d2bf29311ce1a9af6b628722b635b0f1829deaa3c2bc19f2173f6a",
+    "hash": "0x60c65d2f99da3b15b03d123a0f2152100f313fbb731fd98990c758edb8ac0559",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.49.0-nightly"
   },
@@ -703,14 +703,24 @@
         "composite": {
           "fields": [
             {
-              "name": "from_name",
+              "name": "from_symbol",
               "type": 7,
               "typeName": "String"
             },
             {
-              "name": "to_name",
+              "name": "from_decimals",
+              "type": 4,
+              "typeName": "u8"
+            },
+            {
+              "name": "to_symbol",
               "type": 7,
               "typeName": "String"
+            },
+            {
+              "name": "to_decimals",
+              "type": 4,
+              "typeName": "u8"
             },
             {
               "name": "from_token_pool",
