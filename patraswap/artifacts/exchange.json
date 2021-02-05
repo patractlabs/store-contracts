@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x60c65d2f99da3b15b03d123a0f2152100f313fbb731fd98990c758edb8ac0559",
+    "hash": "0xc7d4516cf6d2c7c85950ac125f2191fdfda4d09d138a40dca1458c5a1a629049",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.49.0-nightly"
   },
@@ -22,7 +22,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -31,7 +31,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -40,7 +40,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           }
         ],
@@ -48,7 +48,7 @@
         "name": [
           "new"
         ],
-        "selector": "0xd183512b"
+        "selector": "0x9bae9d5e"
       }
     ],
     "docs": [],
@@ -63,7 +63,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -74,7 +74,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           },
           {
@@ -85,7 +85,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -102,7 +102,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -113,7 +113,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           },
           {
@@ -124,7 +124,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -141,7 +141,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -152,7 +152,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           },
           {
@@ -163,7 +163,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -180,7 +180,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -191,7 +191,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           },
           {
@@ -202,7 +202,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 2
+              "type": 1
             }
           }
         ],
@@ -219,7 +219,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -233,9 +233,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0xf350bc39"
+        "selector": "0x41ea6873"
       },
       {
         "args": [
@@ -245,7 +245,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -259,9 +259,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0xd2f5a9bf"
+        "selector": "0x0efa6ad0"
       },
       {
         "args": [
@@ -271,7 +271,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -285,9 +285,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0x89f549ef"
+        "selector": "0xc0eb1de9"
       },
       {
         "args": [
@@ -297,7 +297,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -311,9 +311,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0xbec7ab71"
+        "selector": "0xb272a2d7"
       },
       {
         "args": [
@@ -323,7 +323,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -339,9 +339,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0xac674d2d"
+        "selector": "0xa135456d"
       },
       {
         "args": [
@@ -351,7 +351,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -367,9 +367,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0x0e2d87f9"
+        "selector": "0x266fe735"
       },
       {
         "args": [
@@ -379,7 +379,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -395,9 +395,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0xbb423444"
+        "selector": "0x59ee06ae"
       },
       {
         "args": [
@@ -407,7 +407,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -423,9 +423,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0x5d53aa35"
+        "selector": "0xb27aaa07"
       },
       {
         "args": [
@@ -435,7 +435,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           },
           {
@@ -444,7 +444,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -460,9 +460,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0x58c13299"
+        "selector": "0x264cd04b"
       },
       {
         "args": [
@@ -472,7 +472,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -488,7 +488,7 @@
           "displayName": [],
           "type": 5
         },
-        "selector": "0xb72e7a88"
+        "selector": "0xbdd16bfa"
       },
       {
         "args": [
@@ -498,7 +498,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           },
           {
@@ -507,7 +507,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -521,9 +521,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 1
+          "type": 4
         },
-        "selector": "0xffa82393"
+        "selector": "0xddc30089"
       },
       {
         "args": [
@@ -533,7 +533,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 1
+              "type": 4
             }
           }
         ],
@@ -547,7 +547,7 @@
           "displayName": [],
           "type": 5
         },
-        "selector": "0xa6a6084a"
+        "selector": "0x36c655df"
       },
       {
         "args": [],
@@ -563,7 +563,33 @@
           ],
           "type": 6
         },
-        "selector": "0x367c3d78"
+        "selector": "0x8453270b"
+      },
+      {
+        "args": [
+          {
+            "name": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "lp_balance_of"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Balance"
+          ],
+          "type": 4
+        },
+        "selector": "0x751f35b1"
       }
     ]
   },
@@ -572,22 +598,13 @@
       "fields": [
         {
           "layout": {
-            "cell": {
-              "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
-              "ty": 1
-            }
-          },
-          "name": "lpt_total_supply"
-        },
-        {
-          "layout": {
             "struct": {
               "fields": [
                 {
                   "layout": {
                     "cell": {
-                      "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-                      "ty": 2
+                      "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                      "ty": 1
                     }
                   },
                   "name": "account_id"
@@ -604,8 +621,8 @@
                 {
                   "layout": {
                     "cell": {
-                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-                      "ty": 2
+                      "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                      "ty": 1
                     }
                   },
                   "name": "account_id"
@@ -622,8 +639,8 @@
                 {
                   "layout": {
                     "cell": {
-                      "key": "0x0300000000000000000000000000000000000000000000000000000000000000",
-                      "ty": 2
+                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
+                      "ty": 1
                     }
                   },
                   "name": "account_id"
@@ -636,8 +653,8 @@
         {
           "layout": {
             "cell": {
-              "key": "0x0400000000000000000000000000000000000000000000000000000000000000",
-              "ty": 2
+              "key": "0x0300000000000000000000000000000000000000000000000000000000000000",
+              "ty": 1
             }
           },
           "name": "from_token"
@@ -645,8 +662,8 @@
         {
           "layout": {
             "cell": {
-              "key": "0x0500000000000000000000000000000000000000000000000000000000000000",
-              "ty": 2
+              "key": "0x0400000000000000000000000000000000000000000000000000000000000000",
+              "ty": 1
             }
           },
           "name": "to_token"
@@ -657,15 +674,10 @@
   "types": [
     {
       "def": {
-        "primitive": "u128"
-      }
-    },
-    {
-      "def": {
         "composite": {
           "fields": [
             {
-              "type": 3,
+              "type": 2,
               "typeName": "[u8; 32]"
             }
           ]
@@ -681,7 +693,7 @@
       "def": {
         "array": {
           "len": 32,
-          "type": 4
+          "type": 3
         }
       }
     },
@@ -692,9 +704,14 @@
     },
     {
       "def": {
+        "primitive": "u128"
+      }
+    },
+    {
+      "def": {
         "tuple": [
-          1,
-          1
+          4,
+          4
         ]
       }
     },
@@ -709,7 +726,7 @@
             },
             {
               "name": "from_decimals",
-              "type": 4,
+              "type": 3,
               "typeName": "u8"
             },
             {
@@ -719,27 +736,27 @@
             },
             {
               "name": "to_decimals",
-              "type": 4,
+              "type": 3,
               "typeName": "u8"
             },
             {
               "name": "from_token_pool",
-              "type": 1,
+              "type": 4,
               "typeName": "Balance"
             },
             {
               "name": "to_token_pool",
-              "type": 1,
+              "type": 4,
               "typeName": "Balance"
             },
             {
               "name": "lp_token_supply",
-              "type": 1,
+              "type": 4,
               "typeName": "Balance"
             },
             {
               "name": "own_lp_token",
-              "type": 1,
+              "type": 4,
               "typeName": "Balance"
             }
           ]
