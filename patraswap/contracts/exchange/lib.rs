@@ -6,14 +6,14 @@ use ink_lang as ink;
 #[ink::contract]
 mod exchange {
     #[cfg(not(feature = "ink-as-dependency"))]
-    use erc20::StandardToken;
+    use erc20_fixed::StandardToken;
+    #[cfg(not(feature = "ink-as-dependency"))]
+    use erc20_issue::StandardToken as LPT;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     use ink_prelude::string::String;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_storage::Lazy;
-    #[cfg(not(feature = "ink-as-dependency"))]
-    use lpt::LPT;
 
     #[derive(Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode)]
     #[cfg_attr(
@@ -33,8 +33,6 @@ mod exchange {
 
     #[ink(storage)]
     pub struct PatraExchange {
-        // total number of LPT in existence.
-        lpt_total_supply: Lazy<Balance>,
         // address of the ERC20 token traded on this contract
         from_token_contract: Lazy<StandardToken>,
         to_token_contract: Lazy<StandardToken>,
@@ -95,7 +93,6 @@ mod exchange {
                 exchange: Self::env().account_id(),
             });
             Self {
-                lpt_total_supply: Lazy::new(0),
                 from_token_contract: Lazy::new(from_token_contract),
                 to_token_contract: Lazy::new(to_token_contract),
                 lp_token_contract: Lazy::new(lp_token_contract),
@@ -287,7 +284,7 @@ mod exchange {
             let exchange_account = self.env().account_id();
             assert!(from_tokens > 0 && to_tokens > 0);
             // total number of LPT in existence.
-            let total_liquidity: Balance = *self.lpt_total_supply;
+            let total_liquidity: Balance = self.lp_token_contract.total_supply();
             if total_liquidity > 0 {
                 let from_reserve = self.from_token_contract.balance_of(exchange_account);
                 let to_reserve = self.to_token_contract.balance_of(exchange_account);
@@ -305,9 +302,8 @@ mod exchange {
                     .is_ok());
                 assert!(self
                     .lp_token_contract
-                    .mint(caller, liquidity_minted)
+                    .issue(caller, liquidity_minted)
                     .is_ok());
-                *self.lpt_total_supply += liquidity_minted;
                 self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
@@ -324,8 +320,7 @@ mod exchange {
                     .transfer_from(caller, exchange_account, to_tokens)
                     .is_ok());
                 // PAT balance of an account (LP token)
-                assert!(self.lp_token_contract.mint(caller, from_tokens).is_ok());
-                *self.lpt_total_supply += from_tokens;
+                assert!(self.lp_token_contract.issue(caller, from_tokens).is_ok());
                 self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
@@ -341,7 +336,7 @@ mod exchange {
         #[ink(message)]
         pub fn remove_liquidity(&mut self, lp_amount: Balance) -> (Balance, Balance) {
             assert!(lp_amount > 0);
-            let total_liquidity = *self.lpt_total_supply;
+            let total_liquidity = self.lp_token_contract.total_supply();
             assert!(total_liquidity > 0);
             let caller = self.env().caller();
             assert!(self.to_token_contract.balance_of(caller) >= lp_amount);
@@ -355,8 +350,7 @@ mod exchange {
                 .transfer(caller, from_amount)
                 .is_ok());
             assert!(self.to_token_contract.transfer(caller, to_amount).is_ok());
-            assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
-            *self.lpt_total_supply -= lp_amount;
+            assert!(self.lp_token_contract.redeem(caller, lp_amount).is_ok());
             self.env().emit_event(RemoveLiquidity {
                 sender: caller,
                 from_amount,
@@ -369,7 +363,7 @@ mod exchange {
         pub fn estimated_add_liquidity(&self, from_tokens: Balance, to_tokens: Balance) -> Balance {
             let exchange_account = self.env().account_id();
             assert!(from_tokens > 0 && to_tokens > 0);
-            let total_liquidity: Balance = *self.lpt_total_supply;
+            let total_liquidity: Balance = self.lp_token_contract.total_supply();
             if total_liquidity > 0 {
                 let from_reserve = self.from_token_contract.balance_of(exchange_account);
                 from_tokens * total_liquidity / from_reserve
@@ -381,7 +375,7 @@ mod exchange {
         #[ink(message)]
         pub fn estimated_remove_liquidity(&self, lp_amount: Balance) -> (Balance, Balance) {
             assert!(lp_amount > 0);
-            let total_liquidity = *self.lpt_total_supply;
+            let total_liquidity = self.lp_token_contract.total_supply();
             assert!(total_liquidity > 0);
             let exchange_account = self.env().account_id();
             let from_token_reserve = self.from_token_contract.balance_of(exchange_account);
@@ -402,9 +396,14 @@ mod exchange {
                 to_decimals: self.to_token_contract.token_decimals() as u8,
                 from_token_pool: self.from_token_contract.balance_of(exchange_account),
                 to_token_pool: self.to_token_contract.balance_of(exchange_account),
-                lp_token_supply: *self.lpt_total_supply,
+                lp_token_supply: self.lp_token_contract.total_supply(),
                 own_lp_token: self.lp_token_contract.balance_of(caller),
             }
+        }
+
+        #[ink(message)]
+        pub fn lp_balance_of(&self, user: AccountId) -> Balance {
+            self.lp_token_contract.balance_of(user)
         }
     }
 

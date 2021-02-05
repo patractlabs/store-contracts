@@ -6,6 +6,7 @@ use ink_lang as ink;
 mod factory {
     use ink_lang as ink;
 
+    use erc20_issue::StandardToken;
     use exchange::PatraExchange;
     use exchange2::PatraExchange as PatraExchange2;
     use ink_env::hash::Blake2x256;
@@ -17,7 +18,7 @@ mod factory {
     pub struct PatraFactory {
         exchange_template: Hash,
         exchange_template2: Hash,
-        lpt: AccountId,
+        lpt: Hash,
         token_count: u128,
         swap_pairs: Vec<SwapPair>,
         token_to_exchange: StorageHashMap<SwapPair, AccountId>,
@@ -32,7 +33,7 @@ mod factory {
         fn new() -> Self;
 
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash, template2: Hash, lpt: AccountId);
+        fn initialize_factory(&mut self, template: Hash, template2: Hash, lpt: Hash);
 
         #[ink(message)]
         fn create_exchange(
@@ -64,7 +65,9 @@ mod factory {
         #[ink(topic)]
         token: AccountId,
         #[ink(topic)]
-        caller: AccountId,
+        exchange: AccountId,
+        #[ink(topic)]
+        lpt: AccountId,
     }
 
     impl Factory for PatraFactory {
@@ -83,7 +86,7 @@ mod factory {
 
         // Can't call initializeFactory on factory twice
         #[ink(message)]
-        fn initialize_factory(&mut self, template: Hash, template2: Hash, lpt: AccountId) {
+        fn initialize_factory(&mut self, template: Hash, template2: Hash, lpt: Hash) {
             assert_eq!(self.exchange_template, Default::default());
             assert_ne!(template, Default::default());
             // exchange template contract code hash
@@ -119,8 +122,20 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
+            // instantiate lp token
+            let lpt_params = StandardToken::new(0, "LP Token".into(), "LPT".into(), 18)
+                .endowment(1000000000000)
+                .code_hash(self.lpt)
+                .salt_bytes(salt)
+                .params();
+            let lpt_account_id = self
+                .env()
+                .instantiate_contract(&lpt_params)
+                .expect("failed at instantiating the `lp token` contract");
+
+            let salt = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.clone().as_ref()));
             // instantiate exchange
-            let exchange_params = PatraExchange::new(from_token, to_token, self.lpt)
+            let exchange_params = PatraExchange::new(from_token, to_token, lpt_account_id)
                 .endowment(1000000000000)
                 .code_hash(self.exchange_template)
                 .salt_bytes(salt)
@@ -138,7 +153,8 @@ mod factory {
                 .insert(self.token_count, (from_token, to_token));
             Self::env().emit_event(NewExchange {
                 token: from_token,
-                caller: exchange_account_id,
+                exchange: exchange_account_id,
+                lpt: lpt_account_id,
             });
             exchange_account_id
         }
@@ -171,8 +187,21 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
+            // instantiate lp token
+            let lpt_params = StandardToken::new(0, "LP Token".into(), "LPT".into(), 18)
+                .endowment(1000000000000)
+                .code_hash(self.lpt)
+                .salt_bytes(salt)
+                .params();
+            let lpt_account_id = self
+                .env()
+                .instantiate_contract(&lpt_params)
+                .expect("failed at instantiating the `lp token` contract");
+
+            let salt = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.clone().as_ref()));
+
             // instantiate exchange
-            let exchange_params = PatraExchange2::new(from_token, self.lpt)
+            let exchange_params = PatraExchange2::new(from_token, lpt_account_id)
                 .endowment(1000000000000)
                 .code_hash(self.exchange_template2)
                 .salt_bytes(salt)
@@ -190,7 +219,8 @@ mod factory {
                 .insert(self.token_count, (from_token, to_token));
             Self::env().emit_event(NewExchange {
                 token: from_token,
-                caller: exchange_account_id,
+                exchange: exchange_account_id,
+                lpt: lpt_account_id,
             });
             exchange_account_id
         }
