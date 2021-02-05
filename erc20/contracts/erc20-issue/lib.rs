@@ -190,11 +190,15 @@ mod erc20 {
     #[ink(event)]
     pub struct Issue {
         #[ink(topic)]
+        user: AccountId,
+        #[ink(topic)]
         amount: Balance,
     }
 
     #[ink(event)]
     pub struct Redeem {
+        #[ink(topic)]
+        user: AccountId,
         #[ink(topic)]
         amount: Balance,
     }
@@ -440,16 +444,17 @@ mod erc20 {
         /// Issue a new amount of tokens
         /// these tokens are deposited into the owner address
         #[ink(message)]
-        pub fn issue(&mut self, amount: Balance) -> Result<()> {
+        pub fn issue(&mut self, user: AccountId, amount: Balance) -> Result<()> {
             self.only_owner();
+            assert_ne!(user, Default::default());
             if amount <= 0 {
                 return Err(Error::InvalidAmount);
             }
 
-            let owner_balance = self.balance_of(self.owner);
-            self.balances.insert(self.owner, owner_balance + amount);
+            let user_balance = self.balance_of(user);
+            self.balances.insert(user, user_balance + amount);
             *self.total_supply += amount;
-            self.env().emit_event(Issue { amount });
+            self.env().emit_event(Issue { user, amount });
             Ok(())
         }
 
@@ -458,19 +463,19 @@ mod erc20 {
         /// if the balance must be enough to cover the redeem
         /// or the call will fail.
         #[ink(message)]
-        pub fn redeem(&mut self, amount: Balance) -> Result<()> {
+        pub fn redeem(&mut self, user: AccountId, amount: Balance) -> Result<()> {
             self.only_owner();
             if *self.total_supply < amount {
                 return Err(Error::InsufficientSupply);
             }
-            let owner_balance = self.balance_of(self.owner);
-            if owner_balance < amount {
+            let user_balance = self.balance_of(user);
+            if user_balance < amount {
                 return Err(Error::InsufficientBalance);
             }
 
-            self.balances.insert(self.owner, owner_balance - amount);
+            self.balances.insert(user, user_balance - amount);
             *self.total_supply -= amount;
-            self.env().emit_event(Redeem { amount });
+            self.env().emit_event(Redeem { user, amount });
             Ok(())
         }
 
