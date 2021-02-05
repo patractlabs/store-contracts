@@ -5,7 +5,7 @@ wss://ws.staging.jupiter.patract.cn
 
 ### PatraPK
 ```
-5FKU3eEAEKnb1RPEyaN4KEruosucgYVCXDxEcn89jT3gqKru
+5DibJchJQnG4zKxE2YfgfXJyAkwXT36cB13bYjj5XweS5Dh1
 ```
 ### PatraPixel
 ```
