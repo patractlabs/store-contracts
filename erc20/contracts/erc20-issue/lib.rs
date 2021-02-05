@@ -38,7 +38,7 @@ mod erc20 {
     pub trait Erc20 {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
-        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u128) -> Self;
+        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u8) -> Self;
 
         /// Returns the total token supply.
         #[ink(message)]
@@ -54,7 +54,7 @@ mod erc20 {
 
         /// Returns the token decimals.
         #[ink(message)]
-        fn token_decimals(&self) -> u128;
+        fn token_decimals(&self) -> u8;
 
         /// Returns the account balance for the specified `owner`.
         #[ink(message)]
@@ -121,7 +121,7 @@ mod erc20 {
         /// Token symbol
         symbol: String,
         /// Token decimals
-        decimals: u128,
+        decimals: u8,
         /// Total token supply.
         total_supply: Lazy<Balance>,
         /// Mapping from owner to number of owned token.
@@ -206,7 +206,7 @@ mod erc20 {
     impl Erc20 for StandardToken {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
-        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u128) -> Self {
+        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u8) -> Self {
             let caller = Self::env().caller();
             let mut balances = StorageHashMap::new();
             balances.insert(caller, initial_supply);
@@ -249,7 +249,7 @@ mod erc20 {
 
         /// Returns the token decimals.
         #[ink(message)]
-        fn token_decimals(&self) -> u128 {
+        fn token_decimals(&self) -> u8 {
             self.decimals
         }
 

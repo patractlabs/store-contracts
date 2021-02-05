@@ -57,7 +57,7 @@ async function run() {
   console.log('');
 
   // Maker DAI, DAI
-  const contract = await contractFactory.deployed('erc20,new', '0', 'Maker DAI', 'DAI', '0', {
+  const contract = await contractFactory.deployed('erc20,new', '0', 'Maker DAI', 'DAI', '18', {
     gasLimit: '200000000000',
     value: '10000000000000',
     salt: 'Maker DAI ERC20'
