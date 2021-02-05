@@ -14,11 +14,7 @@ wss://ws.staging.jupiter.patract.cn
 ### PatraSwap
 Factory
 ```
-5H2Xf47JxdgTJkAw19XcHqaZouJJeKxyaiezbh1NGew3V4LL
-```
-LPT
-```
-5HXBBSg9gi2aPPrTdtMLdjXknneo6xNuqMJ8JXuyb8TwNfvp
+5CEKEazgCndpKgdUWjUZpCvGGKSXM3HPEGfLyNBbwAvHp5yA
 ```
 
 ## DeFi
