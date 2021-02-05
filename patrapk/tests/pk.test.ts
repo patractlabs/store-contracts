@@ -17,7 +17,7 @@ describe('PatraPK', () => {
     const Alice = signers[0];
     const sender = await getRandomSigner(Alice, one.muln(100));
     const contractFactory = await getContractFactory('patrapk', sender);
-    const contract = await contractFactory.deploy('new');
+    const contract = await contractFactory.deploy('new', 10);
     const abi = artifacts.readAbi('patrapk');
     const receiver = await getRandomSigner();
 

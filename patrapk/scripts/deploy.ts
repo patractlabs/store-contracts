@@ -16,7 +16,7 @@ async function run() {
 
   console.log('Balance: ', balance.toHuman());
 
-  const contract = await contractFactory.deployed('new', {
+  const contract = await contractFactory.deployed('new', 14400, {
     gasLimit: '200000000000',
     value: '10000000000000000',
     salt: '12312'

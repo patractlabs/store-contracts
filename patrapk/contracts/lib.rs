@@ -131,7 +131,7 @@ mod patrapk {
     )]
     pub struct GameDetails {
         pub creator: AccountId,
-        pub start_block: BlockNumber,
+        pub join_block: BlockNumber,
         pub salt: String,
         pub salt_hash: Hash,
         pub create_choice: Choice,
@@ -146,7 +146,7 @@ mod patrapk {
         fn default() -> GameDetails {
             GameDetails {
                 creator: Default::default(),
-                start_block: 0,
+                join_block: 0,
                 salt: "".parse().unwrap(),
                 salt_hash: Default::default(),
                 create_choice: Choice::None,
@@ -163,14 +163,16 @@ mod patrapk {
     pub struct Patrapk {
         games: StorageMap<GameID, GameDetails>,
         counter: u32,
+        expire_time: BlockNumber,
     }
 
     impl Patrapk {
         #[ink(constructor)]
-        pub fn new() -> Self {
+        pub fn new(expire_time: BlockNumber) -> Self {
             Self {
                 games: StorageMap::new(),
                 counter: 0,
+                expire_time,
             }
         }
 
@@ -179,7 +181,6 @@ mod patrapk {
         pub fn create(&mut self, salt_hash: Hash) -> GameID {
             let mut game = GameDetails::default();
             game.creator = self.env().caller();
-            game.start_block = self.env().block_number();
             game.salt_hash = salt_hash;
             game.value = self.env().transferred_balance();
             game.status = GameStatus::Join;
@@ -215,12 +216,14 @@ mod patrapk {
         pub fn join(&mut self, game_id: GameID, choice: Choice) {
             let caller = self.env().caller();
             let value = self.env().transferred_balance();
+            let join_block = self.env().block_number();
             let game = self.games.get_mut(&game_id).unwrap();
 
             assert_ne!(game.creator, caller, "Game creator");
             assert_eq!(game.status, GameStatus::Join, "Cannot delete");
             assert_eq!(value, game.value, "Invalid stake");
 
+            game.join_block = join_block;
             game.status = GameStatus::Settle;
             game.joiner = caller;
             game.joiner_choice = choice;
@@ -272,9 +275,8 @@ mod patrapk {
         pub fn expire(&mut self, game_id: GameID) {
             let game = self.games.get(&game_id).unwrap();
             assert_eq!(game.status, GameStatus::Settle, "Cannot Expire");
-            // 1 Day
             assert!(
-                self.env().block_number() >= game.start_block + 14400,
+                self.env().block_number() >= game.join_block + self.expire_time,
                 "Not Expired"
             );
 
@@ -308,6 +310,13 @@ mod patrapk {
         pub fn game_of(&self, game_id: GameID) -> Result<GameDetails> {
             let game = self.games.get(&game_id).ok_or(Error::GameNotFound)?;
             Ok(game.clone())
+        }
+
+        #[ink(message)]
+        pub fn expire_of(&self, game_id: GameID) -> BlockNumber {
+            let game = self.games.get(&game_id).unwrap();
+            let epoch = self.env().block_number().saturating_sub(game.join_block);
+            self.expire_time.saturating_sub(epoch)
         }
 
         #[ink(message)]

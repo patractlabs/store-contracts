@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x5b5e5eaa2e81dbbe2ff29e272df28cedabd2dc83daed50e1a6d71e3b87352349",
+    "hash": "0xa287678d1c2adf63a9faa2afee486664d9074a2383a27ac5957df0fa71daf84e",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.51.0-nightly"
   },
@@ -15,12 +15,22 @@
   "spec": {
     "constructors": [
       {
-        "args": [],
+        "args": [
+          {
+            "name": "expire_time",
+            "type": {
+              "displayName": [
+                "BlockNumber"
+              ],
+              "type": 2
+            }
+          }
+        ],
         "docs": [],
         "name": [
           "new"
         ],
-        "selector": "0xd183512b"
+        "selector": "0x9bae9d5e"
       }
     ],
     "docs": [],
@@ -224,7 +234,7 @@
           ],
           "type": 2
         },
-        "selector": "0x744789ad"
+        "selector": "0xab700a1b"
       },
       {
         "args": [
@@ -245,7 +255,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0xa51b6d49"
+        "selector": "0x55ddc8ac"
       },
       {
         "args": [
@@ -275,7 +285,7 @@
         ],
         "payable": true,
         "returnType": null,
-        "selector": "0x669b4856"
+        "selector": "0x2c254e82"
       },
       {
         "args": [
@@ -314,7 +324,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0x4c2b8e66"
+        "selector": "0xa80532c0"
       },
       {
         "args": [
@@ -335,7 +345,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0xea63d23e"
+        "selector": "0xb2c68550"
       },
       {
         "args": [
@@ -370,7 +380,7 @@
           ],
           "type": 11
         },
-        "selector": "0x8ca7314c"
+        "selector": "0xf330e016"
       },
       {
         "args": [
@@ -396,7 +406,33 @@
           ],
           "type": 16
         },
-        "selector": "0x94656e1c"
+        "selector": "0xc8b89bf8"
+      },
+      {
+        "args": [
+          {
+            "name": "game_id",
+            "type": {
+              "displayName": [
+                "GameID"
+              ],
+              "type": 2
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "expire_of"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "BlockNumber"
+          ],
+          "type": 2
+        },
+        "selector": "0x762072c9"
       },
       {
         "args": [],
@@ -412,7 +448,7 @@
           ],
           "type": 2
         },
-        "selector": "0x7bf544d6"
+        "selector": "0xb1e1f2d5"
       }
     ]
   },
@@ -507,6 +543,15 @@
             }
           },
           "name": "counter"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+              "ty": 2
+            }
+          },
+          "name": "expire_time"
         }
       ]
     }
@@ -642,7 +687,7 @@
               "typeName": "AccountId"
             },
             {
-              "name": "start_block",
+              "name": "join_block",
               "type": 2,
               "typeName": "BlockNumber"
             },
