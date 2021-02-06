@@ -6,9 +6,7 @@ use ink_lang as ink;
 #[ink::contract]
 mod exchange {
     #[cfg(not(feature = "ink-as-dependency"))]
-    use erc20_fixed::StandardToken;
-    #[cfg(not(feature = "ink-as-dependency"))]
-    use erc20_issue::StandardToken as LPT;
+    use erc20::Erc20;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     use ink_prelude::string::String;
@@ -34,8 +32,8 @@ mod exchange {
     #[ink(storage)]
     pub struct PatraExchange {
         // address of the ERC20 token traded on this contract
-        token_contract: Lazy<StandardToken>,
-        lp_token_contract: Lazy<LPT>,
+        token_contract: Lazy<Erc20>,
+        lp_token_contract: Lazy<Erc20>,
         token: AccountId,
         init_deposit_dot: Balance,
     }
@@ -81,8 +79,8 @@ mod exchange {
     impl PatraExchange {
         #[ink(constructor)]
         pub fn new(token: AccountId, lpt: AccountId) -> Self {
-            let token_contract: StandardToken = FromAccountId::from_account_id(token);
-            let lp_token_contract: LPT = FromAccountId::from_account_id(lpt);
+            let token_contract: Erc20 = FromAccountId::from_account_id(token);
+            let lp_token_contract: Erc20 = FromAccountId::from_account_id(lpt);
             Self::env().emit_event(NewExchangeWithDot {
                 token,
                 exchange: Self::env().account_id(),
@@ -282,7 +280,7 @@ mod exchange {
                     .is_ok());
                 assert!(self
                     .lp_token_contract
-                    .issue(caller, liquidity_minted)
+                    .mint(caller, liquidity_minted)
                     .is_ok());
                 self.env().emit_event(AddLiquidity {
                     sender: caller,
@@ -296,7 +294,7 @@ mod exchange {
                     .transfer_from(caller, exchange_account, from_tokens)
                     .is_ok());
                 // PAT balance of an account (LP token)
-                assert!(self.lp_token_contract.issue(caller, from_tokens).is_ok());
+                assert!(self.lp_token_contract.mint(caller, from_tokens).is_ok());
                 self.env().emit_event(AddLiquidity {
                     sender: caller,
                     from_amount: from_tokens,
@@ -324,7 +322,7 @@ mod exchange {
             let to_amount = lp_amount * to_token_reserve / total_liquidity;
             assert!(self.token_contract.transfer(caller, from_amount).is_ok());
             assert!(self.env().transfer(caller, to_amount).is_ok());
-            assert!(self.lp_token_contract.redeem(caller, lp_amount).is_ok());
+            assert!(self.lp_token_contract.burn(caller, lp_amount).is_ok());
             self.env().emit_event(RemoveLiquidity {
                 sender: caller,
                 from_amount,
@@ -364,8 +362,11 @@ mod exchange {
             let caller = self.env().caller();
             let exchange_account = self.env().account_id();
             ExchangeInfo {
-                from_symbol: self.token_contract.token_symbol(),
-                from_decimals: self.token_contract.token_decimals() as u8,
+                from_symbol: self
+                    .token_contract
+                    .token_symbol()
+                    .unwrap_or(Default::default()),
+                from_decimals: self.token_contract.token_decimals().unwrap_or(0),
                 to_symbol: "DOT".parse().unwrap(),
                 to_decimals: 10,
                 from_token_pool: self.token_contract.balance_of(exchange_account),
@@ -382,7 +383,7 @@ mod exchange {
 
         #[ink(message)]
         pub fn lp_token_decimals(&self) -> u8 {
-            self.lp_token_contract.token_decimals()
+            self.lp_token_contract.token_decimals().unwrap_or(0)
         }
 
         fn dot_balance(&self) -> Balance {

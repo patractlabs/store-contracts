@@ -15,7 +15,7 @@ ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink"
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
 scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
-erc20-issue = { version = "0.1.0", path = "erc20-issue", default-features = false, features = ["ink-as-dependency"] }
+erc20 = { version = "0.1.0", path = "erc20", default-features = false, features = ["ink-as-dependency"] }
 exchange = { version = "0.1.0", path = "exchange", default-features = false, features = ["ink-as-dependency"] }
 exchange2 = { version = "0.1.0", path = "exchange2", default-features = false, features = ["ink-as-dependency"] }
 
@@ -37,7 +37,7 @@ std = [
     "ink_prelude/std",
     "scale/std",
     "scale-info/std",
-    "erc20-issue/std",
+    "erc20/std",
     "exchange/std",
     "exchange2/std",
 ]
@@ -48,6 +48,7 @@ overflow-checks = false
 
 [workspace]
 members = [
+    "erc20",
     "exchange",
     "exchange2",
 ]
