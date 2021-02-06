@@ -405,6 +405,11 @@ mod exchange {
         pub fn lp_balance_of(&self, user: AccountId) -> Balance {
             self.lp_token_contract.balance_of(user)
         }
+
+        #[ink(message)]
+        pub fn lp_token_decimals(&self) -> u8 {
+            self.lp_token_contract.token_decimals()
+        }
     }
 
     impl PatraExchange {

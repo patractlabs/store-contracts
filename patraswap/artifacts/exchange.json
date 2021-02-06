@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xc7d4516cf6d2c7c85950ac125f2191fdfda4d09d138a40dca1458c5a1a629049",
+    "hash": "0x5c48d1c00447cfac53cf4ee29fff647aec6857e193bf1050c45af4b801a15979",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.49.0-nightly"
   },
@@ -590,6 +590,22 @@
           "type": 4
         },
         "selector": "0x751f35b1"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "lp_token_decimals"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u8"
+          ],
+          "type": 3
+        },
+        "selector": "0xdec1d572"
       }
     ]
   },

@@ -9,7 +9,9 @@ mod factory {
     use erc20_issue::StandardToken;
     use exchange::PatraExchange;
     use exchange2::PatraExchange as PatraExchange2;
-    use ink_env::hash::Blake2x256;
+    #[cfg(not(feature = "ink-as-dependency"))]
+    use ink_env::call::FromAccountId;
+    use ink_env::{hash::Blake2x256};
     use ink_prelude::vec::Vec;
     use ink_storage::collections::HashMap as StorageHashMap;
     use scale::Encode;
@@ -122,12 +124,19 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
+            let from_token_contract: StandardToken = FromAccountId::from_account_id(from_token);
+
             // instantiate lp token
-            let lpt_params = StandardToken::new(0, "LP Token".into(), "LPT".into(), 18)
-                .endowment(1000000000000)
-                .code_hash(self.lpt)
-                .salt_bytes(salt)
-                .params();
+            let lpt_params = StandardToken::new(
+                0,
+                "LP Token".into(),
+                "LPT".into(),
+                from_token_contract.token_decimals(),
+            )
+            .endowment(1000000000000)
+            .code_hash(self.lpt)
+            .salt_bytes(salt)
+            .params();
             let lpt_account_id = self
                 .env()
                 .instantiate_contract(&lpt_params)

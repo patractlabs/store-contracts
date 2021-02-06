@@ -31,7 +31,7 @@ mod erc20 {
             _initial_supply: Balance,
             _name: String,
             _symbol: String,
-            _decimals: u128,
+            _decimals: u8,
         ) -> Self {
             unimplemented!()
         }
@@ -56,7 +56,7 @@ mod erc20 {
 
         /// Returns the token decimals.
         #[ink(message, selector = "0xa2d7f5dc")]
-        pub fn token_decimals(&self) -> u128 {
+        pub fn token_decimals(&self) -> u8 {
             unimplemented!()
         }
 

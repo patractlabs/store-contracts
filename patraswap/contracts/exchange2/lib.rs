@@ -380,6 +380,11 @@ mod exchange {
             self.lp_token_contract.balance_of(user)
         }
 
+        #[ink(message)]
+        pub fn lp_token_decimals(&self) -> u8 {
+            self.lp_token_contract.token_decimals()
+        }
+
         fn dot_balance(&self) -> Balance {
             self.env().balance() - self.init_deposit_dot
         }
