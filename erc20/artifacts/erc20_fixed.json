@@ -1,15 +1,15 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xb5bb5f4640b854a400c878abdda515fc7c5f108c7c7c5430cf18c260704548bd",
+    "hash": "0xf78f775b3c9d7f865129d86e418a725734446f3a289df8e69f0c487f02fbeccf",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.49.0-nightly"
   },
   "contract": {
-    "name": "erc20",
+    "name": "erc20-fixed",
     "version": "0.1.0",
     "authors": [
-      "tyler <tyler@patract.io>"
+      "Patract Labs <tyler@patract.io>"
     ]
   },
   "spec": {
@@ -22,45 +22,43 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 3
+              "type": 1
             }
           },
           {
             "name": "name",
             "type": {
               "displayName": [
-                "String"
+                "Option"
               ],
-              "type": 1
+              "type": 13
             }
           },
           {
             "name": "symbol",
             "type": {
               "displayName": [
-                "String"
+                "Option"
               ],
-              "type": 1
+              "type": 13
             }
           },
           {
             "name": "decimals",
             "type": {
               "displayName": [
-                "u8"
+                "Option"
               ],
-              "type": 2
+              "type": 14
             }
           }
         ],
-        "docs": [
-          "Creates a new ERC-20 contract with the specified initial supply."
-        ],
+        "docs": [],
         "name": [
-          "Erc20",
+          "IErc20",
           "new"
         ],
-        "selector": "0x2ee504f0"
+        "selector": "0xba66e576"
       }
     ],
     "docs": [],
@@ -75,7 +73,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 16
+              "type": 18
             }
           },
           {
@@ -86,7 +84,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 16
+              "type": 18
             }
           },
           {
@@ -97,7 +95,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 3
+              "type": 1
             }
           }
         ],
@@ -116,7 +114,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -127,7 +125,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -138,7 +136,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 3
+              "type": 1
             }
           }
         ],
@@ -153,40 +151,21 @@
       {
         "args": [],
         "docs": [
-          " Returns the total token supply."
-        ],
-        "mutates": false,
-        "name": [
-          "Erc20",
-          "total_supply"
-        ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "Balance"
-          ],
-          "type": 3
-        },
-        "selector": "0x3ef71755"
-      },
-      {
-        "args": [],
-        "docs": [
           " Returns the token name."
         ],
         "mutates": false,
         "name": [
-          "Erc20",
+          "IErc20",
           "token_name"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "String"
+            "Option"
           ],
-          "type": 1
+          "type": 13
         },
-        "selector": "0xba2d1c0b"
+        "selector": "0x6b1bb951"
       },
       {
         "args": [],
@@ -195,17 +174,17 @@
         ],
         "mutates": false,
         "name": [
-          "Erc20",
+          "IErc20",
           "token_symbol"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "String"
+            "Option"
           ],
-          "type": 1
+          "type": 13
         },
-        "selector": "0x58af15a8"
+        "selector": "0xb42c3368"
       },
       {
         "args": [],
@@ -214,17 +193,36 @@
         ],
         "mutates": false,
         "name": [
-          "Erc20",
+          "IErc20",
           "token_decimals"
         ],
         "payable": false,
         "returnType": {
           "displayName": [
-            "u8"
+            "Option"
           ],
-          "type": 2
+          "type": 14
         },
-        "selector": "0x55d2c725"
+        "selector": "0xc64b0eb2"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns the total token supply."
+        ],
+        "mutates": false,
+        "name": [
+          "IErc20",
+          "total_supply"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Balance"
+          ],
+          "type": 1
+        },
+        "selector": "0x143862ae"
       },
       {
         "args": [
@@ -234,7 +232,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           }
         ],
@@ -245,7 +243,7 @@
         ],
         "mutates": false,
         "name": [
-          "Erc20",
+          "IErc20",
           "balance_of"
         ],
         "payable": false,
@@ -253,9 +251,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 3
+          "type": 1
         },
-        "selector": "0x03de5509"
+        "selector": "0xb7d968c9"
       },
       {
         "args": [
@@ -265,7 +263,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -274,7 +272,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 3
+              "type": 1
             }
           }
         ],
@@ -290,7 +288,7 @@
         ],
         "mutates": true,
         "name": [
-          "Erc20",
+          "IErc20",
           "transfer"
         ],
         "payable": false,
@@ -298,9 +296,9 @@
           "displayName": [
             "Result"
           ],
-          "type": 13
+          "type": 15
         },
-        "selector": "0x46607e68"
+        "selector": "0x10d455c2"
       },
       {
         "args": [
@@ -310,7 +308,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -319,7 +317,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           }
         ],
@@ -330,7 +328,7 @@
         ],
         "mutates": false,
         "name": [
-          "Erc20",
+          "IErc20",
           "allowance"
         ],
         "payable": false,
@@ -338,9 +336,9 @@
           "displayName": [
             "Balance"
           ],
-          "type": 3
+          "type": 1
         },
-        "selector": "0x3a272874"
+        "selector": "0xc04aa300"
       },
       {
         "args": [
@@ -350,7 +348,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -359,7 +357,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -368,7 +366,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 3
+              "type": 1
             }
           }
         ],
@@ -390,7 +388,7 @@
         ],
         "mutates": true,
         "name": [
-          "Erc20",
+          "IErc20",
           "transfer_from"
         ],
         "payable": false,
@@ -398,9 +396,9 @@
           "displayName": [
             "Result"
           ],
-          "type": 13
+          "type": 15
         },
-        "selector": "0x5b396ade"
+        "selector": "0xbb399017"
       },
       {
         "args": [
@@ -410,7 +408,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 7
+              "type": 5
             }
           },
           {
@@ -419,7 +417,7 @@
               "displayName": [
                 "Balance"
               ],
-              "type": 3
+              "type": 1
             }
           }
         ],
@@ -433,7 +431,7 @@
         ],
         "mutates": true,
         "name": [
-          "Erc20",
+          "IErc20",
           "approve"
         ],
         "payable": false,
@@ -441,9 +439,9 @@
           "displayName": [
             "Result"
           ],
-          "type": 13
+          "type": 15
         },
-        "selector": "0xc6703339"
+        "selector": "0x4ce0e831"
       }
     ]
   },
@@ -455,33 +453,6 @@
             "cell": {
               "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
               "ty": 1
-            }
-          },
-          "name": "name"
-        },
-        {
-          "layout": {
-            "cell": {
-              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-              "ty": 1
-            }
-          },
-          "name": "symbol"
-        },
-        {
-          "layout": {
-            "cell": {
-              "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-              "ty": 2
-            }
-          },
-          "name": "decimals"
-        },
-        {
-          "layout": {
-            "cell": {
-              "key": "0x0300000000000000000000000000000000000000000000000000000000000000",
-              "ty": 3
             }
           },
           "name": "total_supply"
@@ -497,8 +468,8 @@
                         {
                           "layout": {
                             "cell": {
-                              "key": "0x0400000000000000000000000000000000000000000000000000000000000000",
-                              "ty": 4
+                              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                              "ty": 2
                             }
                           },
                           "name": "header"
@@ -510,8 +481,8 @@
                                 {
                                   "layout": {
                                     "cell": {
-                                      "key": "0x0500000000000000000000000000000000000000000000000000000000000000",
-                                      "ty": 5
+                                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
+                                      "ty": 3
                                     }
                                   },
                                   "name": "len"
@@ -522,12 +493,12 @@
                                       "cellsPerElem": 1,
                                       "layout": {
                                         "cell": {
-                                          "key": "0x0500000001000000000000000000000000000000000000000000000000000000",
-                                          "ty": 6
+                                          "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                                          "ty": 4
                                         }
                                       },
                                       "len": 4294967295,
-                                      "offset": "0x0600000000000000000000000000000000000000000000000000000000000000"
+                                      "offset": "0x0300000000000000000000000000000000000000000000000000000000000000"
                                     }
                                   },
                                   "name": "elems"
@@ -547,11 +518,11 @@
                     "hash": {
                       "layout": {
                         "cell": {
-                          "key": "0x0600000001000000000000000000000000000000000000000000000000000000",
-                          "ty": 10
+                          "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                          "ty": 9
                         }
                       },
-                      "offset": "0x0500000001000000000000000000000000000000000000000000000000000000",
+                      "offset": "0x0200000001000000000000000000000000000000000000000000000000000000",
                       "strategy": {
                         "hasher": "Blake2x256",
                         "postfix": "",
@@ -577,8 +548,8 @@
                         {
                           "layout": {
                             "cell": {
-                              "key": "0x0600000001000000000000000000000000000000000000000000000000000000",
-                              "ty": 4
+                              "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                              "ty": 2
                             }
                           },
                           "name": "header"
@@ -590,8 +561,8 @@
                                 {
                                   "layout": {
                                     "cell": {
-                                      "key": "0x0700000001000000000000000000000000000000000000000000000000000000",
-                                      "ty": 5
+                                      "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
+                                      "ty": 3
                                     }
                                   },
                                   "name": "len"
@@ -602,12 +573,12 @@
                                       "cellsPerElem": 1,
                                       "layout": {
                                         "cell": {
-                                          "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
-                                          "ty": 11
+                                          "key": "0x0400000002000000000000000000000000000000000000000000000000000000",
+                                          "ty": 10
                                         }
                                       },
                                       "len": 4294967295,
-                                      "offset": "0x0800000001000000000000000000000000000000000000000000000000000000"
+                                      "offset": "0x0500000001000000000000000000000000000000000000000000000000000000"
                                     }
                                   },
                                   "name": "elems"
@@ -627,11 +598,11 @@
                     "hash": {
                       "layout": {
                         "cell": {
-                          "key": "0x0800000002000000000000000000000000000000000000000000000000000000",
-                          "ty": 10
+                          "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
+                          "ty": 9
                         }
                       },
-                      "offset": "0x0700000002000000000000000000000000000000000000000000000000000000",
+                      "offset": "0x0400000002000000000000000000000000000000000000000000000000000000",
                       "strategy": {
                         "hasher": "Blake2x256",
                         "postfix": "",
@@ -645,21 +616,89 @@
             }
           },
           "name": "allowances"
+        },
+        {
+          "layout": {
+            "enum": {
+              "dispatchKey": "0x0500000002000000000000000000000000000000000000000000000000000000",
+              "variants": {
+                "0": {
+                  "fields": [
+                    {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
+                          "ty": 12
+                        }
+                      },
+                      "name": null
+                    }
+                  ]
+                },
+                "1": {
+                  "fields": []
+                }
+              }
+            }
+          },
+          "name": "name"
+        },
+        {
+          "layout": {
+            "enum": {
+              "dispatchKey": "0x0600000002000000000000000000000000000000000000000000000000000000",
+              "variants": {
+                "0": {
+                  "fields": [
+                    {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
+                          "ty": 12
+                        }
+                      },
+                      "name": null
+                    }
+                  ]
+                },
+                "1": {
+                  "fields": []
+                }
+              }
+            }
+          },
+          "name": "symbol"
+        },
+        {
+          "layout": {
+            "enum": {
+              "dispatchKey": "0x0700000002000000000000000000000000000000000000000000000000000000",
+              "variants": {
+                "0": {
+                  "fields": [
+                    {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0800000002000000000000000000000000000000000000000000000000000000",
+                          "ty": 7
+                        }
+                      },
+                      "name": null
+                    }
+                  ]
+                },
+                "1": {
+                  "fields": []
+                }
+              }
+            }
+          },
+          "name": "decimals"
         }
       ]
     }
   },
   "types": [
-    {
-      "def": {
-        "primitive": "str"
-      }
-    },
-    {
-      "def": {
-        "primitive": "u8"
-      }
-    },
     {
       "def": {
         "primitive": "u128"
@@ -671,17 +710,17 @@
           "fields": [
             {
               "name": "last_vacant",
-              "type": 5,
+              "type": 3,
               "typeName": "Index"
             },
             {
               "name": "len",
-              "type": 5,
+              "type": 3,
               "typeName": "u32"
             },
             {
               "name": "len_entries",
-              "type": 5,
+              "type": 3,
               "typeName": "u32"
             }
           ]
@@ -706,7 +745,7 @@
             {
               "fields": [
                 {
-                  "type": 9,
+                  "type": 8,
                   "typeName": "VacantEntry"
                 }
               ],
@@ -715,7 +754,7 @@
             {
               "fields": [
                 {
-                  "type": 7,
+                  "type": 5,
                   "typeName": "T"
                 }
               ],
@@ -725,7 +764,7 @@
         }
       },
       "params": [
-        7
+        5
       ],
       "path": [
         "ink_storage",
@@ -739,7 +778,7 @@
         "composite": {
           "fields": [
             {
-              "type": 8,
+              "type": 6,
               "typeName": "[u8; 32]"
             }
           ]
@@ -755,8 +794,13 @@
       "def": {
         "array": {
           "len": 32,
-          "type": 2
+          "type": 7
         }
+      }
+    },
+    {
+      "def": {
+        "primitive": "u8"
       }
     },
     {
@@ -765,12 +809,12 @@
           "fields": [
             {
               "name": "next",
-              "type": 5,
+              "type": 3,
               "typeName": "Index"
             },
             {
               "name": "prev",
-              "type": 5,
+              "type": 3,
               "typeName": "Index"
             }
           ]
@@ -789,19 +833,19 @@
           "fields": [
             {
               "name": "value",
-              "type": 3,
+              "type": 1,
               "typeName": "V"
             },
             {
               "name": "key_index",
-              "type": 5,
+              "type": 3,
               "typeName": "KeyIndex"
             }
           ]
         }
       },
       "params": [
-        3
+        1
       ],
       "path": [
         "ink_storage",
@@ -817,7 +861,7 @@
             {
               "fields": [
                 {
-                  "type": 9,
+                  "type": 8,
                   "typeName": "VacantEntry"
                 }
               ],
@@ -826,7 +870,7 @@
             {
               "fields": [
                 {
-                  "type": 12,
+                  "type": 11,
                   "typeName": "T"
                 }
               ],
@@ -836,7 +880,7 @@
         }
       },
       "params": [
-        12
+        11
       ],
       "path": [
         "ink_storage",
@@ -848,10 +892,67 @@
     {
       "def": {
         "tuple": [
-          7,
-          7
+          5,
+          5
         ]
       }
+    },
+    {
+      "def": {
+        "primitive": "str"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 12,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        12
+      ],
+      "path": [
+        "Option"
+      ]
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 7,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        7
+      ],
+      "path": [
+        "Option"
+      ]
     },
     {
       "def": {
@@ -860,7 +961,7 @@
             {
               "fields": [
                 {
-                  "type": 14,
+                  "type": 16,
                   "typeName": "T"
                 }
               ],
@@ -869,7 +970,7 @@
             {
               "fields": [
                 {
-                  "type": 15,
+                  "type": 17,
                   "typeName": "E"
                 }
               ],
@@ -879,8 +980,8 @@
         }
       },
       "params": [
-        14,
-        15
+        16,
+        17
       ],
       "path": [
         "Result"
@@ -907,7 +1008,7 @@
         }
       },
       "path": [
-        "erc20",
+        "erc20_trait",
         "erc20",
         "Error"
       ]
@@ -922,7 +1023,7 @@
             {
               "fields": [
                 {
-                  "type": 7,
+                  "type": 5,
                   "typeName": "T"
                 }
               ],
@@ -932,7 +1033,7 @@
         }
       },
       "params": [
-        7
+        5
       ],
       "path": [
         "Option"

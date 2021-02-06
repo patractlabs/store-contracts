@@ -1,18 +1,18 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub use self::erc20::Erc20;
 use ink_lang as ink;
 
 #[ink::contract]
 mod erc20 {
+    use erc20_trait::{Error as IError, IErc20, Result as IResult};
     use ink_prelude::string::String;
+    use ownership::Ownable;
 
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_lang as ink;
-
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_storage::{collections::HashMap as StorageHashMap, lazy::Lazy};
-
-    use ownership::Ownable;
 
     /// The ERC-20 error types.
     #[derive(Debug, PartialEq, Eq, scale::Encode)]
@@ -32,51 +32,6 @@ mod erc20 {
 
     /// The ERC-20 result type.
     pub type Result<T> = core::result::Result<T, Error>;
-
-    /// Trait implemented by all ERC-20 respecting smart contracts.
-    #[ink::trait_definition]
-    pub trait Erc20 {
-        /// Creates a new ERC-20 contract with the specified initial supply.
-        #[ink(constructor)]
-        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u8) -> Self;
-
-        /// Returns the total token supply.
-        #[ink(message)]
-        fn total_supply(&self) -> Balance;
-
-        /// Returns the token name.
-        #[ink(message)]
-        fn token_name(&self) -> String;
-
-        /// Returns the token symbol.
-        #[ink(message)]
-        fn token_symbol(&self) -> String;
-
-        /// Returns the token decimals.
-        #[ink(message)]
-        fn token_decimals(&self) -> u8;
-
-        /// Returns the account balance for the specified `owner`.
-        #[ink(message)]
-        fn balance_of(&self, owner: AccountId) -> Balance;
-
-        /// Transfers `value` amount of tokens from the caller's account to account `to`.
-        #[ink(message)]
-        fn transfer(&mut self, to: AccountId, value: Balance) -> Result<()>;
-
-        /// Returns the amount which `spender` is still allowed to withdraw from `owner`.
-        #[ink(message)]
-        fn allowance(&self, owner: AccountId, spender: AccountId) -> Balance;
-
-        /// Transfers `value` tokens on the behalf of `from` to the account `to`.
-        #[ink(message)]
-        fn transfer_from(&mut self, from: AccountId, to: AccountId, value: Balance) -> Result<()>;
-
-        /// Allows `spender` to withdraw from the caller's account multiple times, up to
-        /// the `value` amount.
-        #[ink(message)]
-        fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()>;
-    }
 
     /// Base contract which allows children to implement an emergency stop mechanism.
     #[ink::trait_definition]
@@ -113,15 +68,8 @@ mod erc20 {
         fn destroy_blackfunds(&mut self, blacklisted_user: AccountId) -> Result<()>;
     }
 
-    /// Basic version of StandardToken, with no allowances.
     #[ink(storage)]
-    pub struct StandardToken {
-        /// Token Name
-        name: String,
-        /// Token symbol
-        symbol: String,
-        /// Token decimals
-        decimals: u8,
+    pub struct Erc20 {
         /// Total token supply.
         total_supply: Lazy<Balance>,
         /// Mapping from owner to number of owned token.
@@ -129,6 +77,12 @@ mod erc20 {
         /// Mapping of the token amount which an account is allowed to withdraw
         /// from another account.
         allowances: StorageHashMap<(AccountId, AccountId), Balance>,
+        /// Name of the token
+        name: Option<String>,
+        /// Symbol of the token
+        symbol: Option<String>,
+        /// Decimals of the token
+        decimals: Option<u8>,
         /// Implement an emergency stop mechanism.
         pause: bool,
         /// The contract owner, provides basic authorization control
@@ -188,7 +142,7 @@ mod erc20 {
     }
 
     #[ink(event)]
-    pub struct Issue {
+    pub struct Mint {
         #[ink(topic)]
         user: AccountId,
         #[ink(topic)]
@@ -196,30 +150,34 @@ mod erc20 {
     }
 
     #[ink(event)]
-    pub struct Redeem {
+    pub struct Burn {
         #[ink(topic)]
         user: AccountId,
         #[ink(topic)]
         amount: Balance,
     }
 
-    impl Erc20 for StandardToken {
-        /// Creates a new ERC-20 contract with the specified initial supply.
+    impl IErc20 for Erc20 {
         #[ink(constructor)]
-        fn new(initial_supply: Balance, name: String, symbol: String, decimals: u8) -> Self {
+        fn new(
+            initial_supply: Balance,
+            name: Option<String>,
+            symbol: Option<String>,
+            decimals: Option<u8>,
+        ) -> Self {
             let caller = Self::env().caller();
             let mut balances = StorageHashMap::new();
             balances.insert(caller, initial_supply);
             let instance = Self {
-                name,
-                symbol,
-                decimals,
                 total_supply: Lazy::new(initial_supply),
                 balances,
                 allowances: StorageHashMap::new(),
+                name,
+                symbol,
+                decimals,
                 pause: false,
                 owner: caller,
-                blacklisted: StorageHashMap::new(),
+                blacklisted: Default::default(),
             };
             Self::env().emit_event(Transfer {
                 from: None,
@@ -229,28 +187,28 @@ mod erc20 {
             instance
         }
 
-        /// Returns the total token supply.
-        #[ink(message)]
-        fn total_supply(&self) -> Balance {
-            *self.total_supply
-        }
-
         /// Returns the token name.
         #[ink(message)]
-        fn token_name(&self) -> String {
+        fn token_name(&self) -> Option<String> {
             self.name.clone()
         }
 
         /// Returns the token symbol.
         #[ink(message)]
-        fn token_symbol(&self) -> String {
+        fn token_symbol(&self) -> Option<String> {
             self.symbol.clone()
         }
 
         /// Returns the token decimals.
         #[ink(message)]
-        fn token_decimals(&self) -> u8 {
+        fn token_decimals(&self) -> Option<u8> {
             self.decimals
+        }
+
+        /// Returns the total token supply.
+        #[ink(message)]
+        fn total_supply(&self) -> Balance {
+            *self.total_supply
         }
 
         /// Returns the account balance for the specified `owner`.
@@ -270,12 +228,8 @@ mod erc20 {
         /// Returns `InsufficientBalance` error if there are not enough tokens on
         /// the caller's account balance.
         #[ink(message)]
-        fn transfer(&mut self, to: AccountId, value: Balance) -> Result<()> {
+        fn transfer(&mut self, to: AccountId, value: Balance) -> IResult<()> {
             let from = self.env().caller();
-            if self.get_blacklist_status(from) {
-                return Err(Error::BlacklistedUser);
-            }
-
             self.transfer_from_to(from, to, value)
         }
 
@@ -302,15 +256,11 @@ mod erc20 {
         /// Returns `InsufficientBalance` error if there are not enough tokens on
         /// the the account balance of `from`.
         #[ink(message)]
-        fn transfer_from(&mut self, from: AccountId, to: AccountId, value: Balance) -> Result<()> {
-            if self.get_blacklist_status(from) {
-                return Err(Error::BlacklistedUser);
-            }
-
+        fn transfer_from(&mut self, from: AccountId, to: AccountId, value: Balance) -> IResult<()> {
             let caller = self.env().caller();
             let allowance = self.allowance(from, caller);
             if allowance < value {
-                return Err(Error::InsufficientAllowance);
+                return Err(IError::InsufficientAllowance);
             }
             self.transfer_from_to(from, to, value)?;
             self.allowances.insert((from, caller), allowance - value);
@@ -324,7 +274,7 @@ mod erc20 {
         ///
         /// An `Approval` event is emitted.
         #[ink(message)]
-        fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()> {
+        fn approve(&mut self, spender: AccountId, value: Balance) -> IResult<()> {
             let owner = self.env().caller();
             self.allowances.insert((owner, spender), value);
             self.env().emit_event(Approval {
@@ -336,7 +286,7 @@ mod erc20 {
         }
     }
 
-    impl Ownable for StandardToken {
+    impl Ownable for Erc20 {
         #[ink(constructor)]
         fn new() -> Self {
             unimplemented!()
@@ -344,31 +294,21 @@ mod erc20 {
 
         /// Contract owner.
         #[ink(message)]
-        fn owner(&self) -> AccountId {
-            self.owner
-        }
-
-        #[ink(message)]
-        fn only_owner(&self) {
-            assert_eq!(self.env().caller(), self.owner);
+        fn owner(&self) -> Option<AccountId> {
+            Some(self.owner)
         }
 
         /// transfer contract ownership to new owner.
         #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: AccountId) {
+        fn transfer_ownership(&mut self, new_owner: Option<AccountId>) {
             self.only_owner();
-            assert_ne!(new_owner, Default::default());
-            self.owner = new_owner;
-        }
-
-        #[ink(message)]
-        fn renounce_ownership(&mut self) {
-            self.only_owner();
-            self.owner = Default::default();
+            if let Some(owner) = new_owner {
+                self.owner = owner;
+            }
         }
     }
 
-    impl Pausable for StandardToken {
+    impl Pausable for Erc20 {
         /// Pause contract transaction.
         #[ink(message)]
         fn pause(&mut self) -> Result<()> {
@@ -399,7 +339,7 @@ mod erc20 {
         }
     }
 
-    impl BlackList for StandardToken {
+    impl BlackList for Erc20 {
         /// Whether the user is blacklisted.
         #[ink(message)]
         fn get_blacklist_status(&self, maker: AccountId) -> bool {
@@ -440,11 +380,11 @@ mod erc20 {
         }
     }
 
-    impl StandardToken {
-        /// Issue a new amount of tokens
+    impl Erc20 {
+        /// Mint a new amount of tokens
         /// these tokens are deposited into the owner address
         #[ink(message)]
-        pub fn issue(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+        pub fn mint(&mut self, user: AccountId, amount: Balance) -> Result<()> {
             self.only_owner();
             assert_ne!(user, Default::default());
             if amount <= 0 {
@@ -454,16 +394,16 @@ mod erc20 {
             let user_balance = self.balance_of(user);
             self.balances.insert(user, user_balance + amount);
             *self.total_supply += amount;
-            self.env().emit_event(Issue { user, amount });
+            self.env().emit_event(Mint { user, amount });
             Ok(())
         }
 
-        /// Redeem tokens.
+        /// Burn tokens.
         /// These tokens are withdrawn from the owner address
         /// if the balance must be enough to cover the redeem
         /// or the call will fail.
         #[ink(message)]
-        pub fn redeem(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+        pub fn burn(&mut self, user: AccountId, amount: Balance) -> Result<()> {
             self.only_owner();
             if *self.total_supply < amount {
                 return Err(Error::InsufficientSupply);
@@ -475,7 +415,7 @@ mod erc20 {
 
             self.balances.insert(user, user_balance - amount);
             *self.total_supply -= amount;
-            self.env().emit_event(Redeem { user, amount });
+            self.env().emit_event(Burn { user, amount });
             Ok(())
         }
 
@@ -492,10 +432,10 @@ mod erc20 {
             from: AccountId,
             to: AccountId,
             value: Balance,
-        ) -> Result<()> {
+        ) -> IResult<()> {
             let from_balance = self.balance_of(from);
             if from_balance < value {
-                return Err(Error::InsufficientBalance);
+                return Err(IError::InsufficientBalance);
             }
             self.balances.insert(from, from_balance - value);
             let to_balance = self.balance_of(to);
@@ -506,6 +446,10 @@ mod erc20 {
                 value,
             });
             Ok(())
+        }
+
+        fn only_owner(&self) {
+            assert_eq!(self.env().caller(), self.owner);
         }
     }
 }

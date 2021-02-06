@@ -36,7 +36,6 @@ mod erc20 {
         pub value: Balance,
     }
 
-    /// Basic version of StandardToken, with no allowances.
     #[ink(storage)]
     pub struct Erc20 {
         /// Total token supply.

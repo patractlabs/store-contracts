@@ -1,5 +1,5 @@
 [package]
-name = "erc20"
+name = "erc20-issue"
 version = "0.1.0"
 authors = ["[your_name] <[your_email]>"]
 edition = "2018"
@@ -13,14 +13,20 @@ ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", d
 ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
-scale-info = { version = "0.5", default-features = false, features = ["derive"], optional = true }
+scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
-ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", branch = "ownership",  default-features = false }
+erc20-trait = { git = "https://github.com/patractlabs/metis", default-features = false, features = ["ink-as-dependency"] }
+ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", default-features = false }
 
 [lib]
-name = "erc20"
+name = "erc20_issue"
 path = "lib.rs"
-crate-type = ["cdylib"]
+crate-type = [
+    # Used for normal contract Wasm blobs.
+    "cdylib",
+    # Used for ABI generation.
+    "rlib",
+]
 
 [features]
 default = ["std"]
@@ -35,6 +41,8 @@ std = [
     "scale/std",
     "scale-info",
     "scale-info/std",
+
+    "erc20-trait/std",
     "ownership/std",
 ]
 ink-as-dependency = []
