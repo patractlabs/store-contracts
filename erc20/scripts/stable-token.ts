@@ -10,7 +10,7 @@ async function run() {
   await api.isReady;
 
   const signer = createSigner(keyring.createFromUri(uri));
-  const contractFactory = await getContractFactory('erc20-issue', signer);
+  const contractFactory = await getContractFactory('erc20_issue', signer);
 
   const balance = await api.query.system.account(signer.address);
 
@@ -18,10 +18,10 @@ async function run() {
   console.log('');
 
   // Tether USD, USDT, 2, 10亿
-  const contract = await contractFactory.deployed('erc20,new', '100000000000', 'Tether USD', 'USDT', '2', {
+  const contract = await contractFactory.deployed('IErc20,new', '100000000000', 'Tether USD', 'USDT', '2', {
     gasLimit: '200000000000',
-    value: '10000000000000',
-    salt: 'Tether USD ERC20'
+    value: '100000000000',
+    salt: 'Tether USD Token'
   });
 
   console.log(
@@ -31,10 +31,10 @@ async function run() {
   console.log('');
 
   // Jupiter Bitcoin, jBTC, 8, 1百万
-  const contract = await contractFactory.deployed('erc20,new', '100000000000000', 'Jupiter Bitcoin', 'jBTC', '8', {
+  const contract = await contractFactory.deployed('IErc20,new', '100000000000000', 'Jupiter Bitcoin', 'jBTC', '8', {
     gasLimit: '200000000000',
-    value: '10000000000000',
-    salt: 'Jupiter Bitcoin ERC20'
+    value: '100000000000',
+    salt: 'Jupiter Bitcoin Token'
   });
 
   console.log(
@@ -44,10 +44,10 @@ async function run() {
   console.log('');
 
   // Jupiter Ethereum, jETH, 18, 1千万
-  const contract = await contractFactory.deployed('erc20,new', '10000000000000000000000000', 'Jupiter Ethereum', 'jETH', '18', {
+  const contract = await contractFactory.deployed('IErc20,new', '10000000000000000000000000', 'Jupiter Ethereum', 'jETH', '18', {
     gasLimit: '200000000000',
-    value: '10000000000000',
-    salt: 'Jupiter Ethereum ERC20'
+    value: '100000000000',
+    salt: 'Jupiter Ethereum Token'
   });
 
   console.log(
@@ -57,10 +57,10 @@ async function run() {
   console.log('');
 
   // Maker DAI, DAI
-  const contract = await contractFactory.deployed('erc20,new', '0', 'Maker DAI', 'DAI', '18', {
+  const contract = await contractFactory.deployed('IErc20,new', '1000000000000000000000000', 'Maker DAI', 'DAI', '18', {
     gasLimit: '200000000000',
-    value: '10000000000000',
-    salt: 'Maker DAI ERC20'
+    value: '100000000000',
+    salt: 'Maker DAI Token'
   });
 
   console.log(
