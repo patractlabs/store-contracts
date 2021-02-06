@@ -2,19 +2,27 @@
 
 ## Develop Testnet Dapps Address
 wss://ws.staging.jupiter.patract.cn
-
+### ERC20 Code Hash
+1. fixed
+```
+0xf78f775b3c9d7f865129d86e418a725734446f3a289df8e69f0c487f02fbeccf
+```
+2. issue
+```
+0x2735794dd9b9394e7ea716272ece04074fac54a78106e87bc62f9436f67ce4a5
+```
 ### PatraPK
 ```
-5DibJchJQnG4zKxE2YfgfXJyAkwXT36cB13bYjj5XweS5Dh1
+5DkPJueCHTqyVjRUsZnD1HzvtrscESZc3utXR7PCoz4MSNQZ
 ```
 ### PatraPixel
 ```
-5FAuq5anZnsMm8kke6NoPb1ofeTVbmiGsmhbS6r19xrQ26st
+5CSuyAbVkhJ84WzDbJohNMs4eQizoYoqds6yQiwv3iDim2hD
 ```
 ### PatraSwap
 Factory
 ```
-5CEKEazgCndpKgdUWjUZpCvGGKSXM3HPEGfLyNBbwAvHp5yA
+5C5ucj3aCPRekJVwFp1CtiYjiHHnmK4Y1tuxGkDX8D7ztGJ1
 ```
 
 ## DeFi
