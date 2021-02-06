@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xc924ed28e6a9e33a8f6d2c22c79b661c4eb51527341d8ac2cf755bbd768da610",
+    "hash": "0x78414771b5f1a057473530b8b39b37033b890c2f73255114f07a06d5fee215ca",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.51.0-nightly"
   },
@@ -20,7 +20,7 @@
         "name": [
           "new"
         ],
-        "selector": "0xd183512b"
+        "selector": "0x9bae9d5e"
       }
     ],
     "docs": [],
@@ -60,7 +60,7 @@
           ],
           "type": 2
         },
-        "selector": "0xe8b3b3a6"
+        "selector": "0x6394e97a"
       },
       {
         "args": [],
@@ -76,7 +76,7 @@
           ],
           "type": 4
         },
-        "selector": "0x2949e16b"
+        "selector": "0xd92c9b21"
       },
       {
         "args": [
@@ -99,7 +99,7 @@
         ],
         "payable": true,
         "returnType": null,
-        "selector": "0xdb775a5c"
+        "selector": "0x5f234f5d"
       }
     ]
   },
@@ -184,7 +184,8 @@
         "composite": {
           "fields": [
             {
-              "type": 9
+              "type": 9,
+              "typeName": "[u8; 32]"
             }
           ]
         }
