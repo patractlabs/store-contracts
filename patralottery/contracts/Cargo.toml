@@ -12,10 +12,10 @@ ink_storage = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink"
 ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
-ink-babe-random = { version = "0.1.0", git = "https://github.com/tylerztl/ink-babe-random", default-features = false}
+ink-babe-random = { version = "0.1.0", git = "https://github.com/patractlabs/ink-babe-random", default-features = false}
 
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
-scale-info = { version = "0.5", default-features = false, features = ["derive"], optional = true }
+scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
 [lib]
 name = "patralottery"

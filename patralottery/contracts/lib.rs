@@ -1,11 +1,11 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_babe_random::{CustomEnvironment, Randomness};
+use ink_babe_random::{BabeRandomness, CustomEnvironment};
 use ink_lang as ink;
 
 #[ink::contract(env = crate::CustomEnvironment)]
 mod patralottery {
-    use crate::Randomness;
+    use crate::BabeRandomness;
     use core::fmt::Write;
     use ink_prelude::{string::String, vec, vec::Vec};
     use ink_storage::{
@@ -172,7 +172,7 @@ mod patralottery {
 
         #[ink(message, payable)]
         pub fn buy_tickets(&mut self, epoch_id: EpochID, num: Vec<u32>, amount: u32) {
-            let ret: Randomness = self.env().extension().random("".as_bytes()).unwrap();
+            let ret: BabeRandomness = self.env().extension().next_epoch();
             assert!(epoch_id >= ret.epoch + 1);
             let caller = self.env().caller();
             let spend = self.env().transferred_balance();
@@ -232,16 +232,14 @@ mod patralottery {
 
         #[ink(message)]
         pub fn draw_lottery(&mut self, epoch_id: EpochID) {
-            let ret: Randomness = self.env().extension().random("".as_bytes()).unwrap();
-            let epoch = ret.epoch;
-            assert_eq!(epoch, epoch_id);
-            assert!(self.epochs.get(&epoch).is_some());
-            let lottery = self.epochs.get_mut(&epoch).unwrap();
+            let random_hash = self.env().extension().randomness_of(epoch_id);
+            assert!(self.epochs.get(&epoch_id).is_some());
+            let lottery = self.epochs.get_mut(&epoch_id).unwrap();
             assert!(!lottery.end);
 
-            let (_hex_random, win_num) = Self::get_winning_number(ret.randomness);
+            let (_hex_random, win_num) = Self::get_winning_number(random_hash);
             lottery.end = true;
-            lottery.random = ret.randomness;
+            lottery.random = random_hash;
             lottery.win_num = win_num.clone();
 
             // claim reward
@@ -255,7 +253,7 @@ mod patralottery {
             let mut first_palyers: Vec<AccountId> = Vec::new();
             let mut biggest_winner: BiggestWinner = Default::default();
             for buyer in lottery.buyers.iter() {
-                if let Some(player) = self.players.get_mut(&(epoch, *buyer)) {
+                if let Some(player) = self.players.get_mut(&(epoch_id, *buyer)) {
                     for tic in player {
                         let rank = Self::rank(tic.num.clone(), win_num.clone());
                         match rank {
@@ -333,8 +331,8 @@ mod patralottery {
             self.winners.insert(epoch_id, biggest_winner);
 
             self.env().emit_event(DrawLottery {
-                epoch,
-                randomness: ret.randomness,
+                epoch: epoch_id,
+                randomness: random_hash,
                 win_num,
             })
         }
@@ -379,8 +377,7 @@ mod patralottery {
 
         #[ink(message)]
         pub fn latest_epoch(&self) -> EpochInfo {
-            let ret: Randomness = self.env().extension().random("".as_bytes()).unwrap();
-            // TODO
+            let ret: BabeRandomness = self.env().extension().next_epoch();
             EpochInfo {
                 epoch_id: ret.epoch + 1,
                 start_slot: ret.start_slot,
@@ -400,9 +397,9 @@ mod patralottery {
         }
 
         #[ink(message)]
-        pub fn winning_number(&self, subject: Vec<u8>) -> (String, Vec<u32>) {
-            let ret: Randomness = self.env().extension().random(subject.as_slice()).unwrap();
-            Self::get_winning_number(ret.randomness)
+        pub fn randomness_of(&self, epoch_id: EpochID) -> (String, Vec<u32>) {
+            let ret = self.env().extension().randomness_of(epoch_id);
+            Self::get_winning_number(ret)
         }
     }
 
