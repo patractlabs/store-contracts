@@ -16,6 +16,8 @@ ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink"
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
 scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
+funty = "=1.1"
+
 [lib]
 name = "patrapixel"
 path = "lib.rs"

@@ -26,7 +26,7 @@ mod patrapixel {
         pub fn new() -> Self {
             Self {
                 name: "PatraPixel".parse().unwrap(),
-                metadata: vec![0; 160 * 90],
+                metadata: vec![0; 320 * 180],
                 pool: 0,
             }
         }
