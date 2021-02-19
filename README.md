@@ -19,6 +19,10 @@ wss://ws.staging.jupiter.patract.cn
 ```
 5CSuyAbVkhJ84WzDbJohNMs4eQizoYoqds6yQiwv3iDim2hD
 ```
+### PatraLottery
+```
+5DYvhVPkjTJdbQNz66kza3e2Cn7XvxBpR4F1s1si9Vd96wFh
+```
 ### PatraSwap
 Factory
 ```
