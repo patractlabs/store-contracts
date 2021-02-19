@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xc19132e4a53faf0b67216f2540c5e02a15bc78eb15371d4d6a433bf51c654b61",
+    "hash": "0x8a2fb67cafc21073e7b97c413ea8cc35a2c2b0a364d59a2c9708f4c96192d265",
     "language": "ink! 3.0.0-rc2",
-    "compiler": "rustc 1.49.0-nightly"
+    "compiler": "rustc 1.52.0-nightly"
   },
   "contract": {
     "name": "exchange2",
@@ -567,6 +567,34 @@
           "type": 3
         },
         "selector": "0xdec1d572"
+      },
+      {
+        "args": [
+          {
+            "name": "from_tokens",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 4
+            }
+          }
+        ],
+        "docs": [
+          " estimated need to token amount by from tokens"
+        ],
+        "mutates": false,
+        "name": [
+          "estimated_to_token"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Balance"
+          ],
+          "type": 4
+        },
+        "selector": "0x7bbf9f94"
       }
     ]
   },

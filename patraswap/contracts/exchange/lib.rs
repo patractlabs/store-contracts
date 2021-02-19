@@ -277,7 +277,7 @@ mod exchange {
         // @return The amount of PAT minted.
         // 等比例添加
         #[ink(message)]
-        pub fn add_liquidity(&mut self, from_tokens: Balance, to_tokens: Option<Balance>) -> Balance {
+        pub fn add_liquidity(&mut self, from_tokens: Balance, to_tokens: Balance) -> Balance {
             let caller = self.env().caller();
             let exchange_account = self.env().account_id();
             // assert!(from_tokens > 0 && to_tokens > 0);
@@ -310,8 +310,6 @@ mod exchange {
                 });
                 liquidity_minted
             } else {
-                assert!(to_tokens.is_some());
-                let to_tokens = to_tokens.unwrap();
                 assert!(self
                     .from_token_contract
                     .transfer_from(caller, exchange_account, from_tokens)

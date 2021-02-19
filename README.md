@@ -22,8 +22,18 @@ wss://ws.staging.jupiter.patract.cn
 ### PatraSwap
 Factory
 ```
-5C5ucj3aCPRekJVwFp1CtiYjiHHnmK4Y1tuxGkDX8D7ztGJ1
+5C8pqeB3Cj1ePZm49D1wFwHAJtZARviCGhXkpGtSJSmdgHm7
 ```
+
+### 固定地址的预发行资产列表：
+1. Tether USD, USDT, 2, 10亿, 可增发,
+   地址：`5EWH8uG8DYgcurXhJ2GANxeCyRDHgVAK5uupqsQSekPSRM9g`
+1. Jupiter Bitcoin, jBTC, 8, 1百万，可增发,
+   地址：`5GtCRvPhaSo9iUJHcE7TyDsHveh3duEzeike9E8PLoxfUhzL`
+1. Jupiter Ethereum, jETH, 18, 1千万，可增发,
+   地址：`5DLB2GYTjdQHJigkDx1SWGC4a12VwGAWtuJrnh82Y1BdrKBr`
+1. Maker DAI, DAI, 18, x, 可增发,
+   地址：`5GnhhemyFoDQjo53rFZbm6D48rv4EdfjBS3fqGCpQvYWD3jP`
 
 ## DeFi
 
