@@ -1,0 +1,1052 @@
+{
+  "metadataVersion": "0.1.0",
+  "source": {
+    "hash": "0xd8aee2189e2085051a5caa5878dcda776ee0cce58f63d576ab2087be355db490",
+    "language": "ink! 3.0.0-rc2",
+    "compiler": "rustc 1.52.0-nightly"
+  },
+  "contract": {
+    "name": "patramaker",
+    "version": "0.1.0",
+    "authors": [
+      "Patract Labs <tyler@patract.io>"
+    ]
+  },
+  "spec": {
+    "constructors": [
+      {
+        "args": [],
+        "docs": [],
+        "name": [
+          "Ownable",
+          "new"
+        ],
+        "selector": "0x58c987a1"
+      },
+      {
+        "args": [
+          {
+            "name": "dai_contract",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [],
+        "name": [
+          "new"
+        ],
+        "selector": "0x9bae9d5e"
+      }
+    ],
+    "docs": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "collateral",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "dai",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [],
+        "name": "IssueDAI"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "add_collateral",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "collateral_ratio",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [],
+        "name": "AddCollateral"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "minus_collateral",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "collateral_ratio",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [],
+        "name": "MinusCollateral"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "collateral",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "dai",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [],
+        "name": "Withdraw"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "collateral",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "name": "keeper_reward",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [],
+        "name": "Liquidate"
+      }
+    ],
+    "messages": [
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "Ownable",
+          "owner"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Option"
+          ],
+          "type": 13
+        },
+        "selector": "0x4fa43c8c"
+      },
+      {
+        "args": [
+          {
+            "name": "new_owner",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 13
+            }
+          }
+        ],
+        "docs": [
+          " transfer contract ownership to new owner."
+        ],
+        "mutates": true,
+        "name": [
+          "Ownable",
+          "transfer_ownership"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0x11f43efd"
+      },
+      {
+        "args": [
+          {
+            "name": "mcr",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Adjust Min Collateral Ratio only admin"
+        ],
+        "mutates": true,
+        "name": [
+          "adjust_mcr"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xe3cc04bd"
+      },
+      {
+        "args": [
+          {
+            "name": "mlr",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": true,
+        "name": [
+          "adjust_mlr"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0x4bad7a34"
+      },
+      {
+        "args": [
+          {
+            "name": "lrr",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Adjust Liquidater Reward Ratio only admin"
+        ],
+        "mutates": true,
+        "name": [
+          "adjust_lrr"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0x1d152194"
+      },
+      {
+        "args": [
+          {
+            "name": "price",
+            "type": {
+              "displayName": [
+                "USD"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Adjust dot price only admin"
+        ],
+        "mutates": true,
+        "name": [
+          "adjust_dot_price"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xdf6f4748"
+      },
+      {
+        "args": [],
+        "docs": [
+          " System params"
+        ],
+        "mutates": false,
+        "name": [
+          "system_params"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [],
+          "type": 14
+        },
+        "selector": "0x85b3e1f7"
+      },
+      {
+        "args": [
+          {
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Query cdp by id"
+        ],
+        "mutates": false,
+        "name": [
+          "query_cdp"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Option"
+          ],
+          "type": 15
+        },
+        "selector": "0xffb46c88"
+      },
+      {
+        "args": [
+          {
+            "name": "cr",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Stake collateral and issue dai"
+        ],
+        "mutates": true,
+        "name": [
+          "issue_dai"
+        ],
+        "payable": true,
+        "returnType": {
+          "displayName": [],
+          "type": 16
+        },
+        "selector": "0xffede79b"
+      },
+      {
+        "args": [
+          {
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [
+          " Only issuer can add collateral and update collateral ratio"
+        ],
+        "mutates": true,
+        "name": [
+          "add_collateral"
+        ],
+        "payable": true,
+        "returnType": null,
+        "selector": "0xe3d1fc1b"
+      },
+      {
+        "args": [
+          {
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "name": "collateral",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [
+          " Only issuer can minus collateral and update collateral ratio"
+        ],
+        "mutates": true,
+        "name": [
+          "minus_collateral"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xe794c7c6"
+      },
+      {
+        "args": [
+          {
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "name": "dai",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [
+          " Only issuer can withdraw"
+        ],
+        "mutates": true,
+        "name": [
+          "withdraw_dot"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Balance"
+          ],
+          "type": 10
+        },
+        "selector": "0xf5a4f097"
+      },
+      {
+        "args": [
+          {
+            "name": "cdp_id",
+            "type": {
+              "displayName": [
+                "CdpId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "name": "dai",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 10
+            }
+          }
+        ],
+        "docs": [
+          " Anyone can invoke collateral liquidation if current collateral ratio lower than minimum"
+        ],
+        "mutates": true,
+        "name": [
+          "liquidate_collateral"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xaea53649"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns the total issuers、total collateral、total issue dai."
+        ],
+        "mutates": false,
+        "name": [
+          "total_supply"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [],
+          "type": 17
+        },
+        "selector": "0xdb6375a8"
+      },
+      {
+        "args": [],
+        "docs": [
+          " Returns the total cdp amount."
+        ],
+        "mutates": false,
+        "name": [
+          "cdp_count"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "u32"
+          ],
+          "type": 5
+        },
+        "selector": "0x6e2a7d4c"
+      }
+    ]
+  },
+  "storage": {
+    "struct": {
+      "fields": [
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "cell": {
+                      "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                      "ty": 1
+                    }
+                  },
+                  "name": "account_id"
+                }
+              ]
+            }
+          },
+          "name": "dai_token"
+        },
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                              "ty": 4
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
+                                      "ty": 5
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                                          "ty": 6
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0300000000000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                          "ty": 8
+                        }
+                      },
+                      "offset": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
+            }
+          },
+          "name": "cdps"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "cdp_count"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "min_collateral_ratio"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0500000001000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "min_liquidation_ratio"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0600000001000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "liquidater_reward_ratio"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0700000001000000000000000000000000000000000000000000000000000000",
+              "ty": 5
+            }
+          },
+          "name": "dot_price"
+        },
+        {
+          "layout": {
+            "cell": {
+              "key": "0x0800000001000000000000000000000000000000000000000000000000000000",
+              "ty": 1
+            }
+          },
+          "name": "owner"
+        }
+      ]
+    }
+  },
+  "types": [
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "type": 2,
+              "typeName": "[u8; 32]"
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_env",
+        "types",
+        "AccountId"
+      ]
+    },
+    {
+      "def": {
+        "array": {
+          "len": 32,
+          "type": 3
+        }
+      }
+    },
+    {
+      "def": {
+        "primitive": "u8"
+      }
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "last_vacant",
+              "type": 5,
+              "typeName": "Index"
+            },
+            {
+              "name": "len",
+              "type": 5,
+              "typeName": "u32"
+            },
+            {
+              "name": "len_entries",
+              "type": 5,
+              "typeName": "u32"
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Header"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u32"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 7,
+                  "typeName": "VacantEntry"
+                }
+              ],
+              "name": "Vacant"
+            },
+            {
+              "fields": [
+                {
+                  "type": 5,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Occupied"
+            }
+          ]
+        }
+      },
+      "params": [
+        5
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Entry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "next",
+              "type": 5,
+              "typeName": "Index"
+            },
+            {
+              "name": "prev",
+              "type": 5,
+              "typeName": "Index"
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "VacantEntry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 9,
+              "typeName": "V"
+            },
+            {
+              "name": "key_index",
+              "type": 5,
+              "typeName": "KeyIndex"
+            }
+          ]
+        }
+      },
+      "params": [
+        9
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "issuer",
+              "type": 1,
+              "typeName": "AccountId"
+            },
+            {
+              "name": "collateral_dot",
+              "type": 10,
+              "typeName": "Balance"
+            },
+            {
+              "name": "issue_dai",
+              "type": 10,
+              "typeName": "Balance"
+            },
+            {
+              "name": "collateral_ratio",
+              "type": 5,
+              "typeName": "u32"
+            },
+            {
+              "name": "valid",
+              "type": 11,
+              "typeName": "bool"
+            },
+            {
+              "name": "create_date",
+              "type": 12,
+              "typeName": "Timestamp"
+            }
+          ]
+        }
+      },
+      "path": [
+        "patramaker",
+        "patramaker",
+        "CDP"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u128"
+      }
+    },
+    {
+      "def": {
+        "primitive": "bool"
+      }
+    },
+    {
+      "def": {
+        "primitive": "u64"
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 1,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        1
+      ],
+      "path": [
+        "Option"
+      ]
+    },
+    {
+      "def": {
+        "tuple": [
+          5,
+          5,
+          5,
+          5
+        ]
+      }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 9,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        9
+      ],
+      "path": [
+        "Option"
+      ]
+    },
+    {
+      "def": {
+        "tuple": [
+          5,
+          10
+        ]
+      }
+    },
+    {
+      "def": {
+        "tuple": [
+          5,
+          10,
+          10
+        ]
+      }
+    }
+  ]
+}
