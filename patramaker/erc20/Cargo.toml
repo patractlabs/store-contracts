@@ -1,5 +1,5 @@
 [package]
-name = "dai"
+name = "erc20"
 version = "0.1.0"
 authors = ["Patract Labs <tyler@patract.io>"]
 edition = "2018"
@@ -13,10 +13,12 @@ ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", d
 ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
-scale-info = { version = "0.5", default-features = false, features = ["derive"], optional = true }
+scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
+
+funty = "=1.1"
 
 [lib]
-name = "dai"
+name = "erc20"
 path = "lib.rs"
 crate-type = [
     # Used for normal contract Wasm blobs.

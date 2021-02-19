@@ -277,10 +277,11 @@ mod exchange {
         // @return The amount of PAT minted.
         // 等比例添加
         #[ink(message)]
-        pub fn add_liquidity(&mut self, from_tokens: Balance, to_tokens: Balance) -> Balance {
+        pub fn add_liquidity(&mut self, from_tokens: Balance, to_tokens: Option<Balance>) -> Balance {
             let caller = self.env().caller();
             let exchange_account = self.env().account_id();
-            assert!(from_tokens > 0 && to_tokens > 0);
+            // assert!(from_tokens > 0 && to_tokens > 0);
+            assert!(from_tokens > 0);
             // total number of LPT in existence.
             let total_liquidity: Balance = self.lp_token_contract.total_supply();
             if total_liquidity > 0 {
@@ -289,7 +290,7 @@ mod exchange {
                 let token_amount = from_tokens * to_reserve / from_reserve + 1;
                 let liquidity_minted = from_tokens * total_liquidity / from_reserve;
                 // important
-                assert!(to_tokens >= token_amount);
+                // assert!(to_tokens >= token_amount);
                 assert!(self
                     .from_token_contract
                     .transfer_from(caller, exchange_account, from_tokens)
@@ -309,6 +310,8 @@ mod exchange {
                 });
                 liquidity_minted
             } else {
+                assert!(to_tokens.is_some());
+                let to_tokens = to_tokens.unwrap();
                 assert!(self
                     .from_token_contract
                     .transfer_from(caller, exchange_account, from_tokens)
@@ -413,6 +416,15 @@ mod exchange {
         #[ink(message)]
         pub fn lp_token_decimals(&self) -> u8 {
             self.lp_token_contract.token_decimals().unwrap_or(0)
+        }
+
+        /// estimated need to token amount by from tokens
+        #[ink(message)]
+        pub fn estimated_to_token(&self, from_tokens: Balance) -> Balance {
+            let exchange_account = self.env().account_id();
+            let from_reserve = self.from_token_contract.balance_of(exchange_account);
+            let to_reserve = self.to_token_contract.balance_of(exchange_account);
+            from_tokens * to_reserve / from_reserve + 1
         }
     }
 

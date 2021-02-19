@@ -13,10 +13,10 @@ ink_lang = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", d
 ink_prelude = { version = "3.0.0-rc2", git = "https://github.com/paritytech/ink", default-features = false }
 
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
-scale-info = { version = "0.5", default-features = false, features = ["derive"], optional = true }
+scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
-ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", branch = "ownership",  default-features = false }
-dai = { version = "0.1.0", path = "dai", default-features = false, features = ["ink-as-dependency"] }
+ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", default-features = false }
+erc20 = { path = "erc20", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 name = "patramaker"
@@ -35,9 +35,10 @@ std = [
     "ink_primitives/std",
     "ink_prelude/std",
     "scale/std",
+    "scale-info",
     "scale-info/std",
     "ownership/std",
-    "dai/std"
+    "erc20/std"
 ]
 ink-as-dependency = []
 
@@ -46,5 +47,5 @@ overflow-checks = false
 
 [workspace]
 members = [
-    "dai",
+    "erc20",
 ]

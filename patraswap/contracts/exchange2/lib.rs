@@ -389,6 +389,15 @@ mod exchange {
         fn dot_balance(&self) -> Balance {
             self.env().balance() - self.init_deposit_dot
         }
+
+        /// estimated need to token amount by from tokens
+        #[ink(message)]
+        pub fn estimated_to_token(&self, from_tokens: Balance) -> Balance {
+            let exchange_account = self.env().account_id();
+            let from_reserve = self.token_contract.balance_of(exchange_account);
+            let to_reserve = self.dot_balance() ;
+            from_tokens * to_reserve / from_reserve + 1
+        }
     }
 
     impl PatraExchange {

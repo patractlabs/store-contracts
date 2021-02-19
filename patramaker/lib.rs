@@ -4,7 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod patramaker {
-    use dai::DAI;
+    use erc20::Erc20;
     use ink_env::call::FromAccountId;
     use ink_prelude::vec::Vec;
     use ink_storage::{
@@ -86,7 +86,7 @@ mod patramaker {
 
     #[ink(storage)]
     pub struct PatraMaker {
-        dai_token: Lazy<DAI>,
+        dai_token: Lazy<Erc20>,
         cdps: StorageMap<CdpId, CDP>,
         cdp_count: u32,
         min_collateral_ratio: u32,
@@ -103,27 +103,17 @@ mod patramaker {
         }
 
         #[ink(message)]
-        fn owner(&self) -> AccountId {
-            self.owner
-        }
-
-        #[ink(message)]
-        fn only_owner(&self) {
-            assert_eq!(self.env().caller(), self.owner);
+        fn owner(&self) -> Option<AccountId> {
+            Some(self.owner)
         }
 
         /// transfer contract ownership to new owner.
         #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: AccountId) {
-            self.only_owner();
-            assert_ne!(new_owner, Default::default());
-            self.owner = new_owner;
-        }
-
-        #[ink(message)]
-        fn renounce_ownership(&mut self) {
-            self.only_owner();
-            self.owner = Default::default();
+        fn transfer_ownership(&mut self, new_owner: Option<AccountId>) {
+            assert_eq!(self.owner(), Some(self.env().caller()));
+            if let Some(new_one) = new_owner {
+                self.owner = new_one;
+            }
         }
     }
 
@@ -132,15 +122,7 @@ mod patramaker {
         pub fn new(dai_contract: AccountId) -> Self {
             assert_ne!(dai_contract, Default::default());
             let caller = Self::env().caller();
-            let dai_token: DAI = FromAccountId::from_account_id(dai_contract);
-            // let salt = 0_u32.to_le_bytes();
-            // let total_balance = Self::env().balance();
-            // let dai_token = DAI::new()
-            //     .endowment(total_balance / 2)
-            //     .code_hash(dai_contract)
-            //     .salt_bytes(salt)
-            //     .instantiate()
-            //     .expect("failed at instantiating the dai token contract");
+            let dai_token: Erc20 = FromAccountId::from_account_id(dai_contract);
             Self {
                 dai_token: Lazy::new(dai_token),
                 cdps: StorageMap::new(),
@@ -337,6 +319,16 @@ mod patramaker {
                 total_issue_dai += v.issue_dai;
             }
             (issuers.len() as u32, total_collateral, total_issue_dai)
+        }
+
+        /// Returns the total cdp amount.
+        #[ink(message)]
+        pub fn cdp_count(&self) -> u32 {
+            self.cdp_count
+        }
+
+        fn only_owner(&self) {
+            assert_eq!(self.env().caller(), self.owner);
         }
     }
 }
