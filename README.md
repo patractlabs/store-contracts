@@ -26,7 +26,7 @@ wss://ws.staging.jupiter.patract.cn
 ### PatraSwap
 Factory
 ```
-5C8pqeB3Cj1ePZm49D1wFwHAJtZARviCGhXkpGtSJSmdgHm7
+5HBv8M3cmQvS5CWBaJSitwwvvKxYDmconuupEPLzFvMKqe89
 ```
 
 ### 固定地址的预发行资产列表：
