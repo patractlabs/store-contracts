@@ -313,11 +313,9 @@ mod exchange {
             let total_liquidity = self.lp_token_contract.total_supply();
             assert!(total_liquidity > 0);
             let caller = self.env().caller();
-            let exchange_balance = self.dot_balance();
-            assert!(exchange_balance >= lp_amount);
             let exchange_account = self.env().account_id();
             let from_token_reserve = self.token_contract.balance_of(exchange_account);
-            let to_token_reserve = exchange_balance;
+            let to_token_reserve = self.dot_balance();
             let from_amount = lp_amount * from_token_reserve / total_liquidity;
             let to_amount = lp_amount * to_token_reserve / total_liquidity;
             assert!(self.token_contract.transfer(caller, from_amount).is_ok());
@@ -387,7 +385,7 @@ mod exchange {
         }
 
         fn dot_balance(&self) -> Balance {
-            self.env().balance() - self.init_deposit_dot
+            self.env().balance().saturating_sub(self.init_deposit_dot)
         }
 
         /// estimated need to token amount by from tokens

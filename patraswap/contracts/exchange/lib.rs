@@ -338,7 +338,6 @@ mod exchange {
             let total_liquidity = self.lp_token_contract.total_supply();
             assert!(total_liquidity > 0);
             let caller = self.env().caller();
-            assert!(self.to_token_contract.balance_of(caller) >= lp_amount);
             let exchange_account = self.env().account_id();
             let from_token_reserve = self.from_token_contract.balance_of(exchange_account);
             let to_token_reserve = self.to_token_contract.balance_of(exchange_account);
