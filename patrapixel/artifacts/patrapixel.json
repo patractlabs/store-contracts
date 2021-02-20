@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x8f7babbc7c39ecaf6832e0c9b78cab1722d5a8d26134e649d74eb3ffe0f8c65a",
+    "hash": "0xa463643589016cdcaa6c8976c3dd0ebaa9bfbd322fe098a6f441137fee5fe753",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.52.0-nightly"
   },
@@ -15,12 +15,39 @@
   "spec": {
     "constructors": [
       {
-        "args": [],
+        "args": [
+          {
+            "name": "x",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          },
+          {
+            "name": "y",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 3
+            }
+          }
+        ],
         "docs": [],
         "name": [
           "new"
         ],
         "selector": "0x9bae9d5e"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "name": [
+          "default"
+        ],
+        "selector": "0xed4b9d1b"
       }
     ],
     "docs": [],
@@ -35,7 +62,7 @@
               "displayName": [
                 "AccountId"
               ],
-              "type": 8
+              "type": 12
             }
           }
         ],
@@ -58,7 +85,7 @@
           "displayName": [
             "Vec"
           ],
-          "type": 2
+          "type": 9
         },
         "selector": "0x6394e97a"
       },
@@ -74,9 +101,23 @@
           "displayName": [
             "Balance"
           ],
-          "type": 4
+          "type": 8
         },
         "selector": "0xd92c9b21"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "size"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [],
+          "type": 11
+        },
+        "selector": "0x5bcd7160"
       },
       {
         "args": [
@@ -86,7 +127,7 @@
               "displayName": [
                 "Vec"
               ],
-              "type": 5
+              "type": 9
             }
           }
         ],
@@ -117,9 +158,80 @@
         },
         {
           "layout": {
-            "cell": {
-              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-              "ty": 2
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                              "ty": 2
+                            }
+                          },
+                          "name": "header"
+                        },
+                        {
+                          "layout": {
+                            "struct": {
+                              "fields": [
+                                {
+                                  "layout": {
+                                    "cell": {
+                                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
+                                      "ty": 3
+                                    }
+                                  },
+                                  "name": "len"
+                                },
+                                {
+                                  "layout": {
+                                    "array": {
+                                      "cellsPerElem": 1,
+                                      "layout": {
+                                        "cell": {
+                                          "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                                          "ty": 4
+                                        }
+                                      },
+                                      "len": 4294967295,
+                                      "offset": "0x0300000000000000000000000000000000000000000000000000000000000000"
+                                    }
+                                  },
+                                  "name": "elems"
+                                }
+                              ]
+                            }
+                          },
+                          "name": "entries"
+                        }
+                      ]
+                    }
+                  },
+                  "name": "keys"
+                },
+                {
+                  "layout": {
+                    "hash": {
+                      "layout": {
+                        "cell": {
+                          "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                          "ty": 6
+                        }
+                      },
+                      "offset": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                      "strategy": {
+                        "hasher": "Blake2x256",
+                        "postfix": "",
+                        "prefix": "0x696e6b20686173686d6170"
+                      }
+                    }
+                  },
+                  "name": "values"
+                }
+              ]
             }
           },
           "name": "metadata"
@@ -127,11 +239,38 @@
         {
           "layout": {
             "cell": {
-              "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-              "ty": 4
+              "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+              "ty": 8
             }
           },
           "name": "pool"
+        },
+        {
+          "layout": {
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "cell": {
+                      "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
+                      "ty": 3
+                    }
+                  },
+                  "name": null
+                },
+                {
+                  "layout": {
+                    "cell": {
+                      "key": "0x0500000001000000000000000000000000000000000000000000000000000000",
+                      "ty": 3
+                    }
+                  },
+                  "name": null
+                }
+              ]
+            }
+          },
+          "name": "size"
         }
       ]
     }
@@ -144,10 +283,123 @@
     },
     {
       "def": {
-        "sequence": {
-          "type": 3
+        "composite": {
+          "fields": [
+            {
+              "name": "last_vacant",
+              "type": 3,
+              "typeName": "Index"
+            },
+            {
+              "name": "len",
+              "type": 3,
+              "typeName": "u32"
+            },
+            {
+              "name": "len_entries",
+              "type": 3,
+              "typeName": "u32"
+            }
+          ]
         }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Header"
+      ]
+    },
+    {
+      "def": {
+        "primitive": "u32"
       }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "fields": [
+                {
+                  "type": 5,
+                  "typeName": "VacantEntry"
+                }
+              ],
+              "name": "Vacant"
+            },
+            {
+              "fields": [
+                {
+                  "type": 3,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Occupied"
+            }
+          ]
+        }
+      },
+      "params": [
+        3
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "Entry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "next",
+              "type": 3,
+              "typeName": "Index"
+            },
+            {
+              "name": "prev",
+              "type": 3,
+              "typeName": "Index"
+            }
+          ]
+        }
+      },
+      "path": [
+        "ink_storage",
+        "collections",
+        "stash",
+        "VacantEntry"
+      ]
+    },
+    {
+      "def": {
+        "composite": {
+          "fields": [
+            {
+              "name": "value",
+              "type": 7,
+              "typeName": "V"
+            },
+            {
+              "name": "key_index",
+              "type": 3,
+              "typeName": "KeyIndex"
+            }
+          ]
+        }
+      },
+      "params": [
+        7
+      ],
+      "path": [
+        "ink_storage",
+        "collections",
+        "hashmap",
+        "ValueEntry"
+      ]
     },
     {
       "def": {
@@ -162,21 +414,24 @@
     {
       "def": {
         "sequence": {
-          "type": 6
+          "type": 10
         }
       }
     },
     {
       "def": {
         "tuple": [
-          7,
-          3
+          3,
+          7
         ]
       }
     },
     {
       "def": {
-        "primitive": "u32"
+        "tuple": [
+          3,
+          3
+        ]
       }
     },
     {
@@ -184,7 +439,7 @@
         "composite": {
           "fields": [
             {
-              "type": 9,
+              "type": 13,
               "typeName": "[u8; 32]"
             }
           ]
@@ -200,7 +455,7 @@
       "def": {
         "array": {
           "len": 32,
-          "type": 3
+          "type": 7
         }
       }
     }
