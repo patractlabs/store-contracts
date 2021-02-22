@@ -250,6 +250,7 @@ mod patralottery {
                 random_hash = self.env().extension().randomness_of(epoch_id);
             }
 
+            assert!(epoch_id <= next_random.epoch);
             assert!(self.epochs.get(&epoch_id).is_some());
             let lottery = self.epochs.get_mut(&epoch_id).unwrap();
             assert!(!lottery.end);
