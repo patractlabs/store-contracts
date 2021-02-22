@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x710ac4091a61ed2d742cde33f566b93e6fb9e4c4c96152db10cfb7f218db4fa8",
+    "hash": "0x194401f0b386ff0e3daa64d32b4aee8e4e6de14088692271cf847d8bb87a07b1",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.52.0-nightly"
   },
@@ -220,6 +220,32 @@
         "selector": "0x717a29cb"
       },
       {
+        "args": [
+          {
+            "name": "epoch_id",
+            "type": {
+              "displayName": [
+                "EpochID"
+              ],
+              "type": 4
+            }
+          }
+        ],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "lottery_history"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "Option"
+          ],
+          "type": 31
+        },
+        "selector": "0x82e49b3b"
+      },
+      {
         "args": [],
         "docs": [],
         "mutates": false,
@@ -231,7 +257,7 @@
           "displayName": [
             "EpochInfo"
           ],
-          "type": 31
+          "type": 32
         },
         "selector": "0x32d82910"
       },
@@ -257,7 +283,7 @@
           "displayName": [
             "Option"
           ],
-          "type": 32
+          "type": 33
         },
         "selector": "0xae6fd1ec"
       },
@@ -273,7 +299,9 @@
             }
           }
         ],
-        "docs": [],
+        "docs": [
+          " The historical randomness function cant get the current epoch and next epoch randomness."
+        ],
         "mutates": false,
         "name": [
           "randomness_of"
@@ -281,9 +309,37 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 33
+          "type": 34
         },
         "selector": "0x13210043"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "current_randomness"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [],
+          "type": 34
+        },
+        "selector": "0x2667f4a6"
+      },
+      {
+        "args": [],
+        "docs": [],
+        "mutates": false,
+        "name": [
+          "next_randomness"
+        ],
+        "payable": false,
+        "returnType": {
+          "displayName": [],
+          "type": 34
+        },
+        "selector": "0xf00cbd1e"
       }
     ]
   },
@@ -1246,6 +1302,32 @@
     },
     {
       "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 7,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        7
+      ],
+      "path": [
+        "Option"
+      ]
+    },
+    {
+      "def": {
         "composite": {
           "fields": [
             {
@@ -1311,7 +1393,7 @@
     {
       "def": {
         "tuple": [
-          34,
+          35,
           11
         ]
       }

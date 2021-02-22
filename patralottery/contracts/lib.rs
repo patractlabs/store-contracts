@@ -7,6 +7,7 @@ use ink_lang as ink;
 mod patralottery {
     use crate::BabeRandomness;
     use core::fmt::Write;
+    use ink_env::hash::Blake2x256;
     use ink_prelude::{string::String, vec, vec::Vec};
     use ink_storage::{
         collections::HashMap as StorageMap,
@@ -232,7 +233,23 @@ mod patralottery {
 
         #[ink(message)]
         pub fn draw_lottery(&mut self, epoch_id: EpochID) {
-            let random_hash = self.env().extension().randomness_of(epoch_id);
+            let random_hash;
+            let next_random: BabeRandomness = self.env().extension().next_epoch();
+            if next_random.epoch == epoch_id {
+                random_hash = Hash::from(
+                    self.env()
+                        .hash_bytes::<Blake2x256>(next_random.randomness.as_ref()),
+                );
+            } else if next_random.epoch == epoch_id + 1 {
+                let cur_random: BabeRandomness = self.env().extension().current_epoch();
+                random_hash = Hash::from(
+                    self.env()
+                        .hash_bytes::<Blake2x256>(cur_random.randomness.as_ref()),
+                );
+            } else {
+                random_hash = self.env().extension().randomness_of(epoch_id);
+            }
+
             assert!(self.epochs.get(&epoch_id).is_some());
             let lottery = self.epochs.get_mut(&epoch_id).unwrap();
             assert!(!lottery.end);
@@ -304,7 +321,7 @@ mod patralottery {
                 }
             }
 
-            if self.reward_pool > 0 {
+            if self.reward_pool > 0 && first_palyers.len() > 0 && first_count > 0 {
                 let reward = self.reward_pool / first_count as u128;
                 for player in first_palyers.iter() {
                     let tickets = self.players.get_mut(&(epoch_id, *player)).unwrap();
@@ -376,6 +393,15 @@ mod patralottery {
         }
 
         #[ink(message)]
+        pub fn lottery_history(&self, epoch_id: EpochID) -> Option<Lottery> {
+            if let Some(lottery) = self.epochs.get(&epoch_id) {
+                Some((*lottery).clone())
+            } else {
+                None
+            }
+        }
+
+        #[ink(message)]
         pub fn latest_epoch(&self) -> EpochInfo {
             let ret: BabeRandomness = self.env().extension().next_epoch();
             EpochInfo {
@@ -396,9 +422,24 @@ mod patralottery {
             }
         }
 
+        /// The historical randomness function cant get the current epoch and next epoch randomness.
         #[ink(message)]
         pub fn randomness_of(&self, epoch_id: EpochID) -> (String, Vec<u32>) {
             let ret = self.env().extension().randomness_of(epoch_id);
+            Self::get_winning_number(ret)
+        }
+
+        #[ink(message)]
+        pub fn current_randomness(&self) -> (String, Vec<u32>) {
+            let cur_random: BabeRandomness = self.env().extension().current_epoch();
+            let ret = Hash::from(cur_random.randomness);
+            Self::get_winning_number(ret)
+        }
+
+        #[ink(message)]
+        pub fn next_randomness(&self) -> (String, Vec<u32>) {
+            let next_random: BabeRandomness = self.env().extension().next_epoch();
+            let ret = Hash::from(next_random.randomness);
             Self::get_winning_number(ret)
         }
     }
