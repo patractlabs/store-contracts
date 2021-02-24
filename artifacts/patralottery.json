@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xd6a8eb73e82321a7bf90f2e42a0b5728c38459371b399b107bd59f4f4f3b2433",
+    "hash": "0xa6ec5f44366fdd75c097c6f34ee99666c819c14a950851dd20735952d27a2c88",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.52.0-nightly"
   },
@@ -236,17 +236,7 @@
         "selector": "0x32d82910"
       },
       {
-        "args": [
-          {
-            "name": "epoch_id",
-            "type": {
-              "displayName": [
-                "EpochID"
-              ],
-              "type": 4
-            }
-          }
-        ],
+        "args": [],
         "docs": [],
         "mutates": false,
         "name": [
@@ -255,9 +245,9 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "Option"
+            "Vec"
           ],
-          "type": 31
+          "type": 25
         },
         "selector": "0xae6fd1ec"
       },
@@ -283,7 +273,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 32
+          "type": 31
         },
         "selector": "0x13210043"
       },
@@ -297,7 +287,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 32
+          "type": 31
         },
         "selector": "0x2667f4a6"
       },
@@ -311,7 +301,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 32
+          "type": 31
         },
         "selector": "0xf00cbd1e"
       }
@@ -562,80 +552,9 @@
         },
         {
           "layout": {
-            "struct": {
-              "fields": [
-                {
-                  "layout": {
-                    "struct": {
-                      "fields": [
-                        {
-                          "layout": {
-                            "cell": {
-                              "key": "0x0600000003000000000000000000000000000000000000000000000000000000",
-                              "ty": 1
-                            }
-                          },
-                          "name": "header"
-                        },
-                        {
-                          "layout": {
-                            "struct": {
-                              "fields": [
-                                {
-                                  "layout": {
-                                    "cell": {
-                                      "key": "0x0700000003000000000000000000000000000000000000000000000000000000",
-                                      "ty": 2
-                                    }
-                                  },
-                                  "name": "len"
-                                },
-                                {
-                                  "layout": {
-                                    "array": {
-                                      "cellsPerElem": 1,
-                                      "layout": {
-                                        "cell": {
-                                          "key": "0x0700000004000000000000000000000000000000000000000000000000000000",
-                                          "ty": 3
-                                        }
-                                      },
-                                      "len": 4294967295,
-                                      "offset": "0x0800000003000000000000000000000000000000000000000000000000000000"
-                                    }
-                                  },
-                                  "name": "elems"
-                                }
-                              ]
-                            }
-                          },
-                          "name": "entries"
-                        }
-                      ]
-                    }
-                  },
-                  "name": "keys"
-                },
-                {
-                  "layout": {
-                    "hash": {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0800000004000000000000000000000000000000000000000000000000000000",
-                          "ty": 25
-                        }
-                      },
-                      "offset": "0x0700000004000000000000000000000000000000000000000000000000000000",
-                      "strategy": {
-                        "hasher": "Blake2x256",
-                        "postfix": "",
-                        "prefix": "0x696e6b20686173686d6170"
-                      }
-                    }
-                  },
-                  "name": "values"
-                }
-              ]
+            "cell": {
+              "key": "0x0600000003000000000000000000000000000000000000000000000000000000",
+              "ty": 25
             }
           },
           "name": "winners"
@@ -643,7 +562,7 @@
         {
           "layout": {
             "cell": {
-              "key": "0x0800000004000000000000000000000000000000000000000000000000000000",
+              "key": "0x0700000003000000000000000000000000000000000000000000000000000000",
               "ty": 14
             }
           },
@@ -1107,35 +1026,20 @@
     },
     {
       "def": {
-        "composite": {
-          "fields": [
-            {
-              "name": "value",
-              "type": 26,
-              "typeName": "V"
-            },
-            {
-              "name": "key_index",
-              "type": 2,
-              "typeName": "KeyIndex"
-            }
-          ]
+        "sequence": {
+          "type": 26
         }
-      },
-      "params": [
-        26
-      ],
-      "path": [
-        "ink_storage",
-        "collections",
-        "hashmap",
-        "ValueEntry"
-      ]
+      }
     },
     {
       "def": {
         "composite": {
           "fields": [
+            {
+              "name": "epoch",
+              "type": 4,
+              "typeName": "EpochID"
+            },
             {
               "name": "winner",
               "type": 13,
@@ -1276,34 +1180,8 @@
     },
     {
       "def": {
-        "variant": {
-          "variants": [
-            {
-              "name": "None"
-            },
-            {
-              "fields": [
-                {
-                  "type": 26,
-                  "typeName": "T"
-                }
-              ],
-              "name": "Some"
-            }
-          ]
-        }
-      },
-      "params": [
-        26
-      ],
-      "path": [
-        "Option"
-      ]
-    },
-    {
-      "def": {
         "tuple": [
-          33,
+          32,
           11
         ]
       }

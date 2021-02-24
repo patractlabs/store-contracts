@@ -113,6 +113,7 @@ mod patralottery {
         derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
     )]
     pub struct BiggestWinner {
+        pub epoch: EpochID,
         pub winner: AccountId,
         pub win_num: Vec<u32>,
         pub tickets: u32,
@@ -138,7 +139,7 @@ mod patralottery {
         epochs: StorageMap<EpochID, Lottery>,
         players: StorageMap<(EpochID, AccountId), Vec<Tickets>>,
         buyers: StorageMap<AccountId, Vec<EpochID>>,
-        winners: StorageMap<EpochID, BiggestWinner>,
+        winners: Vec<BiggestWinner>,
         reward_pool: Balance,
     }
 
@@ -149,7 +150,7 @@ mod patralottery {
                 epochs: StorageMap::new(),
                 players: StorageMap::new(),
                 buyers: StorageMap::new(),
-                winners: StorageMap::new(),
+                winners: Default::default(),
                 reward_pool: 0,
             }
         }
@@ -287,6 +288,7 @@ mod patralottery {
                             Self::env().transfer(*buyer, tic.reward).unwrap();
                             if tic.reward > biggest_winner.reward {
                                 biggest_winner = BiggestWinner {
+                                    epoch: epoch_id,
                                     winner: *buyer,
                                     win_num: tic.num.clone(),
                                     tickets: tic.amount,
@@ -312,6 +314,7 @@ mod patralottery {
                         }
                         if tic.reward > biggest_winner.reward {
                             biggest_winner = BiggestWinner {
+                                epoch: epoch_id,
                                 winner: *player,
                                 win_num: tic.num.clone(),
                                 tickets: tic.amount,
@@ -324,7 +327,10 @@ mod patralottery {
                 self.reward_pool = 0;
             }
 
-            self.winners.insert(epoch_id, biggest_winner);
+            if biggest_winner.reward > 0 {
+                self.winners.push(biggest_winner);
+                self.winners.sort_by(|x, y| y.reward.cmp(&x.reward));
+            }
 
             self.env().emit_event(DrawLottery {
                 epoch: epoch_id,
@@ -377,12 +383,8 @@ mod patralottery {
         }
 
         #[ink(message)]
-        pub fn biggest_winner(&self, epoch_id: EpochID) -> Option<BiggestWinner> {
-            if let Some(winner) = self.winners.get(&epoch_id) {
-                Some(winner.clone())
-            } else {
-                None
-            }
+        pub fn biggest_winner(&self) -> Vec<BiggestWinner> {
+            self.winners.clone()
         }
 
         /// The historical randomness function cant get the current epoch and next epoch randomness.

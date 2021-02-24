@@ -14,7 +14,7 @@ wss://new-cc2.staging.jupiter.patract.cn
 ```
 ### PatraLottery
 ```
-5Hmb3UCwgkFhWfA4aZ2hmoBTp8YwXwUCDxiaYuqxxWGqxJ6C
+5HPFuJkzgSkZ5mGgoLwHfSVXyUctE7KdCeVNze2TpcepPJVS
 ```
 ### PatraMaker
 ```
