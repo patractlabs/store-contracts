@@ -18,7 +18,7 @@ wss://new-cc2.staging.jupiter.patract.cn
 ```
 ### PatraMaker
 ```
-5GZvvsPuANbCzSDL7z943MWxKvQvaXVw5kHA6C7MhJWbYnhe
+5FKDvQ43uisNSWFZTVAcwFaeMHzMyUHyzGnjESzGP5rGuK9F
 ```
 ### PatraPixel
 ```
