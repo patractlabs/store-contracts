@@ -6,11 +6,11 @@ wss://new-cc2.staging.jupiter.patract.cn
 ### ERC20 Code Hash
 1. fixed
 ```
-0xf78f775b3c9d7f865129d86e418a725734446f3a289df8e69f0c487f02fbeccf
+0x697fcd5e34a7d611468d0fd718461e528ca01af563bcdb6344adc2b6f569509a
 ```
 2. issue
 ```
-0x2735794dd9b9394e7ea716272ece04074fac54a78106e87bc62f9436f67ce4a5
+0x60def6fe66922c566ee5423434611ce53448324f68b8d5341333f80b077c9978
 ```
 ### PatraLottery
 ```
@@ -18,7 +18,7 @@ wss://new-cc2.staging.jupiter.patract.cn
 ```
 ### PatraMaker
 ```
-5FZzRWdG2YeXDxHG8aRESESyWy3EeGyz5SSnydVHi6cXg3ac
+5DuWnR41Dxxvzc2PhRbGNyg5tiDiosNzWAGCo17rXUTSgvNL
 ```
 ### PatraPixel
 ```

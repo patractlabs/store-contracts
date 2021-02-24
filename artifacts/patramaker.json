@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x5a4afed1690a7dec9deea30a408689e3fa8e58027f98b8616ceb2ce0c10eb8dc",
+    "hash": "0xf8f77783e3aa2a11230b3f00225d2415e94a24f36172b99389d46adc0a14d305",
     "language": "ink! 3.0.0-rc2",
     "compiler": "rustc 1.52.0-nightly"
   },
@@ -254,7 +254,7 @@
           "displayName": [
             "Option"
           ],
-          "type": 13
+          "type": 12
         },
         "selector": "0x4fa43c8c"
       },
@@ -266,7 +266,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 13
+              "type": 12
             }
           }
         ],
@@ -384,7 +384,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 14
+          "type": 13
         },
         "selector": "0x85b3e1f7"
       },
@@ -412,7 +412,7 @@
           "displayName": [
             "Option"
           ],
-          "type": 15
+          "type": 14
         },
         "selector": "0xffb46c88"
       },
@@ -438,7 +438,7 @@
         "payable": true,
         "returnType": {
           "displayName": [],
-          "type": 16
+          "type": 15
         },
         "selector": "0xffede79b"
       },
@@ -578,7 +578,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 17
+          "type": 16
         },
         "selector": "0xdb6375a8"
       },
@@ -931,13 +931,8 @@
               "typeName": "Balance"
             },
             {
-              "name": "valid",
-              "type": 11,
-              "typeName": "bool"
-            },
-            {
               "name": "create_date",
-              "type": 12,
+              "type": 11,
               "typeName": "Timestamp"
             }
           ]
@@ -952,11 +947,6 @@
     {
       "def": {
         "primitive": "u128"
-      }
-    },
-    {
-      "def": {
-        "primitive": "bool"
       }
     },
     {

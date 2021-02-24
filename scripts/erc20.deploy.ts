@@ -10,15 +10,15 @@ async function run() {
   await api.isReady;
 
   const signer = createSigner(keyring.createFromUri(uri));
-  const contractFactory = await getContractFactory('erc20', signer);
+  const contractFactory = await getContractFactory('erc20_fixed', signer);
 
   const balance = await api.query.system.account(signer.address);
 
   console.log('Balance: ', balance.toHuman());
 
-  const contract = await contractFactory.deployed('erc20,new', '1000000', 'Jupiter Token', 'JPT', '10', {
+  const contract = await contractFactory.deployed('IErc20,new', '10000000000000000', 'Jupiter Token', 'JPT', '10', {
     gasLimit: '200000000000',
-    value: '10000000000000000',
+    value: '0',
     salt: 'Jupiter Token'
   });
 

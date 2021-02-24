@@ -59,16 +59,32 @@ async function run() {
   );
   console.log('');
 
+  // Moved to patramaker contract deploy
   // Maker DAI, DAI 18
-  contract = await contractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
-    gasLimit: '200000000000',
-    value: '0',
-    salt: 'Maker DAI Token'
-  });
+  // contract = await contractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
+  //   gasLimit: '200000000000',
+  //   value: '0',
+  //   salt: 'Maker DAI Token'
+  // });
+  //
+  // console.log(
+  //   'Deploy DAI successfully. The contract address: ',
+  //   contract.address.toString()
+  // );
+  // console.log('');
 
+  const issue_code_hash = await contractFactory.putCode();
   console.log(
-    'Deploy DAI successfully. The contract address: ',
-    contract.address.toString()
+    'Put issue erc20 code successfully. The contract code hash: ',
+    issue_code_hash.toString()
+  );
+  console.log('');
+
+  const fixedFactory = await getContractFactory('erc20_fixed', signer);
+  const fixed_code_hash = await fixedFactory.putCode();
+  console.log(
+    'Put fixed erc20 code successfully. The contract code hash: ',
+    fixed_code_hash.toString()
   );
   console.log('');
 

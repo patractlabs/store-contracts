@@ -13,18 +13,27 @@ async function run() {
   const contractFactory = await getContractFactory('patramaker', signer);
 
   const balance = await api.query.system.account(signer.address);
-
   console.log('Balance: ', balance.toHuman());
 
-  const contract = await contractFactory.deployed('new', '1000000', {
+  const daiContractFactory = await getContractFactory('erc20_issue', signer);
+  const daiContract = await daiContractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
+    gasLimit: '200000000000',
+    value: '0',
+    salt: 'Maker DAI Token'
+  });
+  console.log(
+    'Deploy dai successfully. The contract address: ',
+    daiContract.address.toString()
+  );
+  console.log('');
+
+  const contract = await contractFactory.deployed('new', daiContract.address, {
     gasLimit: '200000000000',
     value: '0',
     salt: 'PatraMaker'
   });
-
-  console.log('');
   console.log(
-    'Deploy successfully. The contract address: ',
+    'Deploy maker successfully. The contract address: ',
     contract.address.toString()
   );
 

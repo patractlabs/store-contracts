@@ -79,7 +79,6 @@ mod patramaker {
         pub collateral_dot: Balance,
         // 1 DAI = 1 USD
         pub issue_dai: Balance,
-        pub valid: bool,
         pub create_date: Timestamp,
     }
 
@@ -190,7 +189,6 @@ mod patramaker {
                 issuer: caller,
                 collateral_dot: collateral,
                 issue_dai: dai,
-                valid: true,
                 create_date: self.env().block_timestamp(),
             };
             self.cdp_count += 1;
@@ -211,7 +209,6 @@ mod patramaker {
             let caller = self.env().caller();
             let collateral = self.env().transferred_balance();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.valid);
             assert!(cdp.issuer == caller);
             let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
                 / cdp.issue_dai;
@@ -230,7 +227,6 @@ mod patramaker {
             assert!(self.cdps.contains_key(&cdp_id));
             let caller = self.env().caller();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.valid);
             assert!(cdp.issuer == caller);
             let cr =
                 (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
@@ -250,7 +246,6 @@ mod patramaker {
             assert!(self.cdps.contains_key(&cdp_id));
             let caller = self.env().caller();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.valid);
             assert!(cdp.issuer == caller);
             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
             assert!(cr >= self.min_collateral_ratio);
@@ -273,11 +268,9 @@ mod patramaker {
         pub fn liquidate_collateral(&mut self, cdp_id: CdpId, dai: Balance) {
             assert!(self.cdps.contains_key(&cdp_id));
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            // assert!(cdp.valid);
             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
             assert!(cr <= self.min_collateral_ratio);
             assert!(cdp.issue_dai >= dai);
-            cdp.valid = false;
             let owner = cdp.issuer;
             let dot = dai / self.dot_price as u128;
             cdp.issue_dai -= dai;

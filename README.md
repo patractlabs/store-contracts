@@ -6,8 +6,6 @@
 
 Redspot is the most advanced WASM smart contract development, testing and debugging framework. It can simplify the development workflow and connects with other tools as the core of Patract Hub.
 
-Details visit: [Redspot](https://redspot.patract.io/zh-CN/tutorial/#get-started)
-
 ### Run a local node
 ```
 jupiter-dev --dev --execution=Native --tmp
