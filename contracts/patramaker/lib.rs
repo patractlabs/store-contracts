@@ -212,7 +212,7 @@ mod patramaker {
             assert!(cdp.issuer == caller);
             let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
                 / cdp.issue_dai;
-            assert!(cr >= self.min_collateral_ratio.into());
+            // assert!(cr >= self.min_collateral_ratio.into());
             cdp.collateral_dot += collateral;
             self.env().emit_event(AddCollateral {
                 cdp_id,
@@ -230,7 +230,7 @@ mod patramaker {
             assert!(cdp.issuer == caller);
             let cr =
                 (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
-            assert!(cr >= self.min_collateral_ratio.into());
+            // assert!(cr >= self.min_collateral_ratio.into());
             cdp.collateral_dot -= collateral;
             self.env().transfer(caller, collateral).unwrap();
             self.env().emit_event(MinusCollateral {
@@ -247,8 +247,8 @@ mod patramaker {
             let caller = self.env().caller();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             assert!(cdp.issuer == caller);
-            let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
-            assert!(cr >= self.min_collateral_ratio);
+//             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
+            // assert!(cr >= self.min_collateral_ratio);
             assert!(dai <= cdp.issue_dai);
             let dot = cdp.collateral_dot * dai / cdp.issue_dai;
             cdp.collateral_dot -= dot;
