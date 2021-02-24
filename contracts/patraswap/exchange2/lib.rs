@@ -6,7 +6,7 @@ use ink_lang as ink;
 #[ink::contract]
 mod exchange {
     #[cfg(not(feature = "ink-as-dependency"))]
-    use erc20::Erc20;
+    use lpt::Erc20;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_env::call::FromAccountId;
     use ink_prelude::string::String;

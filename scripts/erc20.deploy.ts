@@ -19,7 +19,7 @@ async function run() {
   const contract = await contractFactory.deployed('erc20,new', '1000000', 'Jupiter Token', 'JPT', '10', {
     gasLimit: '200000000000',
     value: '10000000000000000',
-    salt: '12312'
+    salt: 'Jupiter Token'
   });
 
   console.log('');

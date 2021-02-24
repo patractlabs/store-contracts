@@ -6,7 +6,7 @@ use ink_lang as ink;
 mod factory {
     use ink_lang as ink;
 
-    use erc20::Erc20;
+    use lpt::Erc20;
     use exchange::PatraExchange;
     use exchange2::PatraExchange as PatraExchange2;
     #[cfg(not(feature = "ink-as-dependency"))]

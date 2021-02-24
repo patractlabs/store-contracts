@@ -1,10 +1,10 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub use self::erc20::Erc20;
+pub use self::lpt::Erc20;
 use ink_lang as ink;
 
 #[ink::contract]
-mod erc20 {
+mod lpt {
     use ink_prelude::string::String;
 
     #[cfg(not(feature = "ink-as-dependency"))]

@@ -18,8 +18,8 @@ async function run() {
 
   const contract = await contractFactory.deployed('new', {
     gasLimit: '200000000000',
-    value: '10000000000000000',
-    salt: '12312'
+    value: '0',
+    salt: 'PatraLottery'
   });
 
   console.log('');

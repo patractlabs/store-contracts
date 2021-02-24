@@ -21,9 +21,9 @@ async function run() {
   let contract: Contract
 
   // Tether USD, USDT, 2, 10亿
-  contract = await contractFactory.deployed('IErc20,new', '100000000000', 'Tether USD', 'USDT', '2', {
+  contract = await contractFactory.deployed('IErc20,new', '1000000000000000', 'Tether USD', 'USDT', '6', {
     gasLimit: '200000000000',
-    value: '100000000000',
+    value: '0',
     salt: 'Tether USD Token'
   });
 
@@ -36,7 +36,7 @@ async function run() {
   // Jupiter Bitcoin, jBTC, 8, 1百万
   contract = await contractFactory.deployed('IErc20,new', '100000000000000', 'Jupiter Bitcoin', 'jBTC', '8', {
     gasLimit: '200000000000',
-    value: '100000000000',
+    value: '0',
     salt: 'Jupiter Bitcoin Token'
   });
 
@@ -49,7 +49,7 @@ async function run() {
   // Jupiter Ethereum, jETH, 18, 1千万
   contract = await contractFactory.deployed('IErc20,new', '10000000000000000000000000', 'Jupiter Ethereum', 'jETH', '18', {
     gasLimit: '200000000000',
-    value: '100000000000',
+    value: '0',
     salt: 'Jupiter Ethereum Token'
   });
 
@@ -59,10 +59,10 @@ async function run() {
   );
   console.log('');
 
-  // Maker DAI, DAI
-  contract = await contractFactory.deployed('IErc20,new', '1000000000000000000000000', 'Maker DAI', 'DAI', '18', {
+  // Maker DAI, DAI 18
+  contract = await contractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
     gasLimit: '200000000000',
-    value: '100000000000',
+    value: '0',
     salt: 'Maker DAI Token'
   });
 
