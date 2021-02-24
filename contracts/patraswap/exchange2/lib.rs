@@ -190,7 +190,7 @@ mod exchange {
             let token_reserve: Balance = self.token_contract.balance_of(self.env().account_id());
             let dot_sold: Balance =
                 Self::get_output_price(tokens_bought, self.dot_balance() - max_dot, token_reserve);
-            assert!(dot_sold > max_dot);
+            assert!(dot_sold <= max_dot);
             let dot_refund: Balance = max_dot - dot_sold;
             if dot_refund > 0 {
                 assert!(self.env().transfer(buyer, dot_refund).is_ok());

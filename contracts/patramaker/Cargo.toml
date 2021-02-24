@@ -16,7 +16,7 @@ scale = { package = "parity-scale-codec", version = "2.0", default-features = fa
 scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
 ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", default-features = false }
-erc20 = { path = "erc20", default-features = false, features = ["ink-as-dependency"] }
+dai = { path = "dai", default-features = false, features = ["ink-as-dependency"] }
 
 [lib]
 name = "patramaker"
@@ -38,7 +38,7 @@ std = [
     "scale-info",
     "scale-info/std",
     "ownership/std",
-    "erc20/std"
+    "dai/std"
 ]
 ink-as-dependency = []
 
@@ -47,5 +47,5 @@ overflow-checks = false
 
 [workspace]
 members = [
-    "erc20",
+    "dai",
 ]

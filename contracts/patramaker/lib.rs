@@ -4,7 +4,7 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod patramaker {
-    use erc20::Erc20;
+    use dai::Erc20;
     use ink_env::call::FromAccountId;
     use ink_prelude::vec::Vec;
     use ink_storage::{
@@ -79,7 +79,6 @@ mod patramaker {
         pub collateral_dot: Balance,
         // 1 DAI = 1 USD
         pub issue_dai: Balance,
-        pub collateral_ratio: u32,
         pub valid: bool,
         pub create_date: Timestamp,
     }
@@ -191,7 +190,6 @@ mod patramaker {
                 issuer: caller,
                 collateral_dot: collateral,
                 issue_dai: dai,
-                collateral_ratio: cr,
                 valid: true,
                 create_date: self.env().block_timestamp(),
             };
@@ -218,7 +216,6 @@ mod patramaker {
             let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
                 / cdp.issue_dai;
             assert!(cr >= self.min_collateral_ratio.into());
-            cdp.collateral_ratio = cr as u32;
             cdp.collateral_dot += collateral;
             self.env().emit_event(AddCollateral {
                 cdp_id,
@@ -238,7 +235,6 @@ mod patramaker {
             let cr =
                 (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
             assert!(cr >= self.min_collateral_ratio.into());
-            cdp.collateral_ratio = cr as u32;
             cdp.collateral_dot -= collateral;
             self.env().transfer(caller, collateral).unwrap();
             self.env().emit_event(MinusCollateral {
@@ -256,7 +252,8 @@ mod patramaker {
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             assert!(cdp.valid);
             assert!(cdp.issuer == caller);
-            assert!(cdp.collateral_ratio >= self.min_collateral_ratio);
+            let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
+            assert!(cr >= self.min_collateral_ratio);
             assert!(dai <= cdp.issue_dai);
             let dot = cdp.collateral_dot * dai / cdp.issue_dai;
             cdp.collateral_dot -= dot;
@@ -276,8 +273,9 @@ mod patramaker {
         pub fn liquidate_collateral(&mut self, cdp_id: CdpId, dai: Balance) {
             assert!(self.cdps.contains_key(&cdp_id));
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            assert!(cdp.valid);
-            assert!(cdp.collateral_ratio <= self.min_collateral_ratio);
+            // assert!(cdp.valid);
+            let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
+            assert!(cr <= self.min_collateral_ratio);
             assert!(cdp.issue_dai >= dai);
             cdp.valid = false;
             let owner = cdp.issuer;

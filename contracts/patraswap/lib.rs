@@ -135,7 +135,7 @@ mod factory {
                 Some("LPT".parse().unwrap()),
                 from_token_contract.token_decimals(),
             )
-            .endowment(100000000000)
+            .endowment(0)
             .code_hash(self.lpt)
             .salt_bytes(salt)
             .params();
@@ -147,7 +147,7 @@ mod factory {
             let salt = Hash::from(self.env().hash_bytes::<Blake2x256>(salt.clone().as_ref()));
             // instantiate exchange
             let exchange_params = PatraExchange::new(from_token, to_token, lpt_account_id)
-                .endowment(100000000000)
+                .endowment(0)
                 .code_hash(self.exchange_template)
                 .salt_bytes(salt)
                 .params();
@@ -203,7 +203,7 @@ mod factory {
                 Some("LPT".parse().unwrap()),
                 from_token_contract.token_decimals(),
             )
-            .endowment(100000000000)
+            .endowment(0)
             .code_hash(self.lpt)
             .salt_bytes(salt)
             .params();
@@ -216,7 +216,7 @@ mod factory {
 
             // instantiate exchange
             let exchange_params = PatraExchange2::new(from_token, lpt_account_id)
-                .endowment(100000000000)
+                .endowment(0)
                 .code_hash(self.exchange_template2)
                 .salt_bytes(salt)
                 .params();

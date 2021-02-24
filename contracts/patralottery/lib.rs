@@ -6,8 +6,6 @@ use ink_lang as ink;
 #[ink::contract(env = crate::CustomEnvironment)]
 mod patralottery {
     use crate::BabeRandomness;
-    use core::fmt::Write;
-    use ink_env::hash::Blake2x256;
     use ink_prelude::{string::String, vec, vec::Vec};
     use ink_storage::{
         collections::HashMap as StorageMap,
@@ -60,6 +58,7 @@ mod patralottery {
         derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
     )]
     pub struct Lottery {
+        pub epoch_id: EpochID,
         pub random: Hash,
         pub win_num: Vec<u32>,
         pub buyers: Vec<AccountId>,
@@ -81,22 +80,6 @@ mod patralottery {
         pub my_num: Vec<u32>,
         pub tickets: u32,
         pub reward: Balance,
-    }
-
-    #[derive(
-        Debug, PartialEq, Eq, Clone, scale::Encode, scale::Decode, SpreadLayout, PackedLayout,
-    )]
-    #[cfg_attr(
-        feature = "std",
-        derive(scale_info::TypeInfo, ink_storage::traits::StorageLayout)
-    )]
-    pub struct EpochHistory {
-        pub epoch_id: EpochID,
-        pub random: Hash,
-        pub my_num: Vec<u32>,
-        pub buyer: u32,
-        pub pool_in: Balance,
-        pub pool_out: Balance,
     }
 
     #[derive(
@@ -192,6 +175,7 @@ mod patralottery {
                 self.epochs.insert(
                     epoch_id,
                     Lottery {
+                        epoch_id,
                         random: Default::default(),
                         win_num: vec![],
                         buyers: vec![caller],
@@ -236,16 +220,10 @@ mod patralottery {
             let random_hash;
             let next_random: BabeRandomness = self.env().extension().next_epoch();
             if next_random.epoch == epoch_id {
-                random_hash = Hash::from(
-                    self.env()
-                        .hash_bytes::<Blake2x256>(next_random.randomness.as_ref()),
-                );
+                random_hash = Hash::from(next_random.randomness);
             } else if next_random.epoch == epoch_id + 1 {
                 let cur_random: BabeRandomness = self.env().extension().current_epoch();
-                random_hash = Hash::from(
-                    self.env()
-                        .hash_bytes::<Blake2x256>(cur_random.randomness.as_ref()),
-                );
+                random_hash = Hash::from(cur_random.randomness);
             } else {
                 random_hash = self.env().extension().randomness_of(epoch_id);
             }
@@ -378,23 +356,7 @@ mod patralottery {
         }
 
         #[ink(message)]
-        pub fn epoch_history(&self, epoch_id: EpochID) -> Option<EpochHistory> {
-            if let Some(lottery) = self.epochs.get(&epoch_id) {
-                Some(EpochHistory {
-                    epoch_id,
-                    random: lottery.random,
-                    my_num: lottery.win_num.clone(),
-                    buyer: lottery.buyers.len() as u32,
-                    pool_in: lottery.pool_in,
-                    pool_out: lottery.pool_out,
-                })
-            } else {
-                None
-            }
-        }
-
-        #[ink(message)]
-        pub fn lottery_history(&self, epoch_id: EpochID) -> Option<Lottery> {
+        pub fn epoch_history(&self, epoch_id: EpochID) -> Option<Lottery> {
             if let Some(lottery) = self.epochs.get(&epoch_id) {
                 Some((*lottery).clone())
             } else {
@@ -462,10 +424,7 @@ mod patralottery {
         }
 
         pub fn get_winning_number(random: Hash) -> (String, Vec<u32>) {
-            let mut seed = String::new();
-            for byte in random.as_ref() {
-                write!(&mut seed, "{:x}", byte).expect("Unable to write");
-            }
+            let seed = hex::encode(random.as_ref());
             let mut win: Vec<u32> = vec![];
             for (n, v) in seed.chars().filter_map(|x| x.to_digit(10)).enumerate() {
                 if n < 3 {

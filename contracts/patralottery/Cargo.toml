@@ -17,6 +17,8 @@ ink-babe-random = { version = "0.1.0", git = "https://github.com/patractlabs/ink
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
 scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
+hex = { version = "0.4", default-features = false }
+
 [lib]
 name = "patralottery"
 path = "lib.rs"
@@ -36,6 +38,7 @@ std = [
     "ink-babe-random/std",
     "scale/std",
     "scale-info/std",
+    "hex/std",
 ]
 ink-as-dependency = []
 

@@ -1,5 +1,5 @@
 [package]
-name = "erc20"
+name = "dai"
 version = "0.1.0"
 authors = ["Patract Labs <tyler@patract.io>"]
 edition = "2018"
@@ -18,7 +18,7 @@ scale-info = { version = "0.6", default-features = false, features = ["derive"],
 funty = "=1.1"
 
 [lib]
-name = "erc20"
+name = "dai"
 path = "lib.rs"
 crate-type = [
     # Used for normal contract Wasm blobs.
