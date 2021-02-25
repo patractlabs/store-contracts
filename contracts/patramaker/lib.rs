@@ -17,6 +17,9 @@ mod patramaker {
     pub type CdpId = u32;
     pub type USD = u32;
 
+    pub const DOTS: Balance = 10_000_000_000;
+    pub const DOT_PRICE_DECIMALS: u32 = 100;
+
     #[ink(event)]
     pub struct IssueDAI {
         #[ink(topic)]
@@ -128,7 +131,7 @@ mod patramaker {
                 min_collateral_ratio: 150,
                 min_liquidation_ratio: 110,
                 liquidater_reward_ratio: 5,
-                dot_price: 16,
+                dot_price: 3500,
                 owner: caller,
             }
         }
@@ -184,7 +187,10 @@ mod patramaker {
             assert!(cr >= self.min_collateral_ratio);
             let caller = self.env().caller();
             let collateral = self.env().transferred_balance();
-            let dai = collateral * self.dot_price as u128 * 100 / cr as u128;
+            let dai_decimals = self.dai_token.token_decimals().unwrap();
+            let dai =
+                collateral * self.dot_price as u128 * (10 ^ dai_decimals as u128 / DOTS) * 100
+                    / (cr * DOT_PRICE_DECIMALS) as u128;
             let cdp = CDP {
                 issuer: caller,
                 collateral_dot: collateral,
@@ -210,8 +216,15 @@ mod patramaker {
             let collateral = self.env().transferred_balance();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             assert!(cdp.issuer == caller);
-            let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
-                / cdp.issue_dai;
+            // let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
+            //     / cdp.issue_dai;
+            let dai_decimals = self.dai_token.token_decimals().unwrap();
+            let cr = (collateral + cdp.collateral_dot as u128)
+                * self.dot_price as u128
+                * 100
+                * (10 ^ dai_decimals as u128)
+                / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
+
             // assert!(cr >= self.min_collateral_ratio.into());
             cdp.collateral_dot += collateral;
             self.env().emit_event(AddCollateral {
@@ -228,8 +241,15 @@ mod patramaker {
             let caller = self.env().caller();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             assert!(cdp.issuer == caller);
-            let cr =
-                (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
+            // let cr =
+            //     (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
+            let dai_decimals = self.dai_token.token_decimals().unwrap();
+            let cr = (cdp.collateral_dot - collateral)
+                * self.dot_price as u128
+                * 100
+                * (10 ^ dai_decimals as u128)
+                / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
+
             // assert!(cr >= self.min_collateral_ratio.into());
             cdp.collateral_dot -= collateral;
             self.env().transfer(caller, collateral).unwrap();
@@ -247,7 +267,7 @@ mod patramaker {
             let caller = self.env().caller();
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             assert!(cdp.issuer == caller);
-//             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
+            // let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
             // assert!(cr >= self.min_collateral_ratio);
             assert!(dai <= cdp.issue_dai);
             let dot = cdp.collateral_dot * dai / cdp.issue_dai;
@@ -268,14 +288,20 @@ mod patramaker {
         pub fn liquidate_collateral(&mut self, cdp_id: CdpId, dai: Balance) {
             assert!(self.cdps.contains_key(&cdp_id));
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
-            let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
+            // let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
+            let dai_decimals = self.dai_token.token_decimals().unwrap();
+            let cr =
+                (cdp.collateral_dot * self.dot_price as u128 * 100 * (10 ^ dai_decimals as u128)
+                    / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
             assert!(cr <= self.min_collateral_ratio);
             assert!(cdp.issue_dai >= dai);
             let owner = cdp.issuer;
-            let dot = dai / self.dot_price as u128;
+            let dot = dai * DOTS * DOT_PRICE_DECIMALS as u128
+                / (self.dot_price * dai_decimals as u32) as u128;
             cdp.issue_dai -= dai;
             let keeper_reward =
-                dai * self.liquidater_reward_ratio as u128 / (100 * self.dot_price as u128);
+                dai * DOTS * self.liquidater_reward_ratio as u128 * DOT_PRICE_DECIMALS as u128
+                    / (100 * self.dot_price as u128 * dai_decimals as u128);
             cdp.collateral_dot = cdp.collateral_dot - dot - keeper_reward;
             let mut rest_dot = 0_u128;
             if cdp.issue_dai == 0 && cdp.collateral_dot > 0 {
@@ -300,14 +326,14 @@ mod patramaker {
         #[ink(message)]
         pub fn total_supply(&self) -> (u32, Balance, Balance) {
             let mut issuers = Vec::new();
-            let mut total_collateral: Balance = 0;
-            let mut total_issue_dai: Balance = 0;
+            let total_collateral: Balance = self.env().balance();
+            let total_issue_dai: Balance = self.dai_token.total_supply();
             for (_k, v) in self.cdps.iter() {
                 if !issuers.contains(&v.issuer) {
                     issuers.push(v.issuer);
                 }
-                total_collateral += v.collateral_dot;
-                total_issue_dai += v.issue_dai;
+                // total_collateral += v.collateral_dot;
+                // total_issue_dai += v.issue_dai;
             }
             (issuers.len() as u32, total_collateral, total_issue_dai)
         }
