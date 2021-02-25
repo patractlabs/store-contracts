@@ -308,8 +308,8 @@ mod patramaker {
                 rest_dot = cdp.collateral_dot;
                 cdp.collateral_dot = 0;
             }
-            assert!(self.env().transfer(owner, dot).is_ok());
             let caller = self.env().caller();
+            assert!(self.env().transfer(caller, dot).is_ok());
             assert!(self.env().transfer(caller, keeper_reward).is_ok());
             assert!(self.dai_token.burn(caller, dai).is_ok());
             if rest_dot > 0 {
