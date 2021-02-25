@@ -272,35 +272,35 @@
     "@types/websocket" "^1.0.1"
     websocket "^1.0.33"
 
-"@redspot/chai@^0.9.2-4":
-  version "0.9.2-4"
-  resolved "https://registry.yarnpkg.com/@redspot/chai/-/chai-0.9.2-4.tgz#65fc4e0977b0002418816f49670d6650cea9e2c9"
-  integrity sha512-4U96D3/ZZm0M0T+clTOmLQoixk6f0BS6T0nW3Zo0/CBKCh/7L4BLxoK/R+7+sfV3vUGBXCQF86AKv9MJwGwGxQ==
+"@redspot/chai@^0.9.2-5":
+  version "0.9.2-5"
+  resolved "https://registry.yarnpkg.com/@redspot/chai/-/chai-0.9.2-5.tgz#03c91ecf43d1ea3efc40e4a6e96b7f6b7ba49108"
+  integrity sha512-NrGm0mFMzvfj9NSURQ9sJsbRIBcV8eL3ezgcs4p5Mb/NgQcQ4tBT6hGUL3MivrB6Wl+qKcsDuCAH56pWmMEzwQ==
   dependencies:
     "@polkadot/api" "^3.2.3"
     "@polkadot/api-contract" "^3.2.3"
-    redspot "^0.9.2-4"
+    redspot "^0.9.2-5"
 
-"@redspot/gas-reporter@^0.9.2-4":
-  version "0.9.2-4"
-  resolved "https://registry.yarnpkg.com/@redspot/gas-reporter/-/gas-reporter-0.9.2-4.tgz#078fe7d2678d17327c435e90d8a69c2ff565ec2f"
-  integrity sha512-nDUh5kNLbdDOnBydacyXlO+9wXM9vg4E+/2GvK3jorsHecJpAO1JzVW5h9/4VGIEAMB8+JWfuisrsZo4ErAKRA==
+"@redspot/gas-reporter@^0.9.2-5":
+  version "0.9.2-5"
+  resolved "https://registry.yarnpkg.com/@redspot/gas-reporter/-/gas-reporter-0.9.2-5.tgz#c1860b29f3a4510598dbbce11dc2faf8e82422b5"
+  integrity sha512-vrNsv3zUxC62FE5cmE3qOzMIoyBFOgP1qaof0RXmj1XWBEtyl1NScAfWTjfEjciGmnCc0HxpVhSHap7qC+A68Q==
   dependencies:
     cli-table3 "^0.6.0"
     colors "^1.4.0"
     deasync "^0.1.21"
     lodash "^4.17.20"
-    redspot "^0.9.2-4"
+    redspot "^0.9.2-5"
     sync-request "^6.1.0"
 
-"@redspot/patract@^0.9.2-4":
-  version "0.9.2-4"
-  resolved "https://registry.yarnpkg.com/@redspot/patract/-/patract-0.9.2-4.tgz#a8ac4b5971ddae18358364a8eae3f1752cdd9280"
-  integrity sha512-FzsJ4cp7ykxRhgXaqKnpXBH9R/0MXOOM58Xki2jk9MjGkRR86LW7wWHInCgJiOCxAVM02/EAkFucAsc7cLV9Kw==
+"@redspot/patract@^0.9.2-5":
+  version "0.9.2-5"
+  resolved "https://registry.yarnpkg.com/@redspot/patract/-/patract-0.9.2-5.tgz#afaf8e7e8003d149e7216e6a4071e3f6754633fe"
+  integrity sha512-bGHe4ZTc15ohxPJETV02YvzWrHAcoDSPjyi7HLUcoMDdJH8PTeS5nqZggvtHiG1r0QFDyZaTWjsqlWmRmzIbxg==
   dependencies:
     "@polkadot/api" "^3.2.3"
     "@polkadot/api-contract" "^3.2.3"
-    redspot "^0.9.2-4"
+    redspot "^0.9.2-5"
 
 "@types/bn.js@^4.11.6":
   version "4.11.6"
@@ -1483,10 +1483,10 @@ readdirp@~3.5.0:
   dependencies:
     picomatch "^2.2.1"
 
-redspot@^0.9.2-4:
-  version "0.9.2-4"
-  resolved "https://registry.yarnpkg.com/redspot/-/redspot-0.9.2-4.tgz#2ff3ddaa123a178493aa4eddf0fd702bfcd2fec1"
-  integrity sha512-UgYNROhbavz7fkDnKp2eKPoHlLkzrXX/8C0Ntv4r8vGcHNJUjGXgTDk9XGgWNmvQo52rCQT2ja5+w80tL3bOKg==
+redspot@^0.9.2-5:
+  version "0.9.2-5"
+  resolved "https://registry.yarnpkg.com/redspot/-/redspot-0.9.2-5.tgz#866eab01e2a92ec23c2c2b1f1bb546e9b2a8cee8"
+  integrity sha512-PvwGl7wt/ipEMOJbogb9CZox8NiS/yvH35N+vAEAhYeYxFNxpOPOccVzx0EX5NGL8BfVm1uZ8A0scOkpWwpQbw==
   dependencies:
     "@polkadot/api" "^3.2.3"
     abort-controller "^3.0.0"

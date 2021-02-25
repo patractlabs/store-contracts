@@ -27,12 +27,24 @@ describe('PatraLottery', () => {
   it('Buy tickets', async () => {
     const {contract} = await setup();
 
-    await expect(contract.tx.buyTickets([1, 2, 3], 10, {
-      value: 10
+    await expect(contract.tx.buyTickets(100, [1, 2, 3], 2, {
+      value: 20000000000
     })).to.emit(
       contract,
       'BuyTickets'
     );
+  });
+
+  it('LotteriesOf', async () => {
+    const {sender, contract} = await setup();
+    await contract.tx.buyTickets(100, [1, 2, 3], 2, {
+      value: 20000000000
+    });
+    const result = await contract.query.lotteriesOf(sender.address);
+
+    console.log(result.output);
+
+    // expect(result.output).to.equal(7);
   });
 
 });
