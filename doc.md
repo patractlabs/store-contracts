@@ -14,7 +14,7 @@ wss://new-cc2.staging.jupiter.patract.cn
 ```
 ### PatraLottery
 ```
-5HPFuJkzgSkZ5mGgoLwHfSVXyUctE7KdCeVNze2TpcepPJVS
+5GsV8tG9BBAhjSRLMzqMWTCP4ZTnPUE6oebf1TdVjJxK6aPR
 ```
 ### PatraMaker
 dai contract address

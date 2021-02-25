@@ -390,8 +390,17 @@ mod patralottery {
         /// The historical randomness function cant get the current epoch and next epoch randomness.
         #[ink(message)]
         pub fn randomness_of(&self, epoch_id: EpochID) -> (String, Vec<u32>) {
-            let ret = self.env().extension().randomness_of(epoch_id);
-            Self::get_winning_number(ret)
+            let random_hash;
+            let next_random: BabeRandomness = self.env().extension().next_epoch();
+            if next_random.epoch == epoch_id {
+                random_hash = Hash::from(next_random.randomness);
+            } else if next_random.epoch == epoch_id + 1 {
+                let cur_random: BabeRandomness = self.env().extension().current_epoch();
+                random_hash = Hash::from(cur_random.randomness);
+            } else {
+                random_hash = self.env().extension().randomness_of(epoch_id);
+            }
+            Self::get_winning_number(random_hash)
         }
 
         #[ink(message)]
