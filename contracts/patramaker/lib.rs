@@ -187,10 +187,10 @@ mod patramaker {
             assert!(cr >= self.min_collateral_ratio);
             let caller = self.env().caller();
             let collateral = self.env().transferred_balance();
-            let dai_decimals = self.dai_token.token_decimals().unwrap();
-            let dai =
-                collateral * self.dot_price as u128 * (10 ^ dai_decimals as u128 / DOTS) * 100
-                    / (cr * DOT_PRICE_DECIMALS) as u128;
+            let dai_decimals =
+                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+            let dai = collateral * self.dot_price as u128 * (dai_decimals / DOTS) * 100
+                / (cr * DOT_PRICE_DECIMALS) as u128;
             let cdp = CDP {
                 issuer: caller,
                 collateral_dot: collateral,
@@ -218,11 +218,12 @@ mod patramaker {
             assert!(cdp.issuer == caller);
             // let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
             //     / cdp.issue_dai;
-            let dai_decimals = self.dai_token.token_decimals().unwrap();
+            let dai_decimals =
+                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
             let cr = (collateral + cdp.collateral_dot as u128)
                 * self.dot_price as u128
                 * 100
-                * (10 ^ dai_decimals as u128)
+                * dai_decimals
                 / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
 
             // assert!(cr >= self.min_collateral_ratio.into());
@@ -243,12 +244,11 @@ mod patramaker {
             assert!(cdp.issuer == caller);
             // let cr =
             //     (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
-            let dai_decimals = self.dai_token.token_decimals().unwrap();
-            let cr = (cdp.collateral_dot - collateral)
-                * self.dot_price as u128
-                * 100
-                * (10 ^ dai_decimals as u128)
-                / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
+            let dai_decimals =
+                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+            let cr =
+                (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 * dai_decimals
+                    / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
 
             // assert!(cr >= self.min_collateral_ratio.into());
             cdp.collateral_dot -= collateral;
@@ -289,19 +289,19 @@ mod patramaker {
             assert!(self.cdps.contains_key(&cdp_id));
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             // let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
-            let dai_decimals = self.dai_token.token_decimals().unwrap();
-            let cr =
-                (cdp.collateral_dot * self.dot_price as u128 * 100 * (10 ^ dai_decimals as u128)
-                    / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
+            let dai_decimals =
+                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+            let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 * dai_decimals
+                / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
             assert!(cr <= self.min_collateral_ratio);
             assert!(cdp.issue_dai >= dai);
             let owner = cdp.issuer;
-            let dot = dai * DOTS * DOT_PRICE_DECIMALS as u128
-                / (self.dot_price * dai_decimals as u32) as u128;
+            let dot =
+                dai * DOTS * DOT_PRICE_DECIMALS as u128 / (self.dot_price as u128 * dai_decimals);
             cdp.issue_dai -= dai;
             let keeper_reward =
                 dai * DOTS * self.liquidater_reward_ratio as u128 * DOT_PRICE_DECIMALS as u128
-                    / (100 * self.dot_price as u128 * dai_decimals as u128);
+                    / (100 * self.dot_price as u128 * dai_decimals);
             cdp.collateral_dot = cdp.collateral_dot - dot - keeper_reward;
             let mut rest_dot = 0_u128;
             if cdp.issue_dai == 0 && cdp.collateral_dot > 0 {
