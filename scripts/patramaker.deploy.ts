@@ -37,6 +37,14 @@ async function run() {
     contract.address.toString()
   );
 
+  // transfer dai contract ownership to maker
+  await daiContract.tx['ownable,transferOwnership'](contract.address.toString())
+
+  // init dai with 100k DOT
+  await contract.tx.issueDai(200, {
+    value: 1000000000000000
+  });
+
   api.disconnect();
 }
 
