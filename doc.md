@@ -40,10 +40,10 @@ maker contract address
 
 ### 固定地址的预发行资产列表：
 1. Tether USD, USDT, 2, 10亿, 可增发,
-   地址：`5FP6PSCeeBVfT3HGgadLQeso51HG2119bgSwLAbDiMTJgeqE`
+   地址：`5Fc9VypWmMhsiE6P2BoCVw97Y8KnUFCeP47SZCA1kvLjPXYG`
 1. Jupiter Bitcoin, jBTC, 8, 1百万，可增发,
-   地址：`5G3g2kRQqqrprw3YkCdxKubLHcrmxBav9Dvvy9siqAMaUStv`
+   地址：`5DHh9wbUr44NXPgXVaEjQbjBqxbH5PxkrrcW6cNC4xFtaoUo`
 1. Jupiter Ethereum, jETH, 18, 1千万，可增发,
-   地址：`5Ca7jBxtxrw6kA9oUAT3FQLBqjZdXdmwPguaHEjjtuV6Xyk6`
+   地址：`5DgCR6FJNLZDCUM9sH8rSQuNaXG83ciUzC6yYyoHaz7agkCB`
 1. Maker DAI, DAI, 18, x, 可增发,
-   地址：`5CYsfChVGCFf4ScSF4Hj4yVSF26NNQLwZnyqBR19fCHbpqkb`
+   地址：`5DTRjukhW6LCDjQc5XXg65b6wPxGgkgGXxPvcRW8TjpnA5b1`
