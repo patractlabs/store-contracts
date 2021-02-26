@@ -16,7 +16,7 @@ async function run() {
 
   console.log('Balance: ', balance.toHuman());
 
-  const contract = await contractFactory.deployed('new', {
+  const contract = await contractFactory.deployed('default', {
     gasLimit: '200000000000',
     value: '0',
     salt: 'PatraPixel'
