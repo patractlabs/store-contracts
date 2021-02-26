@@ -29,13 +29,48 @@ describe('ERC20', () => {
   }
 
   it('issue dai', async () => {
-    const { contract, receiver } = await setup();
-
+    const { contract } = await setup();
     await expect(contract.tx.issueDai(200, {
       value: 1000000000000000
-    }).;
+    })).to.emit(contract, 'IssueDAI');
+  });
 
+  it('add collateral', async () => {
+    const { contract } = await setup();
+    await contract.tx.issueDai(200, {
+      value: 1000000000000000
+    });
+    await expect(contract.tx.addCollateral(1, {
+      value: 500000000000
+    })).to.emit(contract, 'AddCollateral');
+  });
 
+  it('minus collateral', async () => {
+    const { contract } = await setup();
+    await contract.tx.issueDai(200, {
+      value: 1000000000000000
+    });
+    await expect(contract.tx.minusCollateral(1, 500000000000))
+      .to.emit(contract, 'MinusCollateral');
+  });
+
+  it('withdraw dot', async () => {
+    const { contract } = await setup();
+    await contract.tx.issueDai(200, {
+      value: 1000000000000000
+    });
+    await expect(contract.tx.withdrawDot(1, 2000000000000000000))
+      .to.emit(contract, 'Withdraw');
+  });
+
+  it('liquidate collateral', async () => {
+    const { contract } = await setup();
+    await contract.tx.issueDai(200, {
+      value: 1000000000000000
+    });
+    await contract.tx.withdrawDot(1, 2000000000000000000);
+    await expect(contract.tx.liquidateCollateral(1, 2000000000000000000))
+      .to.emit(contract, ' Liquidate');
   });
 
 });

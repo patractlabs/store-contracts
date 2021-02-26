@@ -41,10 +41,7 @@ describe('PatraLottery', () => {
       value: 20000000000
     });
     const result = await contract.query.lotteriesOf(sender.address);
-
     console.log(result.output);
-
-    // expect(result.output).to.equal(7);
   });
 
 });
