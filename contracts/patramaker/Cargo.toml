@@ -18,6 +18,8 @@ scale-info = { version = "0.6", default-features = false, features = ["derive"],
 ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", default-features = false }
 dai = { path = "dai", default-features = false, features = ["ink-as-dependency"] }
 
+primitive-types = { version = "0.9.0", default-features = false, features = ["codec"] }
+
 [lib]
 name = "patramaker"
 path = "lib.rs"
@@ -38,7 +40,8 @@ std = [
     "scale-info",
     "scale-info/std",
     "ownership/std",
-    "dai/std"
+    "dai/std",
+    "primitive-types/std",
 ]
 ink-as-dependency = []
 

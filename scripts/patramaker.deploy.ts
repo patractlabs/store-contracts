@@ -4,7 +4,7 @@ const { getContractFactory } = patract;
 const { createSigner, keyring, api } = network;
 
 const uri =
-  'sample gloom gold judge knock acid seven dice waste amateur strike lady';
+  'bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice';
 
 async function run() {
   await api.isReady;
@@ -19,7 +19,7 @@ async function run() {
   const daiContract = await daiContractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
     gasLimit: '200000000000',
     value: '0',
-    salt: 'Maker DAI Token test2'
+    salt: 'Maker DAI Token'
   });
   console.log(
     'Deploy dai successfully. The contract address: ',
@@ -30,7 +30,7 @@ async function run() {
   const contract = await contractFactory.deployed('new', daiContract.address, {
     gasLimit: '200000000000',
     value: '0',
-    salt: 'PatraMaker test2'
+    salt: 'PatraMaker'
   });
   console.log(
     'Deploy maker successfully. The contract address: ',

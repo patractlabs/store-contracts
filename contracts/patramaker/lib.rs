@@ -13,6 +13,7 @@ mod patramaker {
         Lazy,
     };
     use ownership::Ownable;
+    use primitive_types::U256;
 
     pub type CdpId = u32;
     pub type USD = u32;
@@ -270,7 +271,13 @@ mod patramaker {
             // let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
             // assert!(cr >= self.min_collateral_ratio);
             assert!(dai <= cdp.issue_dai);
-            let dot = cdp.collateral_dot * (dai / cdp.issue_dai);
+
+            let bt: U256 = cdp.collateral_dot.into();
+            let bi: U256 = dai.into();
+            let ui: U256 = cdp.issue_dai.into();
+            let r = bt * bi / ui;
+            let dot = r.as_u128();
+
             cdp.collateral_dot -= dot;
             cdp.issue_dai -= dai;
             self.env().transfer(caller, dot).unwrap();
