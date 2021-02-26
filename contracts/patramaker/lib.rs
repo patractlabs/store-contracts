@@ -301,14 +301,16 @@ mod patramaker {
             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 * dai_decimals
                 / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
             assert!(cr <= self.min_collateral_ratio);
-            assert!(cdp.issue_dai >= dai);
             let owner = cdp.issuer;
             let dot =
                 dai * DOTS * DOT_PRICE_DECIMALS as u128 / (self.dot_price as u128 * dai_decimals);
-            cdp.issue_dai -= dai;
-            let keeper_reward =
-                dai * DOTS * self.liquidater_reward_ratio as u128 * DOT_PRICE_DECIMALS as u128
-                    / (100 * self.dot_price as u128 * dai_decimals);
+            cdp.issue_dai = cdp.issue_dai.saturating_sub(dai);
+            // let keeper_reward =
+            //     dai * DOTS * self.liquidater_reward_ratio as u128 * DOT_PRICE_DECIMALS as u128
+            //         / (100 * self.dot_price as u128 * dai_decimals);
+            let keeper_reward = dai * DOTS * self.liquidater_reward_ratio as u128
+                / (self.dot_price as u128 * dai_decimals);
+
             cdp.collateral_dot = cdp.collateral_dot - dot - keeper_reward;
             let mut rest_dot = 0_u128;
             if cdp.issue_dai == 0 && cdp.collateral_dot > 0 {
@@ -316,8 +318,7 @@ mod patramaker {
                 cdp.collateral_dot = 0;
             }
             let caller = self.env().caller();
-            assert!(self.env().transfer(caller, dot).is_ok());
-            assert!(self.env().transfer(caller, keeper_reward).is_ok());
+            assert!(self.env().transfer(caller, dot + keeper_reward).is_ok());
             assert!(self.dai_token.burn(caller, dai).is_ok());
             if rest_dot > 0 {
                 assert!(self.env().transfer(owner, rest_dot).is_ok());
