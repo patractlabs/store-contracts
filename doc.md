@@ -35,7 +35,7 @@ maker contract address
 ```
 ### PatraSwap
 ```
-5CgQg7KiifY82sEDQqBYatGgnP7Ynvd7Z82f3FMa6mwmSsgw
+5DaHvjPkTx9gN48CTCG6HUJqZ8QG1X5RwZTQsW7TLN7Q69m2
 ```
 
 ### 固定地址的预发行资产列表：
