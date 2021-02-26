@@ -19,11 +19,11 @@ wss://new-cc2.staging.jupiter.patract.cn
 ### PatraMaker
 dai contract address
 ```
-5Dy9r3XFbiKE92YEaNEKYL5qTKpLyzHLiQbvCXBoNQQRSfDt
+5Eat5PTd8LwtwPKCMB5XQtNR79wcQmjcs9xr5qWL1pen6NMf
 ```
 maker contract address
 ```
-5Ck9iP43dMKy3hCWaKq56WNAWfCoZHSnercr8wkiJc8X5ieW
+5GNFi6cQixB4me6vmKq3zcobXszAJJhenNMbov64BBRNHxyg
 ```
 ### PatraPixel
 ```
