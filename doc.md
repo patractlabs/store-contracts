@@ -1,6 +1,6 @@
 ## Develop Testnet Dapps Address
 ```
-wss://new-cc2.staging.jupiter.patract.cn
+wss://ws.jupiter-poa.patract.cn/
 ```
 
 ### ERC20 Code Hash
@@ -19,11 +19,11 @@ wss://new-cc2.staging.jupiter.patract.cn
 ### PatraMaker
 dai contract address
 ```
-5EFriVMon2iijuDZUoS6cmLsJefPaN2AoBSPjm15yZR96zmG
+5E2jQmVUemwwWvTVYc2H93Q6G6EwhHag5GopqUANWN2PYEnK
 ```
 maker contract address
 ```
-5CQuQj4CFV4wZTwrbArCq7ubZ41wXum3UpEK5PT9Qn3fdK7F
+5CwwXCaj1q94whokZKWATcMK1byJn5omnYwujhFA9JXwp5kv
 ```
 ### PatraPixel
 ```
@@ -35,15 +35,15 @@ maker contract address
 ```
 ### PatraSwap
 ```
-5GAQb5XoPjKgwYWWnhJKdYUHL6jpUnyF6GVb3tGCTEGcauW7
+5GHi6bBPnY5ZiaXYKeKKe8ea7x8hGx8MNbQtJ9E6pahK9eDy
 ```
 
 ### 固定地址的预发行资产列表：
-1. Tether USD, USDT, 2, 10亿, 可增发,
-   地址：`5CWCyBYAHnU6mSRAusQz8XfvcekW5DDZAB93DMTj5vz8cGeP`
+1. Tether USD, USDT, 6, 10亿, 可增发,
+   地址：`5EuWbAoT1gRjGxCT1NQV2TtZofoCBQUWvfwUCq3yBAwwc55S`
 1. Jupiter Bitcoin, jBTC, 8, 1百万，可增发,
-   地址：`5GFy3TY68SBX6AKRKsAdN9VKTDuj2Jxkaiximr77snuEf2SU`
+   地址：`5D2QZYiR656LJCfde3Bc8GJb6eRe54iepMXTf4dFuqWSpeGq`
 1. Jupiter Ethereum, jETH, 18, 1千万，可增发,
-   地址：`5HYDuc4sBBV65XSHU28nFxmf28XuGUcqPQcjgwcJbMzENgvJ`
+   地址：`5DQK1qWnBV5cRhKJEMHoopt8BBxg3xf5WZsyLvpvStjq9AZg`
 1. Maker DAI, DAI, 18, x, 可增发,
-   地址：`5EFriVMon2iijuDZUoS6cmLsJefPaN2AoBSPjm15yZR96zmG`
+   地址：`5E2jQmVUemwwWvTVYc2H93Q6G6EwhHag5GopqUANWN2PYEnK`
