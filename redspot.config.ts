@@ -13,7 +13,7 @@ export default {
   },
   networks: {
     development: {
-      endpoint: 'wss://new.staging.jupiter.patract.cn',
+      endpoint: 'ws://127.0.0.1:9944',
       types: {
         LookupSource: "MultiAddress",
       },
