@@ -1,4 +1,5 @@
-## Develop Testnet Dapps Address
+## [PatraStore](https://patrastore.io) Dapps Contracts Address
+Patract PoA Network
 ```
 wss://ws.jupiter-poa.patract.cn/
 ```
@@ -45,5 +46,5 @@ maker contract address
    地址：`5D2QZYiR656LJCfde3Bc8GJb6eRe54iepMXTf4dFuqWSpeGq`
 1. Jupiter Ethereum, jETH, 18, 1千万，可增发,
    地址：`5DQK1qWnBV5cRhKJEMHoopt8BBxg3xf5WZsyLvpvStjq9AZg`
-1. Maker DAI, DAI, 18, x, 可增发,
+1. Maker DAI, DAI, 18, 0, 可增发,
    地址：`5E2jQmVUemwwWvTVYc2H93Q6G6EwhHag5GopqUANWN2PYEnK`
