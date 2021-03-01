@@ -25,16 +25,16 @@ async function run() {
 
   await contract.query['factory,getSwapPairs']();
   // USDT -> DAI
-  // await contract.tx['factory,createExchange'](usdt, dai, undefined);
+  await contract.tx['factory,createExchange'](usdt, dai, undefined);
 
   // USDT -> DOT
-  // await contract.tx['factory,createExchangeWithDot'](usdt, undefined);
+  await contract.tx['factory,createExchangeWithDot'](usdt, undefined);
 
   // USDT -> jETH
-  // await contract.tx['factory,createExchange'](usdt, eth, undefined);
+  await contract.tx['factory,createExchange'](usdt, eth, undefined);
 
   // USDT -> jBTC
-  // await contract.tx['factory,createExchange'](usdt, btc, undefined);
+  await contract.tx['factory,createExchange'](usdt, btc, undefined);
 
   // jBTC -> DOT
   await contract.tx['factory,createExchangeWithDot'](btc, undefined);
