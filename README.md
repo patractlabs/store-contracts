@@ -1,10 +1,11 @@
-# Store Dapps
+# Store Contracts
 
 ## Get started
 
 ### [Redspot](https://redspot.patract.io/zh-CN/tutorial/#get-started)
 
-Redspot is the most advanced WASM smart contract development, testing and debugging framework. It can simplify the development workflow and connects with other tools as the core of Patract Hub.
+Redspot is the most advanced WASM smart contract development, testing and debugging framework. 
+It can simplify the development workflow and connects with other tools as the core of Patract Hub.
 
 ### Run a local node
 ```
