@@ -24,26 +24,8 @@ async function run() {
   const epoch = await contract.query.latestEpoch();
   const epochId = epoch.output?.epoch_id.toHuman();
   console.log('Latest epoch: ', epochId);
-  // let reqArr = [];
-  for (let i=0; i<ticketsNum; i++) {
-    const num1 = Math.floor(Math.random() * 10);
-    const num2 = Math.floor(Math.random() * 10);
-    const num3 = Math.floor(Math.random() * 10);
-    const amount = Math.floor(Math.random() * 5 + 1);
-    // const buyer = await getRandomSigner(signer, one.muln(amount+1));
-    console.log('Buy tickets: ', num1, num2, num3, "amount: ", amount);
-    // let req = contract.tx.buyTickets(epochId, [num1, num2, num3], amount, {
-    //   signer: buyer,
-    //   value: 10000000000 * amount
-    // });
-    // reqArr.push(req);
-    await contract.tx.buyTickets(epochId, [num1, num2, num3], amount, {
-      value: 10000000000 * amount
-    })
-  }
-  // await Promise.all(reqArr).then((values) => {
-  //   console.log(values);
-  // })
+
+  await contract.tx.drawLottery(epochId-1);
 
   api.disconnect();
 }
