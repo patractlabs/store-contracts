@@ -300,7 +300,7 @@ mod patramaker {
                 10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 * dai_decimals
                 / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
-            assert!(cr <= self.min_collateral_ratio);
+            assert!(cr <= self.min_liquidation_ratio);
             let owner = cdp.issuer;
             let dot =
                 dai * DOTS * DOT_PRICE_DECIMALS as u128 / (self.dot_price as u128 * dai_decimals);
@@ -310,6 +310,7 @@ mod patramaker {
             //         / (100 * self.dot_price as u128 * dai_decimals);
             let keeper_reward = dai * DOTS * self.liquidater_reward_ratio as u128
                 / (self.dot_price as u128 * dai_decimals);
+            assert!(dot + keeper_reward <= cdp.collateral_dot);
 
             cdp.collateral_dot = cdp.collateral_dot - dot - keeper_reward;
             let mut rest_dot = 0_u128;
