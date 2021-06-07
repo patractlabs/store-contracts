@@ -13,12 +13,13 @@ export default {
   },
   networks: {
     development: {
-      endpoint: 'ws://127.0.0.1:9944',
+      endpoint: 'wss://jupiter-poa.elara.patract.io/',
       types: {
         LookupSource: "MultiAddress",
       },
       gasLimit: '400000000000',
-      explorerUrl: 'https://polkadot.js.org/apps/#/explorer/query/'
+      explorerUrl: 'https://polkadot.js.org/apps/#/explorer/query/',
+      accounts: ['//Alice'],
     },
     substrate: {
       endpoint: 'ws://127.0.0.1:9944',

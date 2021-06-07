@@ -2,15 +2,13 @@ import { patract, network } from 'redspot';
 import type Contract from '@redspot/patract/contract';
 
 const { getContractFactory } = patract;
-const { createSigner, keyring, api } = network;
-
-const uri =
-  'bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice';
+const { api, getSigners } = network;
 
 async function run() {
   await api.isReady;
 
-  const signer = createSigner(keyring.createFromUri(uri));
+  const signers = await getSigners();
+  const signer = signers[0];
   const contractFactory = await getContractFactory('erc20_issue', signer);
 
   const balance = await api.query.system.account(signer.address);
