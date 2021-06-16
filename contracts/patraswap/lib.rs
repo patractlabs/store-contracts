@@ -6,6 +6,8 @@ use ink_lang as ink;
 mod factory {
     use ink_lang as ink;
 
+    use erc20_stub::Erc20Stub;
+
     use lpt::Erc20;
     use exchange::PatraExchange;
     use exchange2::PatraExchange as PatraExchange2;
@@ -126,7 +128,7 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
-            let from_token_contract: Erc20 = FromAccountId::from_account_id(from_token);
+            let from_token_contract: Erc20Stub = FromAccountId::from_account_id(from_token);
 
             // instantiate lp token
             let lpt_params = Erc20::new(
@@ -195,7 +197,7 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
-            let from_token_contract: Erc20 = FromAccountId::from_account_id(from_token);
+            let from_token_contract: Erc20Stub = FromAccountId::from_account_id(from_token);
             // instantiate lp token
             let lpt_params = Erc20::new(
                 0,
