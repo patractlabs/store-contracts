@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x6e015de4e6050d1995accbab1b725dcda8b08c7ef4967542b15c6551cd0c43e5",
-    "language": "ink! 3.0.0-rc2",
-    "compiler": "rustc 1.52.0-nightly"
+    "hash": "0xceba4cb21750da9fc7f7448610add1efa5684f6469cb5ba2b1799b4b9d649e40",
+    "language": "ink! 3.0.0-rc3",
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "patralottery",
