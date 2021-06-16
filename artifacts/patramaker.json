@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xeb1218d3926c9074492e19baea2d3ce5b446b44fddcb2cfe65f3f678ef4c9d77",
-    "language": "ink! 3.0.0-rc2",
-    "compiler": "rustc 1.52.0-nightly"
+    "hash": "0xf78071dc2a625f6e56a146c1364aca20b6ca68fb8a3f6663caaa18eb3fcd17a1",
+    "language": "ink! 3.0.0-rc3",
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "patramaker",
