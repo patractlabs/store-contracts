@@ -273,18 +273,18 @@
     "@types/websocket" "^1.0.2"
     websocket "^1.0.34"
 
-"@redspot/chai@^0.11.6-1":
-  version "0.11.6-1"
-  resolved "https://registry.nlark.com/@redspot/chai/download/@redspot/chai-0.11.6-1.tgz#63e833b2d3e8d9f4f4a019d57044a48fc2fae014"
-  integrity sha1-Y+gzstPo2fT0oBnVcESkj8L64BQ=
+"@redspot/chai@^0.11.6-3":
+  version "0.11.6-3"
+  resolved "https://registry.yarnpkg.com/@redspot/chai/-/chai-0.11.6-3.tgz#d655bd8d34185dff6b70768ed88fd2ded5134338"
+  integrity sha512-2Jia6Df+XleIPxW4EAM/E1CbSD5zTndMsJxCtmdausYseyDOKiuBAGJGV9WB3Y/pmKtPjxH34iTEidTVqdEu2g==
   dependencies:
     "@polkadot/api" "^4.11.2"
     "@polkadot/api-contract" "^4.11.2"
 
-"@redspot/gas-reporter@^0.11.6-1":
-  version "0.11.6-1"
-  resolved "https://registry.nlark.com/@redspot/gas-reporter/download/@redspot/gas-reporter-0.11.6-1.tgz#628a8ef8e45cb17fe8d53c05ed4f596f75873693"
-  integrity sha1-YoqO+ORcsX/o1TwF7U9Zb3WHNpM=
+"@redspot/gas-reporter@^0.11.6-3":
+  version "0.11.6-3"
+  resolved "https://registry.yarnpkg.com/@redspot/gas-reporter/-/gas-reporter-0.11.6-3.tgz#b5131a20d038179cbb71e1576365ad6dd2400b39"
+  integrity sha512-P95YDbu3tc3iqA7XQH+UOOFgyjE/3gNe1Tn1CfsqpAXRjK75KISQiPOHZUBwIThV6Xe+tUoDrNoYrinWA/oWZA==
   dependencies:
     cli-table3 "^0.6.0"
     colors "^1.4.0"
@@ -292,10 +292,10 @@
     lodash "^4.17.20"
     sync-request "^6.1.0"
 
-"@redspot/patract@^0.11.6-1":
-  version "0.11.6-1"
-  resolved "https://registry.nlark.com/@redspot/patract/download/@redspot/patract-0.11.6-1.tgz#02c71afd88669ea07e03600d2872cc070d4a95b3"
-  integrity sha1-Asca/YhmnqB+A2ANKHLMBw1KlbM=
+"@redspot/patract@^0.11.6-3":
+  version "0.11.6-3"
+  resolved "https://registry.yarnpkg.com/@redspot/patract/-/patract-0.11.6-3.tgz#31eefffd9dbf273845d14a1bb5ec2c09b119012b"
+  integrity sha512-D9jj4cMvc4/2R+dEzSO4HgORhezV49RZkN5fWh/IclC7HRrPYta0mZDIaDN1beWK/5BcRWImUCYMkJp/6qTA9g==
   dependencies:
     "@polkadot/api" "^4.11.2"
     "@polkadot/api-contract" "^4.11.2"
@@ -1486,10 +1486,10 @@ readdirp@~3.5.0:
   dependencies:
     picomatch "^2.2.1"
 
-redspot@^0.11.6-1:
-  version "0.11.6-1"
-  resolved "https://registry.nlark.com/redspot/download/redspot-0.11.6-1.tgz#569418220efac8ed44604731c693b77c58ba08fa"
-  integrity sha1-VpQYIg76yO1EYEcxxpO3fFi6CPo=
+redspot@^0.11.6-3:
+  version "0.11.6-3"
+  resolved "https://registry.yarnpkg.com/redspot/-/redspot-0.11.6-3.tgz#6571c5219f8335bff6fd61952e6fec51f63d7fcc"
+  integrity sha512-QsP8C+lYD949r9tDp+GXB/ofpeR3lQLBkhWrluYERRVXTnQAs36LnDI2Hc/S2bNLN5AMyMFUkq/5Ie/jP6acQQ==
   dependencies:
     "@polkadot/api" "^4.11.2"
     abort-controller "^3.0.0"
