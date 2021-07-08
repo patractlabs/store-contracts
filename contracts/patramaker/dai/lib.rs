@@ -1,71 +1,124 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use self::erc20::Erc20;
-use ink_lang as ink;
 
-#[ink::contract]
+#[metis_lang::contract]
 mod erc20 {
     use ink_prelude::string::String;
+    use metis_erc20::{self as erc20, Result};
+    use metis_lang::{
+        import,
+        metis,
+    };
 
-    /// The ERC-20 error types.
-    #[derive(Debug, PartialEq, Eq, scale::Encode, scale::Decode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-    pub enum Error {
-        /// Returned if not enough balance to fulfill a request is available.
-        InsufficientBalance,
-        InsufficientSupply,
-        /// Returned if not enough allowance to fulfill a request is available.
-        InsufficientAllowance,
+    /// Event emitted when a token transfer occurs.
+    #[ink(event)]
+    #[metis(erc20)]
+    pub struct Transfer {
+        #[ink(topic)]
+        pub from: Option<AccountId>,
+        #[ink(topic)]
+        pub to: Option<AccountId>,
+        #[ink(topic)]
+        pub value: Balance,
     }
 
-    /// The ERC-20 result type.
-    pub type Result<T> = core::result::Result<T, Error>;
+    /// Event emitted when an approval occurs that `spender` is allowed to withdraw
+    /// up to the amount of `value` tokens from `owner`.
+    #[ink(event)]
+    #[metis(erc20)]
+    pub struct Approval {
+        #[ink(topic)]
+        pub owner: AccountId,
+        #[ink(topic)]
+        pub spender: AccountId,
+        #[ink(topic)]
+        pub value: Balance,
+    }
 
     #[ink(storage)]
-    pub struct Erc20 {}
+    #[import(erc20)]
+    pub struct Erc20 {
+        /// Metis-Erc20 Data
+        erc20: erc20::Data<Erc20>,
+        /// Decimals of the token
+        decimals: u8,
+    }
+
+    #[cfg(not(feature = "ink-as-dependency"))]
+    impl erc20::Impl<Erc20> for Erc20 {
+        fn _before_token_transfer(
+            &mut self,
+            _from: &AccountId,
+            _to: &AccountId,
+            _amount: Balance,
+        ) -> Result<()>
+        {
+            Ok(())
+        }
+    }
 
     impl Erc20 {
         /// Creates a new ERC-20 contract with the specified initial supply.
         #[ink(constructor)]
         pub fn new(
-            _initial_supply: Balance,
-            _name: Option<String>,
-            _symbol: Option<String>,
-            _decimals: Option<u8>,
+            initial_supply: Balance,
+            name: String,
+            symbol: String,
+            decimals: Option<u8>,
         ) -> Self {
-            unimplemented!()
+            let mut instance = Self {
+                erc20: erc20::Data::new(),
+                decimals: decimals.unwrap_or(18),
+            };
+
+            erc20::Impl::init(
+                &mut instance,
+                name,
+                symbol,
+                initial_supply,
+            );
+
+            let caller = Self::env().caller();
+            Self::env().emit_event(Transfer {
+                from: None,
+                to: Some(caller),
+                value: initial_supply,
+            });
+
+            instance
         }
 
         /// Returns the token name.
-        #[ink(message, selector = "0x6b1bb951")]
-        pub fn token_name(&self) -> Option<String> {
-            unimplemented!()
+        #[ink(message)]
+        pub fn token_name(&self) -> String {
+            erc20::Impl::name(self)
         }
 
         /// Returns the token symbol.
-        #[ink(message, selector = "0xb42c3368")]
-        pub fn token_symbol(&self) -> Option<String> {
-            unimplemented!()
+        #[ink(message)]
+        pub fn token_symbol(&self) -> String {
+            erc20::Impl::symbol(self)
         }
 
         /// Returns the token decimals.
-        #[ink(message, selector = "0xc64b0eb2")]
-        pub fn token_decimals(&self) -> Option<u8> {
-            unimplemented!()
+        #[ink(message)]
+        pub fn token_decimals(&self) -> u8 {
+            self.decimals
         }
 
         /// Returns the total token supply.
-        #[ink(message, selector = "0x143862ae")]
+        #[ink(message)]
         pub fn total_supply(&self) -> Balance {
-            unimplemented!()
+            erc20::Impl::total_supply(self)
         }
 
         /// Returns the account balance for the specified `owner`.
         ///
         /// Returns `0` if the account is non-existent.
-        #[ink(message, selector = "0xb7d968c9")]
-        pub fn balance_of(&self, _owner: AccountId) -> Balance {
-            unimplemented!()
+        #[ink(message)]
+        pub fn balance_of(&self, owner: AccountId) -> Balance {
+            erc20::Impl::balance_of(self, &owner)
         }
 
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
@@ -76,17 +129,17 @@ mod erc20 {
         ///
         /// Returns `InsufficientBalance` error if there are not enough tokens on
         /// the caller's account balance.
-        #[ink(message, selector = "0x10d455c2")]
-        pub fn transfer(&mut self, _to: AccountId, _value: Balance) -> Result<()> {
-            unimplemented!()
+        #[ink(message)]
+        pub fn transfer(&mut self, to: AccountId, value: Balance) -> Result<()> {
+            erc20::Impl::transfer(self, &to, value)
         }
 
         /// Returns the amount which `spender` is still allowed to withdraw from `owner`.
         ///
         /// Returns `0` if no allowance has been set `0`.
-        #[ink(message, selector = "0xc04aa300")]
-        pub fn allowance(&self, _owner: AccountId, _spender: AccountId) -> Balance {
-            unimplemented!()
+        #[ink(message)]
+        pub fn allowance(&self, owner: AccountId, spender: AccountId) -> Balance {
+            erc20::Impl::allowance(self, &owner, &spender)
         }
 
         /// Transfers `value` tokens on the behalf of `from` to the account `to`.
@@ -103,14 +156,14 @@ mod erc20 {
         ///
         /// Returns `InsufficientBalance` error if there are not enough tokens on
         /// the the account balance of `from`.
-        #[ink(message, selector = "0xbb399017")]
+        #[ink(message)]
         pub fn transfer_from(
             &mut self,
-            _from: AccountId,
-            _to: AccountId,
-            _value: Balance,
+            from: AccountId,
+            to: AccountId,
+            value: Balance,
         ) -> Result<()> {
-            unimplemented!()
+            erc20::Impl::transfer_from(self, &from, &to, value)
         }
 
         /// Allows `spender` to withdraw from the caller's account multiple times, up to
@@ -119,16 +172,16 @@ mod erc20 {
         /// If this function is called again it overwrites the current allowance with `value`.
         ///
         /// An `Approval` event is emitted.
-        #[ink(message, selector = "0x4ce0e831")]
-        pub fn approve(&mut self, _spender: AccountId, _value: Balance) -> Result<()> {
-            unimplemented!()
+        #[ink(message)]
+        pub fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()> {
+            erc20::Impl::approve(self, &spender, value)
         }
 
         /// Issue a new amount of tokens
         /// these tokens are deposited into the owner address
         #[ink(message)]
-        pub fn mint(&mut self, _user: AccountId, _amount: Balance) -> Result<()> {
-            unimplemented!()
+        pub fn mint(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+            erc20::Impl::_mint(self, &user, amount)
         }
 
         /// Redeem tokens.
@@ -136,8 +189,8 @@ mod erc20 {
         /// if the balance must be enough to cover the redeem
         /// or the call will fail.
         #[ink(message)]
-        pub fn burn(&mut self, _user: AccountId, _amount: Balance) -> Result<()> {
-            unimplemented!()
+        pub fn burn(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+            erc20::Impl::_burn(self, &user, amount)
         }
     }
 }

@@ -623,6 +623,7 @@ checksum = "8452105ba047068f40ff7093dd1d9da90898e63dd61736462e9cdda6a90ad3c3"
 [[package]]
 name = "metis_contract"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "ink_env",
  "ink_lang",
@@ -637,6 +638,7 @@ dependencies = [
 [[package]]
 name = "metis_erc20"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "ink_env",
  "ink_lang",
@@ -654,6 +656,7 @@ dependencies = [
 [[package]]
 name = "metis_lang"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "metis_contract",
  "metis_lang_macro",
@@ -662,6 +665,7 @@ dependencies = [
 [[package]]
 name = "metis_lang_codegen"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "blake2",
  "convert_case",
@@ -682,6 +686,7 @@ dependencies = [
 [[package]]
 name = "metis_lang_macro"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "ink_lang_codegen",
  "ink_lang_ir",
@@ -696,6 +701,7 @@ dependencies = [
 [[package]]
 name = "metis_ownable"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "ink_metadata",
  "ink_storage",
@@ -708,6 +714,7 @@ dependencies = [
 [[package]]
 name = "metis_pausable"
 version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "ink_metadata",
  "ink_storage",

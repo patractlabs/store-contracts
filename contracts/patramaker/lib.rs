@@ -189,7 +189,7 @@ mod patramaker {
             let caller = self.env().caller();
             let collateral = self.env().transferred_balance();
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let dai = collateral * self.dot_price as u128 * (dai_decimals / DOTS) * 100
                 / (cr * DOT_PRICE_DECIMALS) as u128;
             let cdp = CDP {
@@ -220,7 +220,7 @@ mod patramaker {
             // let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
             //     / cdp.issue_dai;
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let cr = (collateral + cdp.collateral_dot as u128)
                 * self.dot_price as u128
                 * 100
@@ -246,7 +246,7 @@ mod patramaker {
             // let cr =
             //     (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let cr =
                 (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 * dai_decimals
                     / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
@@ -297,7 +297,7 @@ mod patramaker {
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             // let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 * dai_decimals
                 / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
             assert!(cr <= self.min_liquidation_ratio);

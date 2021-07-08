@@ -154,6 +154,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "convert_case"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
+
+[[package]]
 name = "cpufeatures"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -291,6 +297,8 @@ dependencies = [
  "ink_prelude",
  "ink_primitives",
  "ink_storage",
+ "metis_erc20",
+ "metis_lang",
  "parity-scale-codec",
  "scale-info",
 ]
@@ -411,7 +419,7 @@ dependencies = [
 [[package]]
 name = "ink_allocator"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "wee_alloc",
 ]
@@ -419,7 +427,7 @@ dependencies = [
 [[package]]
 name = "ink_env"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "arrayref",
  "blake2",
@@ -443,7 +451,7 @@ dependencies = [
 [[package]]
 name = "ink_lang"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "derive_more",
  "ink_env",
@@ -459,7 +467,7 @@ dependencies = [
 [[package]]
 name = "ink_lang_codegen"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "blake2",
  "derive_more",
@@ -478,7 +486,7 @@ dependencies = [
 [[package]]
 name = "ink_lang_ir"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "blake2",
  "either",
@@ -492,7 +500,7 @@ dependencies = [
 [[package]]
 name = "ink_lang_macro"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "ink_lang_codegen",
  "ink_lang_ir",
@@ -505,7 +513,7 @@ dependencies = [
 [[package]]
 name = "ink_metadata"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "derive_more",
  "impl-serde",
@@ -518,7 +526,7 @@ dependencies = [
 [[package]]
 name = "ink_prelude"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "cfg-if 1.0.0",
 ]
@@ -526,7 +534,7 @@ dependencies = [
 [[package]]
 name = "ink_primitives"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "ink_prelude",
  "parity-scale-codec",
@@ -536,7 +544,7 @@ dependencies = [
 [[package]]
 name = "ink_storage"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "array-init",
  "cfg-if 1.0.0",
@@ -554,7 +562,7 @@ dependencies = [
 [[package]]
 name = "ink_storage_derive"
 version = "3.0.0-rc3"
-source = "git+https://github.com/paritytech/ink#e1486563d9cf3a0ab3154686a989cd88aca579d1"
+source = "git+https://github.com/paritytech/ink#4e2c7c301bda9dfb48c9e51c814b79590653ba39"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -653,6 +661,110 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8452105ba047068f40ff7093dd1d9da90898e63dd61736462e9cdda6a90ad3c3"
 
 [[package]]
+name = "metis_contract"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "ink_env",
+ "ink_lang",
+ "ink_metadata",
+ "ink_primitives",
+ "ink_storage",
+ "num-traits",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
+name = "metis_erc20"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "ink_env",
+ "ink_lang",
+ "ink_metadata",
+ "ink_prelude",
+ "ink_storage",
+ "metis_lang",
+ "metis_ownable",
+ "metis_pausable",
+ "num-traits",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
+name = "metis_lang"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "metis_contract",
+ "metis_lang_macro",
+]
+
+[[package]]
+name = "metis_lang_codegen"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "blake2",
+ "convert_case",
+ "derive_more",
+ "either",
+ "heck",
+ "impl-serde",
+ "ink_lang_codegen",
+ "ink_lang_ir",
+ "itertools 0.10.1",
+ "parity-scale-codec",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "syn",
+]
+
+[[package]]
+name = "metis_lang_macro"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "ink_lang_codegen",
+ "ink_lang_ir",
+ "metis_lang_codegen",
+ "num-traits",
+ "parity-scale-codec",
+ "proc-macro2",
+ "scale-info",
+ "syn",
+]
+
+[[package]]
+name = "metis_ownable"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "ink_metadata",
+ "ink_storage",
+ "metis_lang",
+ "num-traits",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
+name = "metis_pausable"
+version = "0.1.0"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
+dependencies = [
+ "ink_metadata",
+ "ink_storage",
+ "metis_lang",
+ "num-traits",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
 name = "num-traits"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -686,7 +798,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "ownership"
 version = "0.1.0"
-source = "git+https://github.com/patractlabs/metis#99701cd69a02f1ae9196e80fee97bdadc518ba6d"
+source = "git+https://github.com/patractlabs/metis#318a2d687ccf34fc8ecc60643d68fcaf3db905e1"
 dependencies = [
  "ink_env",
  "ink_lang",
