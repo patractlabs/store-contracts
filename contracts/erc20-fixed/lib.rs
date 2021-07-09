@@ -41,17 +41,7 @@ mod erc20 {
         erc20: erc20::Data<Erc20>,
     }
 
-    impl erc20::Impl<Erc20> for Erc20 {
-        fn _before_token_transfer(
-            &mut self,
-            _from: &AccountId,
-            _to: &AccountId,
-            _amount: Balance,
-        ) -> Result<()>
-        {
-            Ok(())
-        }
-    }
+    impl erc20::Impl<Erc20> for Erc20 {}
 
     impl Erc20 {
         #[ink(constructor)]

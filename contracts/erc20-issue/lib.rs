@@ -5,33 +5,18 @@ use ink_lang as ink;
 
 #[ink::contract]
 mod erc20 {
-    use erc20_trait::{Error as IError, IErc20, Result as IResult};
     use ink_prelude::string::String;
-    use ownership::Ownable;
+    use metis_erc20::{self as erc20, Error, Result};
+    use metis_ownable::{self as ownable};
+    use metis_lang::{
+        import,
+        metis,
+    };
 
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_lang as ink;
     #[cfg(not(feature = "ink-as-dependency"))]
     use ink_storage::{collections::HashMap as StorageHashMap, lazy::Lazy};
-
-    /// The ERC-20 error types.
-    #[derive(Debug, PartialEq, Eq, scale::Encode)]
-    #[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
-    pub enum Error {
-        /// Returned if not enough balance to fulfill a request is available.
-        InsufficientBalance,
-        InsufficientSupply,
-        /// Returned if not enough allowance to fulfill a request is available.
-        InsufficientAllowance,
-        BlacklistedUser,
-        InvalidAmount,
-        OnlyOwnerAccess,
-        InvalidNewOwner,
-        NotBlacklistedUser,
-    }
-
-    /// The ERC-20 result type.
-    pub type Result<T> = core::result::Result<T, Error>;
 
     /// Base contract which allows children to implement an emergency stop mechanism.
     #[ink::trait_definition]

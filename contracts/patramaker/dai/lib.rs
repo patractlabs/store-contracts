@@ -44,17 +44,7 @@ mod erc20 {
     }
 
     #[cfg(not(feature = "ink-as-dependency"))]
-    impl erc20::Impl<Erc20> for Erc20 {
-        fn _before_token_transfer(
-            &mut self,
-            _from: &AccountId,
-            _to: &AccountId,
-            _amount: Balance,
-        ) -> Result<()>
-        {
-            Ok(())
-        }
-    }
+    impl erc20::Impl<Erc20> for Erc20 {}
 
     impl Erc20 {
         /// Creates a new ERC-20 contract with the specified initial supply.
