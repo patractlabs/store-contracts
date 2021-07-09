@@ -1,7 +1,7 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xba7ad4a5c9e2dbc26724a0ef9dff303c640bdc8ea6546a95115f2e7f1460abd2",
+    "hash": "0xe5b4bb95ddc237fdfdffe1e36299ff66d5c9b142fa536af3a3e9b8f6674363c7",
     "language": "ink! 3.0.0-rc3",
     "compiler": "rustc 1.54.0-nightly"
   },
@@ -619,7 +619,7 @@
                           "layout": {
                             "cell": {
                               "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
-                              "ty": 12
+                              "ty": 7
                             }
                           },
                           "name": null
@@ -632,25 +632,25 @@
                             }
                           },
                           "name": null
+                        },
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
+                              "ty": 12
+                            }
+                          },
+                          "name": null
                         }
                       ]
                     }
                   },
-                  "name": "symbols"
+                  "name": "metadatas"
                 }
               ]
             }
           },
           "name": "erc20"
-        },
-        {
-          "layout": {
-            "cell": {
-              "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
-              "ty": 7
-            }
-          },
-          "name": "decimals"
         }
       ]
     }

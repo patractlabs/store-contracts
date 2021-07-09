@@ -41,8 +41,6 @@ mod erc20 {
     pub struct Erc20 {
         /// Metis-Erc20 Data
         erc20: erc20::Data<Erc20>,
-        /// Decimals of the token
-        decimals: u8,
     }
 
     #[cfg(not(feature = "ink-as-dependency"))]
@@ -69,13 +67,13 @@ mod erc20 {
         ) -> Self {
             let mut instance = Self {
                 erc20: erc20::Data::new(),
-                decimals: decimals.unwrap_or(18),
             };
 
             erc20::Impl::init(
                 &mut instance,
                 name,
                 symbol,
+                decimals.unwrap_or(18),
                 initial_supply,
             );
 
@@ -104,7 +102,7 @@ mod erc20 {
         /// Returns the token decimals.
         #[ink(message)]
         pub fn token_decimals(&self) -> u8 {
-            self.decimals
+            erc20::Impl::decimals(self)
         }
 
         /// Returns the total token supply.
