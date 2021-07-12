@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x4228570c4c410b7e2102f1d5b58ce1d5cbfdb630ebe813194aac5995b1330a81",
+    "hash": "0xd6932498c8408a4c035dfcc64f2e76cfe756937a6c1904d46a1ca09a316a6725",
     "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.54.0-nightly"
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "patramaker",
@@ -14,15 +14,6 @@
   },
   "spec": {
     "constructors": [
-      {
-        "args": [],
-        "docs": [],
-        "name": [
-          "Ownable",
-          "new"
-        ],
-        "selector": "0x58c987a1"
-      },
       {
         "args": [
           {
@@ -238,50 +229,43 @@
         ],
         "docs": [],
         "name": "Liquidate"
-      }
-    ],
-    "messages": [
-      {
-        "args": [],
-        "docs": [],
-        "mutates": false,
-        "name": [
-          "Ownable",
-          "owner"
-        ],
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "Option"
-          ],
-          "type": 12
-        },
-        "selector": "0x4fa43c8c"
       },
       {
         "args": [
           {
+            "docs": [
+              " previous owner account id"
+            ],
+            "indexed": true,
+            "name": "previous_owner",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 16
+            }
+          },
+          {
+            "docs": [
+              " new owner account id"
+            ],
+            "indexed": true,
             "name": "new_owner",
             "type": {
               "displayName": [
                 "Option"
               ],
-              "type": 12
+              "type": 16
             }
           }
         ],
         "docs": [
-          " transfer contract ownership to new owner."
+          " Event emitted when Owner AccountId Transferred"
         ],
-        "mutates": true,
-        "name": [
-          "Ownable",
-          "transfer_ownership"
-        ],
-        "payable": false,
-        "returnType": null,
-        "selector": "0x11f43efd"
-      },
+        "name": "OwnershipTransferred"
+      }
+    ],
+    "messages": [
       {
         "args": [
           {
@@ -384,7 +368,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 13
+          "type": 12
         },
         "selector": "0x85b3e1f7"
       },
@@ -412,7 +396,7 @@
           "displayName": [
             "Option"
           ],
-          "type": 14
+          "type": 13
         },
         "selector": "0xffb46c88"
       },
@@ -438,7 +422,7 @@
         "payable": true,
         "returnType": {
           "displayName": [],
-          "type": 15
+          "type": 14
         },
         "selector": "0xffede79b"
       },
@@ -578,7 +562,7 @@
         "payable": false,
         "returnType": {
           "displayName": [],
-          "type": 16
+          "type": 15
         },
         "selector": "0xdb6375a8"
       },
@@ -750,12 +734,38 @@
         },
         {
           "layout": {
-            "cell": {
-              "key": "0x0800000001000000000000000000000000000000000000000000000000000000",
-              "ty": 1
+            "struct": {
+              "fields": [
+                {
+                  "layout": {
+                    "enum": {
+                      "dispatchKey": "0x0800000001000000000000000000000000000000000000000000000000000000",
+                      "variants": {
+                        "0": {
+                          "fields": [
+                            {
+                              "layout": {
+                                "cell": {
+                                  "key": "0x0900000001000000000000000000000000000000000000000000000000000000",
+                                  "ty": 1
+                                }
+                              },
+                              "name": null
+                            }
+                          ]
+                        },
+                        "1": {
+                          "fields": []
+                        }
+                      }
+                    }
+                  },
+                  "name": "owner"
+                }
+              ]
             }
           },
-          "name": "owner"
+          "name": "ownable"
         }
       ]
     }
@@ -956,32 +966,6 @@
     },
     {
       "def": {
-        "variant": {
-          "variants": [
-            {
-              "name": "None"
-            },
-            {
-              "fields": [
-                {
-                  "type": 1,
-                  "typeName": "T"
-                }
-              ],
-              "name": "Some"
-            }
-          ]
-        }
-      },
-      "params": [
-        1
-      ],
-      "path": [
-        "Option"
-      ]
-    },
-    {
-      "def": {
         "tuple": [
           5,
           5,
@@ -1032,6 +1016,32 @@
           10
         ]
       }
+    },
+    {
+      "def": {
+        "variant": {
+          "variants": [
+            {
+              "name": "None"
+            },
+            {
+              "fields": [
+                {
+                  "type": 1,
+                  "typeName": "T"
+                }
+              ],
+              "name": "Some"
+            }
+          ]
+        }
+      },
+      "params": [
+        1
+      ],
+      "path": [
+        "Option"
+      ]
     }
   ]
 }

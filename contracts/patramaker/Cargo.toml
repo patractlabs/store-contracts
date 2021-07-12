@@ -15,8 +15,9 @@ ink_prelude = { version = "3.0.0-rc3", git = "https://github.com/paritytech/ink"
 scale = { package = "parity-scale-codec", version = "2.0", default-features = false, features = ["derive"] }
 scale-info = { version = "0.6", default-features = false, features = ["derive"], optional = true }
 
-ownership = { version = "0.1.0", git = "https://github.com/patractlabs/metis", default-features = false }
 dai = { path = "dai", default-features = false, features = ["ink-as-dependency"] }
+metis_lang = { git = "https://github.com/patractlabs/metis", default-features = false }
+metis_ownable = { git = "https://github.com/patractlabs/metis", default-features = false }
 
 primitive-types = { version = "0.9.0", default-features = false, features = ["codec"] }
 
@@ -39,9 +40,11 @@ std = [
     "scale/std",
     "scale-info",
     "scale-info/std",
-    "ownership/std",
     "dai/std",
     "primitive-types/std",
+
+    "metis_lang/std",
+    "metis_ownable/std",
 ]
 ink-as-dependency = []
 

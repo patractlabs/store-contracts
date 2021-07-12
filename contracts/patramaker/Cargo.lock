@@ -807,20 +807,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
-name = "ownership"
-version = "0.1.0"
-source = "git+https://github.com/patractlabs/metis#c6436a602e1c459471f2b78a3f795a2b4d6f5335"
-dependencies = [
- "ink_env",
- "ink_lang",
- "ink_metadata",
- "ink_primitives",
- "ink_storage",
- "parity-scale-codec",
- "scale-info",
-]
-
-[[package]]
 name = "parity-scale-codec"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -863,7 +849,8 @@ dependencies = [
  "ink_prelude",
  "ink_primitives",
  "ink_storage",
- "ownership",
+ "metis_lang",
+ "metis_ownable",
  "parity-scale-codec",
  "primitive-types",
  "scale-info",
