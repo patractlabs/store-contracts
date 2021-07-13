@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x81177b0c3f8f10fe060dad911002cae7b014c43016def8b118b9af81d062eb91",
+    "hash": "0x88ec2230a97e9c5fee7bce8865d9f2b9a61d7b6fc70aeabcc7a3e6314dd601a4",
     "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.54.0-nightly"
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "patrapixel",

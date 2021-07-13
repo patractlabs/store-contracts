@@ -18,10 +18,10 @@ describe('ERC20', () => {
     const sender = await getRandomSigner(Alice, one.muln(100));
 
     const daiContractFactory = await getContractFactory('erc20_issue', sender);
-    const daiContract = await daiContractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18');
+    const daiContract = await daiContractFactory.deployed('new', '0', 'Maker DAI', 'DAI', '18');
     const contractFactory = await getContractFactory('patramaker', sender);
     const contract = await contractFactory.deploy('new', daiContract.address);
-    await daiContract.tx['ownable,transferOwnership'](contract.address.toString())
+    await daiContract.tx['transferOwnership'](contract.address.toString())
     const abi = artifacts.readArtifact('patramaker');
     const receiver = await getRandomSigner();
 

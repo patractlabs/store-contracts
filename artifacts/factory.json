@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x498b41686f2718afec42dc001e384ca0703850edcc8f327e4f81e3c65eb2e1b0",
+    "hash": "0xced772244a0b113be415079bb53d677766308e33df507cb5b3f57c8cd322c75f",
     "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.54.0-nightly"
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "factory",

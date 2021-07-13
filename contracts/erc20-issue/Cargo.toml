@@ -17,7 +17,7 @@ scale-info = { version = "0.6", default-features = false, features = ["derive"],
 
 metis_lang = { git = "https://github.com/patractlabs/metis", default-features = false }
 metis_erc20 = { git = "https://github.com/patractlabs/metis", default-features = false }
-metis_owenable = { git = "https://github.com/patractlabs/metis", default-features = false }
+metis_ownable = { git = "https://github.com/patractlabs/metis", default-features = false }
 
 [lib]
 name = "erc20_issue"
@@ -45,6 +45,6 @@ std = [
 
     "metis_lang/std",
     "metis_erc20/std",
-    "metis_owenable/std",
+    "metis_ownable/std",
 ]
 ink-as-dependency = []

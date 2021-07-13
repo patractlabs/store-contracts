@@ -312,6 +312,7 @@ dependencies = [
  "ink_storage",
  "metis_erc20",
  "metis_lang",
+ "metis_ownable",
  "parity-scale-codec",
  "scale-info",
 ]

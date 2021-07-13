@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x1ecee29490bbedeedbacf1c872f47df065dae8cff80306f1bcd763b510923aed",
+    "hash": "0x26a894866b396500e01d060c41638744950e84e0df48665bc7446c8bf90b1740",
     "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.54.0-nightly"
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "lpt",
@@ -29,18 +29,18 @@
             "name": "name",
             "type": {
               "displayName": [
-                "Option"
+                "String"
               ],
-              "type": 13
+              "type": 12
             }
           },
           {
             "name": "symbol",
             "type": {
               "displayName": [
-                "Option"
+                "String"
               ],
-              "type": 13
+              "type": 12
             }
           },
           {
@@ -49,7 +49,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 14
+              "type": 13
             }
           }
         ],
@@ -74,7 +74,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 18
+              "type": 17
             }
           },
           {
@@ -85,7 +85,7 @@
               "displayName": [
                 "Option"
               ],
-              "type": 18
+              "type": 17
             }
           },
           {
@@ -110,7 +110,7 @@
           {
             "docs": [],
             "indexed": true,
-            "name": "caller",
+            "name": "owner",
             "type": {
               "displayName": [
                 "AccountId"
@@ -146,62 +146,6 @@
           " up to the amount of `value` tokens from `owner`."
         ],
         "name": "Approval"
-      },
-      {
-        "args": [
-          {
-            "docs": [],
-            "indexed": true,
-            "name": "user",
-            "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 5
-            }
-          },
-          {
-            "docs": [],
-            "indexed": true,
-            "name": "amount",
-            "type": {
-              "displayName": [
-                "Balance"
-              ],
-              "type": 1
-            }
-          }
-        ],
-        "docs": [],
-        "name": "Mint"
-      },
-      {
-        "args": [
-          {
-            "docs": [],
-            "indexed": true,
-            "name": "user",
-            "type": {
-              "displayName": [
-                "AccountId"
-              ],
-              "type": 5
-            }
-          },
-          {
-            "docs": [],
-            "indexed": true,
-            "name": "amount",
-            "type": {
-              "displayName": [
-                "Balance"
-              ],
-              "type": 1
-            }
-          }
-        ],
-        "docs": [],
-        "name": "Burn"
       }
     ],
     "messages": [
@@ -217,11 +161,11 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "Option"
+            "String"
           ],
-          "type": 13
+          "type": 12
         },
-        "selector": "0x6b1bb951"
+        "selector": "0x53db29ae"
       },
       {
         "args": [],
@@ -235,11 +179,11 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "Option"
+            "String"
           ],
-          "type": 13
+          "type": 12
         },
-        "selector": "0xb42c3368"
+        "selector": "0xd733ea17"
       },
       {
         "args": [],
@@ -253,11 +197,11 @@
         "payable": false,
         "returnType": {
           "displayName": [
-            "Option"
+            "u8"
           ],
-          "type": 14
+          "type": 7
         },
-        "selector": "0xc64b0eb2"
+        "selector": "0x9715e3ca"
       },
       {
         "args": [],
@@ -275,7 +219,7 @@
           ],
           "type": 1
         },
-        "selector": "0x143862ae"
+        "selector": "0xdb6375a8"
       },
       {
         "args": [
@@ -305,7 +249,7 @@
           ],
           "type": 1
         },
-        "selector": "0xb7d968c9"
+        "selector": "0x0f755a56"
       },
       {
         "args": [
@@ -347,9 +291,9 @@
           "displayName": [
             "Result"
           ],
-          "type": 15
+          "type": 14
         },
-        "selector": "0x10d455c2"
+        "selector": "0x84a15da1"
       },
       {
         "args": [
@@ -388,7 +332,7 @@
           ],
           "type": 1
         },
-        "selector": "0xc04aa300"
+        "selector": "0x6a00165e"
       },
       {
         "args": [
@@ -445,9 +389,9 @@
           "displayName": [
             "Result"
           ],
-          "type": 15
+          "type": 14
         },
-        "selector": "0xbb399017"
+        "selector": "0x0b396f18"
       },
       {
         "args": [
@@ -487,9 +431,9 @@
           "displayName": [
             "Result"
           ],
-          "type": 15
+          "type": 14
         },
-        "selector": "0x4ce0e831"
+        "selector": "0x681266a0"
       },
       {
         "args": [
@@ -525,7 +469,7 @@
           "displayName": [
             "Result"
           ],
-          "type": 15
+          "type": 14
         },
         "selector": "0xcfdd9aa2"
       },
@@ -565,7 +509,7 @@
           "displayName": [
             "Result"
           ],
-          "type": 15
+          "type": 14
         },
         "selector": "0xb1efc17b"
       }
@@ -576,30 +520,21 @@
       "fields": [
         {
           "layout": {
-            "cell": {
-              "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
-              "ty": 1
-            }
-          },
-          "name": "total_supply"
-        },
-        {
-          "layout": {
             "struct": {
               "fields": [
                 {
                   "layout": {
+                    "cell": {
+                      "key": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                      "ty": 1
+                    }
+                  },
+                  "name": "total_supply"
+                },
+                {
+                  "layout": {
                     "struct": {
                       "fields": [
-                        {
-                          "layout": {
-                            "cell": {
-                              "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
-                              "ty": 2
-                            }
-                          },
-                          "name": "header"
-                        },
                         {
                           "layout": {
                             "struct": {
@@ -607,79 +542,79 @@
                                 {
                                   "layout": {
                                     "cell": {
-                                      "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
-                                      "ty": 3
+                                      "key": "0x0100000000000000000000000000000000000000000000000000000000000000",
+                                      "ty": 2
                                     }
                                   },
-                                  "name": "len"
+                                  "name": "header"
                                 },
                                 {
                                   "layout": {
-                                    "array": {
-                                      "cellsPerElem": 1,
-                                      "layout": {
-                                        "cell": {
-                                          "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
-                                          "ty": 4
+                                    "struct": {
+                                      "fields": [
+                                        {
+                                          "layout": {
+                                            "cell": {
+                                              "key": "0x0200000000000000000000000000000000000000000000000000000000000000",
+                                              "ty": 3
+                                            }
+                                          },
+                                          "name": "len"
+                                        },
+                                        {
+                                          "layout": {
+                                            "array": {
+                                              "cellsPerElem": 1,
+                                              "layout": {
+                                                "cell": {
+                                                  "key": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                                                  "ty": 4
+                                                }
+                                              },
+                                              "len": 4294967295,
+                                              "offset": "0x0300000000000000000000000000000000000000000000000000000000000000"
+                                            }
+                                          },
+                                          "name": "elems"
                                         }
-                                      },
-                                      "len": 4294967295,
-                                      "offset": "0x0300000000000000000000000000000000000000000000000000000000000000"
+                                      ]
                                     }
                                   },
-                                  "name": "elems"
+                                  "name": "entries"
                                 }
                               ]
                             }
                           },
-                          "name": "entries"
+                          "name": "keys"
+                        },
+                        {
+                          "layout": {
+                            "hash": {
+                              "layout": {
+                                "cell": {
+                                  "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                                  "ty": 9
+                                }
+                              },
+                              "offset": "0x0200000001000000000000000000000000000000000000000000000000000000",
+                              "strategy": {
+                                "hasher": "Blake2x256",
+                                "postfix": "",
+                                "prefix": "0x696e6b20686173686d6170"
+                              }
+                            }
+                          },
+                          "name": "values"
                         }
                       ]
                     }
                   },
-                  "name": "keys"
+                  "name": "balances"
                 },
-                {
-                  "layout": {
-                    "hash": {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
-                          "ty": 9
-                        }
-                      },
-                      "offset": "0x0200000001000000000000000000000000000000000000000000000000000000",
-                      "strategy": {
-                        "hasher": "Blake2x256",
-                        "postfix": "",
-                        "prefix": "0x696e6b20686173686d6170"
-                      }
-                    }
-                  },
-                  "name": "values"
-                }
-              ]
-            }
-          },
-          "name": "balances"
-        },
-        {
-          "layout": {
-            "struct": {
-              "fields": [
                 {
                   "layout": {
                     "struct": {
                       "fields": [
-                        {
-                          "layout": {
-                            "cell": {
-                              "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
-                              "ty": 2
-                            }
-                          },
-                          "name": "header"
-                        },
                         {
                           "layout": {
                             "struct": {
@@ -687,148 +622,115 @@
                                 {
                                   "layout": {
                                     "cell": {
-                                      "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
-                                      "ty": 3
+                                      "key": "0x0300000001000000000000000000000000000000000000000000000000000000",
+                                      "ty": 2
                                     }
                                   },
-                                  "name": "len"
+                                  "name": "header"
                                 },
                                 {
                                   "layout": {
-                                    "array": {
-                                      "cellsPerElem": 1,
-                                      "layout": {
-                                        "cell": {
-                                          "key": "0x0400000002000000000000000000000000000000000000000000000000000000",
-                                          "ty": 10
+                                    "struct": {
+                                      "fields": [
+                                        {
+                                          "layout": {
+                                            "cell": {
+                                              "key": "0x0400000001000000000000000000000000000000000000000000000000000000",
+                                              "ty": 3
+                                            }
+                                          },
+                                          "name": "len"
+                                        },
+                                        {
+                                          "layout": {
+                                            "array": {
+                                              "cellsPerElem": 1,
+                                              "layout": {
+                                                "cell": {
+                                                  "key": "0x0400000002000000000000000000000000000000000000000000000000000000",
+                                                  "ty": 10
+                                                }
+                                              },
+                                              "len": 4294967295,
+                                              "offset": "0x0500000001000000000000000000000000000000000000000000000000000000"
+                                            }
+                                          },
+                                          "name": "elems"
                                         }
-                                      },
-                                      "len": 4294967295,
-                                      "offset": "0x0500000001000000000000000000000000000000000000000000000000000000"
+                                      ]
                                     }
                                   },
-                                  "name": "elems"
+                                  "name": "entries"
                                 }
                               ]
                             }
                           },
-                          "name": "entries"
+                          "name": "keys"
+                        },
+                        {
+                          "layout": {
+                            "hash": {
+                              "layout": {
+                                "cell": {
+                                  "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
+                                  "ty": 9
+                                }
+                              },
+                              "offset": "0x0400000002000000000000000000000000000000000000000000000000000000",
+                              "strategy": {
+                                "hasher": "Blake2x256",
+                                "postfix": "",
+                                "prefix": "0x696e6b20686173686d6170"
+                              }
+                            }
+                          },
+                          "name": "values"
                         }
                       ]
                     }
                   },
-                  "name": "keys"
+                  "name": "allowances"
                 },
                 {
                   "layout": {
-                    "hash": {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
-                          "ty": 9
+                    "struct": {
+                      "fields": [
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0500000002000000000000000000000000000000000000000000000000000000",
+                              "ty": 7
+                            }
+                          },
+                          "name": null
+                        },
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
+                              "ty": 12
+                            }
+                          },
+                          "name": null
+                        },
+                        {
+                          "layout": {
+                            "cell": {
+                              "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
+                              "ty": 12
+                            }
+                          },
+                          "name": null
                         }
-                      },
-                      "offset": "0x0400000002000000000000000000000000000000000000000000000000000000",
-                      "strategy": {
-                        "hasher": "Blake2x256",
-                        "postfix": "",
-                        "prefix": "0x696e6b20686173686d6170"
-                      }
+                      ]
                     }
                   },
-                  "name": "values"
+                  "name": "metadatas"
                 }
               ]
             }
           },
-          "name": "allowances"
-        },
-        {
-          "layout": {
-            "enum": {
-              "dispatchKey": "0x0500000002000000000000000000000000000000000000000000000000000000",
-              "variants": {
-                "0": {
-                  "fields": [
-                    {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0600000002000000000000000000000000000000000000000000000000000000",
-                          "ty": 12
-                        }
-                      },
-                      "name": null
-                    }
-                  ]
-                },
-                "1": {
-                  "fields": []
-                }
-              }
-            }
-          },
-          "name": "name"
-        },
-        {
-          "layout": {
-            "enum": {
-              "dispatchKey": "0x0600000002000000000000000000000000000000000000000000000000000000",
-              "variants": {
-                "0": {
-                  "fields": [
-                    {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0700000002000000000000000000000000000000000000000000000000000000",
-                          "ty": 12
-                        }
-                      },
-                      "name": null
-                    }
-                  ]
-                },
-                "1": {
-                  "fields": []
-                }
-              }
-            }
-          },
-          "name": "symbol"
-        },
-        {
-          "layout": {
-            "enum": {
-              "dispatchKey": "0x0700000002000000000000000000000000000000000000000000000000000000",
-              "variants": {
-                "0": {
-                  "fields": [
-                    {
-                      "layout": {
-                        "cell": {
-                          "key": "0x0800000002000000000000000000000000000000000000000000000000000000",
-                          "ty": 7
-                        }
-                      },
-                      "name": null
-                    }
-                  ]
-                },
-                "1": {
-                  "fields": []
-                }
-              }
-            }
-          },
-          "name": "decimals"
-        },
-        {
-          "layout": {
-            "cell": {
-              "key": "0x0800000002000000000000000000000000000000000000000000000000000000",
-              "ty": 5
-            }
-          },
-          "name": "owner"
+          "name": "erc20"
         }
       ]
     }
@@ -1047,32 +949,6 @@
             {
               "fields": [
                 {
-                  "type": 12,
-                  "typeName": "T"
-                }
-              ],
-              "name": "Some"
-            }
-          ]
-        }
-      },
-      "params": [
-        12
-      ],
-      "path": [
-        "Option"
-      ]
-    },
-    {
-      "def": {
-        "variant": {
-          "variants": [
-            {
-              "name": "None"
-            },
-            {
-              "fields": [
-                {
                   "type": 7,
                   "typeName": "T"
                 }
@@ -1096,7 +972,7 @@
             {
               "fields": [
                 {
-                  "type": 16,
+                  "type": 15,
                   "typeName": "T"
                 }
               ],
@@ -1105,7 +981,7 @@
             {
               "fields": [
                 {
-                  "type": 17,
+                  "type": 16,
                   "typeName": "E"
                 }
               ],
@@ -1115,8 +991,8 @@
         }
       },
       "params": [
-        16,
-        17
+        15,
+        16
       ],
       "path": [
         "Result"
@@ -1137,18 +1013,18 @@
             },
             {
               "discriminant": 1,
-              "name": "InsufficientSupply"
+              "name": "InsufficientAllowance"
             },
             {
               "discriminant": 2,
-              "name": "InsufficientAllowance"
+              "name": "AccountIsZero"
             }
           ]
         }
       },
       "path": [
-        "lpt",
-        "lpt",
+        "metis_erc20",
+        "erc20_basic",
         "Error"
       ]
     },

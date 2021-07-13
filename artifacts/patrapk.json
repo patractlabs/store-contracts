@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0xcd3ac2b3603aa1c005e44eb3d79b31e87b29525ee36dba67c7c41e525f50029a",
+    "hash": "0xbb5064f0d20a801fbdbdeda96d54e06b64e8272a5087d9674f3328ee41d737d4",
     "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.54.0-nightly"
+    "compiler": "rustc 1.55.0-nightly"
   },
   "contract": {
     "name": "patrapk",
