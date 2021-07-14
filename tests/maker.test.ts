@@ -64,6 +64,7 @@ describe('ERC20', () => {
   });
 
   // should not liquidate collateral
+  // FIXME: does not pass the test currently :(
   it('liquidate collateral', async () => {
     const { contract } = await setup();
     await contract.tx.issueDai(200, {
