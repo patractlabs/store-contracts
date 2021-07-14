@@ -7,10 +7,16 @@ mod lpt {
     use ink_prelude::string::String;
 
     use metis_erc20::{self as erc20, Result};
+    use metis_access_control::{
+        self as access_control,
+        RoleId,
+    };
     use metis_lang::{
         import,
         metis,
     };
+
+    pub const ROLE_ID_ADMIN: RoleId = RoleId::new([0x01; 32]);
 
     /// Event emitted when a token transfer occurs.
     #[ink(event)]
@@ -37,11 +43,59 @@ mod lpt {
         pub value: Balance,
     }
 
+    /// Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`
+    ///
+    /// `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
+    /// {RoleAdminChanged} not being emitted signaling this.
+    #[ink(event)]
+    #[metis(access_control)]
+    pub struct RoleAdminChanged {
+        #[ink(topic)]
+        pub role: RoleId,
+        #[ink(topic)]
+        pub previous_admin_role: Option<RoleId>,
+        #[ink(topic)]
+        pub new_admin_role: RoleId,
+    }
+
+    /// Emitted when `account` is granted `role`.
+    ///
+    /// `sender` is the account that originated the contract call, an admin role
+    /// bearer except when using {_setupRole}.
+    #[ink(event)]
+    #[metis(access_control)]
+    pub struct RoleGranted {
+        #[ink(topic)]
+        pub role: RoleId,
+        #[ink(topic)]
+        pub account: AccountId,
+        #[ink(topic)]
+        pub sender: AccountId,
+    }
+
+    /// Emitted when `account` is revoked `role`.
+    ///
+    /// `sender` is the account that originated the contract call:
+    ///   - if using `revokeRole`, it is the admin role bearer
+    ///   - if using `renounceRole`, it is the role bearer (i.e. `account`)
+    #[ink(event)]
+    #[metis(access_control)]
+    pub struct RoleRevoked {
+        #[ink(topic)]
+        pub role: RoleId,
+        #[ink(topic)]
+        pub account: AccountId,
+        #[ink(topic)]
+        pub sender: AccountId,
+    }
+
     #[ink(storage)]
-    #[import(erc20)]
+    #[import(erc20, access_control)]
     pub struct Erc20 {
         /// Metis-Erc20 Data
         erc20: erc20::Data<Erc20>,
+        /// Role-Based Access Control
+        access_control: access_control::Data<Erc20>,
     }
 
     #[cfg(not(feature = "ink-as-dependency"))]
@@ -55,11 +109,14 @@ mod lpt {
             name: String,
             symbol: String,
             decimals: Option<u8>,
+            admin: AccountId,
         ) -> Self {
             let mut instance = Self {
                 erc20: erc20::Data::new(),
+                access_control: access_control::Data::new(),
             };
 
+            // Initialize Erc20 Token
             erc20::Impl::init(
                 &mut instance,
                 name,
@@ -67,13 +124,8 @@ mod lpt {
                 decimals.unwrap_or(18),
                 initial_supply,
             );
-
-            let caller = Self::env().caller();
-            Self::env().emit_event(Transfer {
-                from: None,
-                to: Some(caller),
-                value: initial_supply,
-            });
+            // Setup Access Control Role
+            access_control::Impl::_setup_role(&mut instance, ROLE_ID_ADMIN, admin);
 
             instance
         }
@@ -170,6 +222,7 @@ mod lpt {
         /// these tokens are deposited into the owner address
         #[ink(message)]
         pub fn mint(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+            access_control::Impl::ensure_caller_role(self, ROLE_ID_ADMIN);
             erc20::Impl::_mint(self, &user, amount)
         }
 
@@ -179,6 +232,7 @@ mod lpt {
         /// or the call will fail.
         #[ink(message)]
         pub fn burn(&mut self, user: AccountId, amount: Balance) -> Result<()> {
+            access_control::Impl::ensure_caller_role(self, ROLE_ID_ADMIN);
             erc20::Impl::_burn(self, &user, amount)
         }
     }
