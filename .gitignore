@@ -18,5 +18,4 @@ node_modules
 
 .idea
 
-artifacts/dai.*
 artifacts
