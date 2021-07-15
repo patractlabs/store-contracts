@@ -137,6 +137,7 @@ mod factory {
                 "LP Token".to_string(),
                 "LPT".to_string(),
                 from_token_contract.token_decimals(),
+                self.env().caller(),
             )
             .endowment(0)
             .code_hash(self.lpt)
@@ -205,6 +206,7 @@ mod factory {
                 "LP Token".to_string(),
                 "LPT".to_string(),
                 from_token_contract.token_decimals(),
+                self.env().caller(),
             )
             .endowment(0)
             .code_hash(self.lpt)

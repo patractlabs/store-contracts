@@ -16,6 +16,7 @@ mod lpt {
         metis,
     };
 
+    #[cfg(not(feature = "ink-as-dependency"))]
     pub const ROLE_ID_CALLER: RoleId = RoleId::new([0x01; 32]);
 
     /// Event emitted when a token transfer occurs.
