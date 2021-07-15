@@ -16,7 +16,7 @@ mod lpt {
         metis,
     };
 
-    pub const ROLE_ID_ADMIN: RoleId = RoleId::new([0x01; 32]);
+    pub const ROLE_ID_CALLER: RoleId = RoleId::new([0x01; 32]);
 
     /// Event emitted when a token transfer occurs.
     #[ink(event)]
@@ -45,7 +45,7 @@ mod lpt {
 
     /// Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole`
     ///
-    /// `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite
+    /// `DEFAULT_CALLER_ROLE` is the starting admin for all roles, despite
     /// {RoleAdminChanged} not being emitted signaling this.
     #[ink(event)]
     #[metis(access_control)]
@@ -124,8 +124,9 @@ mod lpt {
                 decimals.unwrap_or(18),
                 initial_supply,
             );
+
             // Setup Access Control Role
-            access_control::Impl::_setup_role(&mut instance, ROLE_ID_ADMIN, admin);
+            access_control::Impl::_setup_role(&mut instance, ROLE_ID_CALLER, admin);
 
             instance
         }
@@ -222,7 +223,7 @@ mod lpt {
         /// these tokens are deposited into the owner address
         #[ink(message)]
         pub fn mint(&mut self, user: AccountId, amount: Balance) -> Result<()> {
-            access_control::Impl::ensure_caller_role(self, ROLE_ID_ADMIN);
+            access_control::Impl::ensure_caller_role(self, ROLE_ID_CALLER);
             erc20::Impl::_mint(self, &user, amount)
         }
 
@@ -232,7 +233,7 @@ mod lpt {
         /// or the call will fail.
         #[ink(message)]
         pub fn burn(&mut self, user: AccountId, amount: Balance) -> Result<()> {
-            access_control::Impl::ensure_caller_role(self, ROLE_ID_ADMIN);
+            access_control::Impl::ensure_caller_role(self, ROLE_ID_CALLER);
             erc20::Impl::_burn(self, &user, amount)
         }
     }

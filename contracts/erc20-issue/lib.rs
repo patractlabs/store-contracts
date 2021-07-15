@@ -7,6 +7,7 @@ mod erc20 {
     use ink_prelude::string::String;
     use metis_erc20::{self as erc20, Error as MErc20Error};
     use metis_ownable::{self as ownable};
+    use metis_pausable::{self as pausable};
     use metis_lang::{
         import,
         metis,
@@ -53,23 +54,6 @@ mod erc20 {
     /// The ERC-20 result type.
     pub type Result<T> = core::result::Result<T, Error>;
 
-
-    /// Base contract which allows children to implement an emergency stop mechanism.
-    #[ink::trait_definition]
-    pub trait Pausable {
-        /// Pause contract transaction.
-        #[ink(message)]
-        fn pause(&mut self) -> Result<()>;
-
-        /// Recover paused contract.
-        #[ink(message)]
-        fn unpause(&mut self) -> Result<()>;
-
-        /// Return contract pause statue.
-        #[ink(message)]
-        fn pause_state(&self) -> bool;
-    }
-
     #[ink::trait_definition]
     pub trait BlackList {
         /// Whether the user is blacklisted.
@@ -90,12 +74,12 @@ mod erc20 {
     }
 
     #[ink(storage)]
-    #[import(erc20, ownable)]
+    #[import(erc20, ownable, pausable)]
     pub struct Erc20 {
         erc20: erc20::Data<Erc20>,
         ownable: ownable::Data<Erc20>,
+        pausable: pausable::Data,
 
-        pause: bool,
         blacklisted: StorageHashMap<AccountId, bool>,
     }
 
@@ -134,11 +118,23 @@ mod erc20 {
         new_owner: Option<AccountId>,
     }
 
+    /// Event emitted when Pause
     #[ink(event)]
-    pub struct Pause {}
+    #[metis(pausable)]
+    pub struct Paused {
+        /// paused caller
+        #[ink(topic)]
+        account: AccountId,
+    }
 
+    /// Event emitted when unPause
     #[ink(event)]
-    pub struct Unpause {}
+    #[metis(pausable)]
+    pub struct Unpaused {
+        /// unpaused caller
+        #[ink(topic)]
+        account: AccountId,
+    }
 
     #[ink(event)]
     pub struct DestroyedBlackFunds {
@@ -190,7 +186,7 @@ mod erc20 {
             let mut instance = Self {
                 erc20: erc20::Data::new(),
                 ownable: ownable::Data::new(),
-                pause: false,
+                pausable: pausable::Data::new(),
                 blacklisted: Default::default(),
             };
 
@@ -320,37 +316,22 @@ mod erc20 {
         pub fn transfer_ownership(&mut self, new_owner: AccountId) {
             ownable::Impl::transfer_ownership(self, &new_owner)
         }
-    }
 
-    impl Pausable for Erc20 {
-        /// Pause contract transaction.
         #[ink(message)]
-        fn pause(&mut self) -> Result<()> {
-            ownable::Impl::ensure_caller_is_owner(self);
-
-            if !self.pause {
-                self.pause = true;
-                self.env().emit_event(Pause {})
-            }
-            Ok(())
+        pub fn paused(&self) -> bool {
+            pausable::Impl::paused(self)
         }
 
-        /// Recover paused contract.
         #[ink(message)]
-        fn unpause(&mut self) -> Result<()> {
+        pub fn pause(&mut self) {
             ownable::Impl::ensure_caller_is_owner(self);
-
-            if self.pause {
-                self.pause = false;
-                self.env().emit_event(Unpause {})
-            }
-            Ok(())
+            pausable::Impl::_pause(self)
         }
 
-        /// Return contract pause statue.
         #[ink(message)]
-        fn pause_state(&self) -> bool {
-            self.pause
+        pub fn unpause(&mut self) {
+            ownable::Impl::ensure_caller_is_owner(self);
+            pausable::Impl::_unpause(self)
         }
     }
 

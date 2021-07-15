@@ -313,6 +313,7 @@ dependencies = [
  "metis_erc20",
  "metis_lang",
  "metis_ownable",
+ "metis_pausable",
  "parity-scale-codec",
  "scale-info",
 ]
