@@ -16,7 +16,7 @@ async function run() {
   console.log('Balance: ', balance.toHuman());
 
   const daiContractFactory = await getContractFactory('erc20_issue', signer);
-  const daiContract = await daiContractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
+  const daiContract = await daiContractFactory.deployed('new', '0', 'Maker DAI', 'DAI', '18', {
     gasLimit: '200000000000',
     value: '0',
     salt: 'Maker DAI Token'
@@ -38,7 +38,7 @@ async function run() {
   );
 
   // transfer dai contract ownership to maker
-  await daiContract.tx['ownable,transferOwnership'](contract.address.toString())
+  await daiContract.tx.transferOwnership(contract.address.toString())
 
   // init dai with 100k DOT
   await contract.tx.issueDai(200, {

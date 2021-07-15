@@ -16,7 +16,7 @@ async function run() {
 
   console.log('Balance: ', balance.toHuman());
 
-  const contract = await contractFactory.deployed('IErc20,new', '10000000000000000', 'Jupiter Token', 'JPT', '10', {
+  const contract = await contractFactory.deployed('new', '10000000000000000', 'Jupiter Token', 'JPT', '10', {
     gasLimit: '200000000000',
     value: '0',
     salt: 'Jupiter Token'

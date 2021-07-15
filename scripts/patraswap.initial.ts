@@ -17,7 +17,7 @@ async function run() {
     const eth = api.createType('AccountId', "3byZbKJSpCwUFDgNyeNfCz5PVyGvehhcNe3USJSvVDyJ2rrM");
     const btc = api.createType('AccountId', "3fT7tskxhBsCMza8FgZaHVLXwra55FWb8B4q8DauRUqmyQxK");
 
-    const swap = api.createType('AccountId', "3ejyYPZ7SULr6zQvWjtRPXfj1JKnzXZ1uhGNQRnph7UCnLNq")
+    const swap = api.createType('AccountId', "3f77g7XQDo11MMgnte4VnUqGcYA44WSWDbY2H9dzJNDKa7VQ")
     const contract = await getContractAt('factory', swap, signer);
 
     await contract.query['factory,getSwapPairs']();

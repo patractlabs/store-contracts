@@ -7,7 +7,7 @@ const { createSigner, keyring, api } = network;
 const uri =
   'bottom drive obey lake curtain smoke basket hold race lonely fit walk//Alice';
 
-const lotteryContract = '5FcjY9tStk6LjTsFCUDZXFPWugrkVaonwcdppVh6xi58QD4j';
+const lotteryContract = '3g4M7y7bwNDK5nUrYw3UWrs3gN8srkBnPbgdHNQPANyBoUhi';
 
 const ticketsNum = 10;
 
