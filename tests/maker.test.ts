@@ -18,10 +18,10 @@ describe('ERC20', () => {
     const sender = await getRandomSigner(Alice, one.muln(100));
 
     const daiContractFactory = await getContractFactory('erc20_issue', sender);
-    const daiContract = await daiContractFactory.deployed('IErc20,new', '0', 'Maker DAI', 'DAI', '18');
+    const daiContract = await daiContractFactory.deployed('new', '0', 'Maker DAI', 'DAI', '18');
     const contractFactory = await getContractFactory('patramaker', sender);
     const contract = await contractFactory.deploy('new', daiContract.address);
-    await daiContract.tx['ownable,transferOwnership'](contract.address.toString())
+    await daiContract.tx['transferOwnership'](contract.address.toString())
     const abi = artifacts.readArtifact('patramaker');
     const receiver = await getRandomSigner();
 
@@ -31,46 +31,48 @@ describe('ERC20', () => {
   it('issue dai', async () => {
     const { contract } = await setup();
     await expect(contract.tx.issueDai(200, {
-      value: 1000000000000000
+      value: 10000
     })).to.emit(contract, 'IssueDAI');
   });
 
   it('add collateral', async () => {
     const { contract } = await setup();
     await contract.tx.issueDai(200, {
-      value: 1000000000000000
+      value: 10000
     });
     await expect(contract.tx.addCollateral(1, {
-      value: 500000000000
+      value: 5000
     })).to.emit(contract, 'AddCollateral');
   });
 
   it('minus collateral', async () => {
     const { contract } = await setup();
     await contract.tx.issueDai(200, {
-      value: 1000000000000000
+      value: 10000
     });
-    await expect(contract.tx.minusCollateral(1, 500000000000))
+    await expect(contract.tx.minusCollateral(1, 5000))
       .to.emit(contract, 'MinusCollateral');
   });
 
   it('withdraw dot', async () => {
     const { contract } = await setup();
     await contract.tx.issueDai(200, {
-      value: 1000000000000000
+      value: 10000
     });
-    await expect(contract.tx.withdrawDot(1, 2000000000000000000))
+    await expect(contract.tx.withdrawDot(1, 2000))
       .to.emit(contract, 'Withdraw');
   });
 
+  // should not liquidate collateral
+  // FIXME: does not pass the test currently :(
   it('liquidate collateral', async () => {
     const { contract } = await setup();
     await contract.tx.issueDai(200, {
-      value: 1000000000000000
+      value: 10000
     });
-    await contract.tx.withdrawDot(1, 2000000000000000000);
-    await expect(contract.tx.liquidateCollateral(1, 2000000000000000000))
-      .to.emit(contract, ' Liquidate');
+    await contract.tx.withdrawDot(1, 2000);
+    await expect(contract.tx.liquidateCollateral(1, 2000))
+      .not.to.emit(contract, 'Liquidate');
   });
 
 });

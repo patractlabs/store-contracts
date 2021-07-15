@@ -62,8 +62,7 @@ describe('PatraPK', () => {
 
     const joiner = await getRandomSigner(Alice, one.muln(10));
 
-    await expect(contract.tx.join(1, 'Paper', {
-      signer: joiner,
+    await expect(contract.connect(joiner).tx.join(1, 'Paper', {
       value: 1
     })).to.emit(
       contract,
@@ -81,8 +80,7 @@ describe('PatraPK', () => {
       value: 1
     });
     const joiner = await getRandomSigner(Alice, one.muln(10));
-    await contract.tx.join(1, 'Paper', {
-      signer: joiner,
+    await contract.connect(joiner).tx.join(1, 'Paper', {
       value: 1
     });
 

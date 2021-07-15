@@ -362,9 +362,8 @@ mod exchange {
             ExchangeInfo {
                 from_symbol: self
                     .token_contract
-                    .token_symbol()
-                    .unwrap_or(Default::default()),
-                from_decimals: self.token_contract.token_decimals().unwrap_or(0),
+                    .token_symbol(),
+                from_decimals: self.token_contract.token_decimals(),
                 to_symbol: "DOT".parse().unwrap(),
                 to_decimals: 10,
                 from_token_pool: self.token_contract.balance_of(exchange_account),
@@ -381,7 +380,7 @@ mod exchange {
 
         #[ink(message)]
         pub fn lp_token_decimals(&self) -> u8 {
-            self.lp_token_contract.token_decimals().unwrap_or(0)
+            self.lp_token_contract.token_decimals()
         }
 
         fn dot_balance(&self) -> Balance {

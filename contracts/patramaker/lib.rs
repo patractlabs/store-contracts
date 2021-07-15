@@ -1,8 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use ink_lang as ink;
-
-#[ink::contract]
+#[metis_lang::contract]
 mod patramaker {
     use dai::Erc20;
     use ink_env::call::FromAccountId;
@@ -12,7 +10,11 @@ mod patramaker {
         traits::{PackedLayout, SpreadLayout},
         Lazy,
     };
-    use ownership::Ownable;
+    use metis_lang::{
+        import,
+        metis,
+    };
+    use metis_ownable::{self as ownable};
     use primitive_types::U256;
 
     pub type CdpId = u32;
@@ -87,6 +89,7 @@ mod patramaker {
     }
 
     #[ink(storage)]
+    #[import(ownable)]
     pub struct PatraMaker {
         dai_token: Lazy<Erc20>,
         cdps: StorageMap<CdpId, CDP>,
@@ -95,37 +98,27 @@ mod patramaker {
         min_liquidation_ratio: u32,
         liquidater_reward_ratio: u32,
         dot_price: USD,
-        owner: AccountId,
+        ownable: ownable::Data<PatraMaker>,
     }
 
-    impl Ownable for PatraMaker {
-        #[ink(constructor)]
-        fn new() -> Self {
-            unimplemented!()
-        }
-
-        #[ink(message)]
-        fn owner(&self) -> Option<AccountId> {
-            Some(self.owner)
-        }
-
-        /// transfer contract ownership to new owner.
-        #[ink(message)]
-        fn transfer_ownership(&mut self, new_owner: Option<AccountId>) {
-            assert_eq!(self.owner(), Some(self.env().caller()));
-            if let Some(new_one) = new_owner {
-                self.owner = new_one;
-            }
-        }
+    /// Event emitted when Owner AccountId Transferred
+    #[ink(event)]
+    #[metis(ownable)]
+    pub struct OwnershipTransferred {
+        /// previous owner account id
+        #[ink(topic)]
+        previous_owner: Option<AccountId>,
+        /// new owner account id
+        #[ink(topic)]
+        new_owner: Option<AccountId>,
     }
 
     impl PatraMaker {
         #[ink(constructor)]
         pub fn new(dai_contract: AccountId) -> Self {
             assert_ne!(dai_contract, Default::default());
-            let caller = Self::env().caller();
             let dai_token: Erc20 = FromAccountId::from_account_id(dai_contract);
-            Self {
+            let mut instance = Self {
                 dai_token: Lazy::new(dai_token),
                 cdps: StorageMap::new(),
                 cdp_count: 0,
@@ -133,35 +126,39 @@ mod patramaker {
                 min_liquidation_ratio: 110,
                 liquidater_reward_ratio: 5,
                 dot_price: 3500,
-                owner: caller,
-            }
+                ownable: ownable::Data::new(),
+            };
+
+            ownable::Impl::init(&mut instance);
+
+            instance
         }
 
         /// Adjust Min Collateral Ratio only admin
         #[ink(message)]
         pub fn adjust_mcr(&mut self, mcr: u32) {
-            self.only_owner();
+            ownable::Impl::ensure_caller_is_owner(self);
             self.min_collateral_ratio = mcr;
         }
 
         // Adjust Min Liquidation Ratio only admin
         #[ink(message)]
         pub fn adjust_mlr(&mut self, mlr: u32) {
-            self.only_owner();
+            ownable::Impl::ensure_caller_is_owner(self);
             self.min_liquidation_ratio = mlr;
         }
 
         /// Adjust Liquidater Reward Ratio only admin
         #[ink(message)]
         pub fn adjust_lrr(&mut self, lrr: u32) {
-            self.only_owner();
+            ownable::Impl::ensure_caller_is_owner(self);
             self.liquidater_reward_ratio = lrr;
         }
 
         /// Adjust dot price only admin
         #[ink(message)]
         pub fn adjust_dot_price(&mut self, price: USD) {
-            self.only_owner();
+            ownable::Impl::ensure_caller_is_owner(self);
             self.dot_price = price;
         }
 
@@ -189,7 +186,7 @@ mod patramaker {
             let caller = self.env().caller();
             let collateral = self.env().transferred_balance();
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let dai = collateral * self.dot_price as u128 * (dai_decimals / DOTS) * 100
                 / (cr * DOT_PRICE_DECIMALS) as u128;
             let cdp = CDP {
@@ -220,7 +217,7 @@ mod patramaker {
             // let cr = (collateral + cdp.collateral_dot as u128) * self.dot_price as u128 * 100
             //     / cdp.issue_dai;
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let cr = (collateral + cdp.collateral_dot as u128)
                 * self.dot_price as u128
                 * 100
@@ -246,7 +243,7 @@ mod patramaker {
             // let cr =
             //     (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 / cdp.issue_dai;
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let cr =
                 (cdp.collateral_dot - collateral) * self.dot_price as u128 * 100 * dai_decimals
                     / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128);
@@ -297,7 +294,7 @@ mod patramaker {
             let cdp = self.cdps.get_mut(&cdp_id).unwrap();
             // let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 / cdp.issue_dai) as u32;
             let dai_decimals =
-                10u128.saturating_pow(self.dai_token.token_decimals().unwrap() as u32);
+                10u128.saturating_pow(self.dai_token.token_decimals() as u32);
             let cr = (cdp.collateral_dot * self.dot_price as u128 * 100 * dai_decimals
                 / (cdp.issue_dai * DOTS * DOT_PRICE_DECIMALS as u128)) as u32;
             assert!(cr <= self.min_liquidation_ratio);
@@ -351,10 +348,6 @@ mod patramaker {
         #[ink(message)]
         pub fn cdp_count(&self) -> u32 {
             self.cdp_count
-        }
-
-        fn only_owner(&self) {
-            assert_eq!(self.env().caller(), self.owner);
         }
     }
 }

@@ -5,6 +5,7 @@ use ink_lang as ink;
 #[ink::contract]
 mod factory {
     use ink_lang as ink;
+    use ink_prelude::string::ToString;
 
     use erc20_stub::Erc20Stub;
 
@@ -133,9 +134,10 @@ mod factory {
             // instantiate lp token
             let lpt_params = Erc20::new(
                 0,
-                Some("LP Token".parse().unwrap()),
-                Some("LPT".parse().unwrap()),
+                "LP Token".to_string(),
+                "LPT".to_string(),
                 from_token_contract.token_decimals(),
+                self.env().caller(),
             )
             .endowment(0)
             .code_hash(self.lpt)
@@ -201,9 +203,10 @@ mod factory {
             // instantiate lp token
             let lpt_params = Erc20::new(
                 0,
-                Some("LP Token".parse().unwrap()),
-                Some("LPT".parse().unwrap()),
+                "LP Token".to_string(),
+                "LPT".to_string(),
                 from_token_contract.token_decimals(),
+                self.env().caller(),
             )
             .endowment(0)
             .code_hash(self.lpt)

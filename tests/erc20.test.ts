@@ -17,7 +17,7 @@ describe('ERC20', () => {
     const Alice = signers[0];
     const sender = await getRandomSigner(Alice, one.muln(100));
     const contractFactory = await getContractFactory('erc20_fixed', sender);
-    const contract = await contractFactory.deploy('iErc20,new', '1000000', 'Jupiter Token', 'JPT', '10');
+    const contract = await contractFactory.deploy('new', '1000000', 'Jupiter Token', 'JPT', '10');
     const abi = artifacts.readArtifact('erc20_fixed');
     const receiver = await getRandomSigner();
 
@@ -26,23 +26,23 @@ describe('ERC20', () => {
 
   it('Assigns initial balance', async () => {
     const { contract, sender } = await setup();
-    const result = await contract.query['iErc20,balanceOf'](sender.address);
+    const result = await contract.query.balanceOf(sender.address);
     expect(result.output).to.equal(1000000);
   });
 
   it('Transfer adds amount to destination account', async () => {
     const { contract, receiver } = await setup();
 
-    await contract.tx['iErc20,transfer'](receiver.address, 7);
+    await contract.tx.transfer(receiver.address, 7);
 
-    const result = await contract.query['iErc20,balanceOf'](receiver.address);
+    const result = await contract.query.balanceOf(receiver.address);
     expect(result.output).to.equal(7);
   });
 
   it('Transfer emits event', async () => {
     const { contract, sender, receiver } = await setup();
 
-    await expect(contract.tx['iErc20,transfer'](receiver.address, 7))
+    await expect(contract.tx.transfer(receiver.address, 7))
       .to.emit(contract, 'Transfer')
       .withArgs(sender.address, receiver.address, 7);
   });
@@ -50,7 +50,7 @@ describe('ERC20', () => {
   it('Can not transfer above the amount', async () => {
     const { contract, receiver } = await setup();
 
-    await expect(contract.tx['iErc20,transfer'](receiver.address, 1000001)).to.not.emit(
+    await expect(contract.tx.transfer(receiver.address, 1000001)).to.not.emit(
       contract,
       'Transfer'
     );
@@ -62,10 +62,8 @@ describe('ERC20', () => {
     const emptyAccount = await getRandomSigner(Alice, one.muln(10));
 
     await expect(
-      contract.tx['iErc20,transfer'](sender.address, 7, {
-        signer: emptyAccount
-      })
-    ).to.not.emit(contract, 'Transfer');
+      contract.connect(emptyAccount).tx.transfer(sender.address, 7)
+    ).to.not.emit(contract, "Transfer");
   });
 
   it('Approve token', async () => {
@@ -73,9 +71,9 @@ describe('ERC20', () => {
 
     const emptyAccount = await getRandomSigner(Alice, one.muln(10));
 
-    await contract.tx['iErc20,approve'](emptyAccount.address, 7);
+    await contract.tx.approve(emptyAccount.address, 7);
 
-    const result = await contract.query['iErc20,allowance'](sender.address, emptyAccount.address);
+    const result = await contract.query.allowance(sender.address, emptyAccount.address);
 
     expect(result.output).to.equal(7);
   });
@@ -85,15 +83,13 @@ describe('ERC20', () => {
 
     const emptyAccount = await getRandomSigner(Alice, one.muln(10));
 
-    await contract.tx['iErc20,approve'](emptyAccount.address, 7);
+    await contract.tx.approve(emptyAccount.address, 7);
 
     const receiver = await getRandomSigner();
 
-    await contract.tx['iErc20,transferFrom'](sender.address, receiver.address, 7, {
-      signer: emptyAccount
-    });
+    await contract.connect(emptyAccount).tx.transferFrom(sender.address, receiver.address, 7);
 
-    const result = await contract.query['iErc20,balanceOf'](receiver.address);
+    const result = await contract.query.balanceOf(receiver.address);
     expect(result.output).to.equal(7);
   });
 });

@@ -390,14 +390,12 @@ mod exchange {
             ExchangeInfo {
                 from_symbol: self
                     .from_token_contract
-                    .token_symbol()
-                    .unwrap_or(Default::default()),
-                from_decimals: self.from_token_contract.token_decimals().unwrap_or(0),
+                    .token_symbol(),
+                from_decimals: self.from_token_contract.token_decimals(),
                 to_symbol: self
                     .to_token_contract
-                    .token_symbol()
-                    .unwrap_or(Default::default()),
-                to_decimals: self.to_token_contract.token_decimals().unwrap_or(0),
+                    .token_symbol(),
+                to_decimals: self.to_token_contract.token_decimals(),
                 from_token_pool: self.from_token_contract.balance_of(exchange_account),
                 to_token_pool: self.to_token_contract.balance_of(exchange_account),
                 lp_token_supply: self.lp_token_contract.total_supply(),
@@ -412,7 +410,7 @@ mod exchange {
 
         #[ink(message)]
         pub fn lp_token_decimals(&self) -> u8 {
-            self.lp_token_contract.token_decimals().unwrap_or(0)
+            self.lp_token_contract.token_decimals()
         }
 
         /// estimated need to token amount by from tokens

@@ -17,6 +17,10 @@ scale-info = { version = "0.6", default-features = false, features = ["derive"],
 
 funty = "=1.1"
 
+metis_lang = { git = "https://github.com/patractlabs/metis", default-features = false }
+metis_erc20 = { git = "https://github.com/patractlabs/metis", default-features = false }
+metis_access_control = { git = "https://github.com/patractlabs/metis", default-features = false }
+
 [lib]
 name = "lpt"
 path = "lib.rs"
@@ -40,5 +44,9 @@ std = [
     "scale/std",
     "scale-info",
     "scale-info/std",
+
+    "metis_lang/std",
+    "metis_erc20/std",
+    "metis_access_control/std",
 ]
 ink-as-dependency = []

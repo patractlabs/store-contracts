@@ -3,8 +3,10 @@ import '@redspot/patract';
 import '@redspot/chai';
 import '@redspot/gas-reporter';
 
+const defaultNetwork = process.env.REDSPOT_ENV ? process.env.REDSPOT_ENV : 'development'
+
 export default {
-  defaultNetwork: 'development',
+  defaultNetwork,
   contract: {
     ink: {
       toolchain: 'nightly',
