@@ -4,6 +4,11 @@ Patract Network
 wss://ws.jupiter.patract-westend.patract.cn/
 ```
 
+### ERC20
+erc20 codehash
+```
+0xc0445263b0206ac46080c5957d67221e4ef84d74211af77734c927ef21e91709
+```
 ### PatraMaker
 dai contract address
 ```
