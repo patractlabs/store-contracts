@@ -23,6 +23,15 @@ export default {
       explorerUrl: 'https://polkadot.js.org/apps/#/explorer/query/',
       accounts: ['//Alice'],
     },
+    paradev: {
+      endpoint: 'wss://ws.jupiter.patract-westend.patract.cn/',
+      types: {
+        LookupSource: "MultiAddress",
+      },
+      gasLimit: '400000000000',
+      explorerUrl: 'https://polkadot.js.org/apps/#/explorer/query/',
+      accounts: ['//Alice'],
+    },
     substrate: {
       endpoint: 'ws://127.0.0.1:9944',
       gasLimit: '400000000000',
