@@ -129,14 +129,14 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
-            let from_token_contract: Erc20Stub = FromAccountId::from_account_id(from_token);
+            let from_token_contract: Erc20 = FromAccountId::from_account_id(from_token);
 
             // instantiate lp token
             let lpt_params = Erc20::new(
                 0,
                 "LP Token".to_string(),
                 "LPT".to_string(),
-                from_token_contract.token_decimals(),
+                Some(from_token_contract.token_decimals()),
                 self.env().caller(),
             )
             .endowment(0)
@@ -199,13 +199,13 @@ mod factory {
                 salt = salt_op.unwrap();
             }
 
-            let from_token_contract: Erc20Stub = FromAccountId::from_account_id(from_token);
+            let from_token_contract: Erc20 = FromAccountId::from_account_id(from_token);
             // instantiate lp token
             let lpt_params = Erc20::new(
                 0,
                 "LP Token".to_string(),
                 "LPT".to_string(),
-                from_token_contract.token_decimals(),
+                Some(from_token_contract.token_decimals()),
                 self.env().caller(),
             )
             .endowment(0)

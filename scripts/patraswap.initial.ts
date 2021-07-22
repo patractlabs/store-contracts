@@ -1,6 +1,7 @@
 import {patract, network} from 'redspot';
+import Contract from "@redspot/patract/contract";
 
-const {getContractAt} = patract;
+const {getContractFactory} = patract;
 const {api, getSigners} = network;
 
 async function run() {
@@ -9,33 +10,40 @@ async function run() {
     const signers = await getSigners();
     const signer = signers[0];
 
+    const contractFactory = await getContractFactory('factory', signer);
+
     const balance = await api.query.system.account(signer.address);
     console.log('Balance: ', balance.toHuman());
 
-    const usdt = api.createType('AccountId', "3enYFZYCVXW2x6orC4YxNEczjEzZ94vpadaqVEJQJfwWBVq9");
-    const dai = api.createType('AccountId', "3bxKXL337YG2ZW91kYDM2ZEduFofVUGcYk7jLUiLFWmoKUdf");
-    const eth = api.createType('AccountId', "3byZbKJSpCwUFDgNyeNfCz5PVyGvehhcNe3USJSvVDyJ2rrM");
-    const btc = api.createType('AccountId', "3fT7tskxhBsCMza8FgZaHVLXwra55FWb8B4q8DauRUqmyQxK");
+    const usdt = api.createType('AccountId', "13vTbmbUoXXt1QDfRqny1n7Yxm7gsaZqVqa3X48gWqTH1iPc");
+    const dai = api.createType('AccountId', "14oZHYiuo6G9SrvjhKg24MCbFjhHMuxhd4ZFvqSBmy12JqSu");
+    const eth = api.createType('AccountId', "128WkLU8zYUVT3XPSooYwZE7xUYUbHuMQGPZrGcf4VHARNUu");
+    const btc = api.createType('AccountId', "12GPiDqSWJr4JFuuZuvG9oskdSnnH1ukE83WaeEExJRjAAxC");
 
-    const swap = api.createType('AccountId', "3f77g7XQDo11MMgnte4VnUqGcYA44WSWDbY2H9dzJNDKa7VQ")
-    const contract = await getContractAt('factory', swap, signer);
+    const swap = api.createType('AccountId', "1vtPXR3PHVZDFUoyvRVfGreDZ9G6uKYj8dTWhLuMZ7N1VQp")
+
+    const contract = new Contract(
+        swap,
+        contractFactory.abi,
+        contractFactory.api,
+        contractFactory.signer
+    );
 
     await contract.query['factory,getSwapPairs']();
-    // 注意因为一些错误需要一组一组的create，但调用都是成功的
     // USDT -> DAI
     await contract.tx['factory,createExchange'](usdt, dai, undefined);
 
-    // // USDT -> DOT
-    // await contract.tx['factory,createExchangeWithDot'](usdt, undefined);
-    //
-    // // USDT -> jETH
-    // await contract.tx['factory,createExchange'](usdt, eth, undefined);
-    //
-    // // USDT -> jBTC
-    // await contract.tx['factory,createExchange'](usdt, btc, undefined);
-    //
-    // // jBTC -> DOT
-    // await contract.tx['factory,createExchangeWithDot'](btc, undefined);
+    // USDT -> DOT
+    await contract.tx['factory,createExchangeWithDot'](usdt, undefined);
+
+    // USDT -> jETH
+    await contract.tx['factory,createExchange'](usdt, eth, undefined);
+
+    // USDT -> jBTC
+    await contract.tx['factory,createExchange'](usdt, btc, undefined);
+
+    // jBTC -> DOT
+    await contract.tx['factory,createExchangeWithDot'](btc, undefined);
 
     api.disconnect();
 }

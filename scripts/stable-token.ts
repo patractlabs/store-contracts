@@ -18,14 +18,14 @@ async function run() {
     // Mock contract to put erc20 hash
     await contractFactory.deployed('new', '1000000000000000', 'MOCK', 'MOCK', '6', {
         gasLimit: '200000000000',
-        value: '0,',
+        value: '0',
         salt: 'MOCK'
     });
 
     // Tether USD, USDT, 2, 10亿
     let contract = await contractFactory.instantiate('new', '1000000000000000', 'Tether USD', 'USDT', '6', {
         gasLimit: '200000000000',
-        value: '0,',
+        value: '0',
         salt: 'Tether USD Token'
     });
 
