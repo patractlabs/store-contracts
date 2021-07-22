@@ -15,11 +15,18 @@ async function run() {
     console.log('Balance: ', balance.toHuman());
     console.log('');
 
-    // Tether USD, USDT, 2, 10亿
-    let contract = await contractFactory.instantiate('IErc20,new', '1000000000000000', 'Tether USD', 'USDT', '6', {
+    // Mock contract to put erc20 hash
+    await contractFactory.deployed('new', '1000000000000000', 'MOCK', 'MOCK', '6', {
         gasLimit: '200000000000',
-        value: '0',
-        salt: 'Tether USD Token '
+        value: '0,',
+        salt: 'MOCK'
+    });
+
+    // Tether USD, USDT, 2, 10亿
+    let contract = await contractFactory.instantiate('new', '1000000000000000', 'Tether USD', 'USDT', '6', {
+        gasLimit: '200000000000',
+        value: '0,',
+        salt: 'Tether USD Token'
     });
 
     console.log(
@@ -29,10 +36,10 @@ async function run() {
     console.log('');
 
     // Jupiter Bitcoin, jBTC, 8, 1百万
-    contract = await contractFactory.instantiate('IErc20,new', '100000000000000', 'Jupiter Bitcoin', 'jBTC', '8', {
+    contract = await contractFactory.instantiate('new', '100000000000000', 'Jupiter Bitcoin', 'jBTC', '8', {
         gasLimit: '200000000000',
         value: '0',
-        salt: 'Jupiter Bitcoin Token '
+        salt: 'Jupiter Bitcoin Token'
     });
 
     console.log(
@@ -42,10 +49,10 @@ async function run() {
     console.log('');
 
     // Jupiter Ethereum, jETH, 18, 1千万
-    contract = await contractFactory.instantiate('IErc20,new', '10000000000000000000000000', 'Jupiter Ethereum', 'jETH', '18', {
+    contract = await contractFactory.instantiate('new', '10000000000000000000000000', 'Jupiter Ethereum', 'jETH', '18', {
         gasLimit: '200000000000',
         value: '0',
-        salt: 'Jupiter Ethereum Token '
+        salt: 'Jupiter Ethereum Token'
     });
 
     console.log(
@@ -56,10 +63,10 @@ async function run() {
 
 //   Moved to patramaker contract deploy
 //   Maker DAI, DAI 18
-//     contract = await contractFactory.instantiate('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
+//     contract = await contractFactory.instantiate('new', '0', 'Maker DAI', 'DAI', '18', {
 //         gasLimit: '200000000000',
 //         value: '0',
-//         salt: 'Maker DAI Token '
+//         salt: 'Maker DAI Token'
 //     });
 //
 //     console.log(
@@ -67,21 +74,6 @@ async function run() {
 //         contract.toString()
 //     );
 //     console.log('');
-
-//   const issue_code_hash = await contractFactory.putCode();
-//   console.log(
-//     'Put issue erc20 code successfully. The contract code hash: ',
-//     issue_code_hash.toString()
-//   );
-//   console.log('');
-//
-//   const fixedFactory = await getContractFactory('erc20_fixed', signer);
-//   const fixed_code_hash = await fixedFactory.putCode();
-//   console.log(
-//     'Put fixed erc20 code successfully. The contract code hash: ',
-//     fixed_code_hash.toString()
-//   );
-//   console.log('');
 
     api.disconnect();
 }

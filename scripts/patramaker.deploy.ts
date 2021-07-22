@@ -1,5 +1,5 @@
 import {patract, network} from 'redspot';
-import type Contract from '@redspot/patract/contract';
+import Contract from '@redspot/patract/contract';
 
 const {getContractFactory} = patract;
 const {getSigners, api} = network;
@@ -16,10 +16,10 @@ async function run() {
 
     const daiContractFactory = await getContractFactory('erc20_issue', signer);
     //   Maker DAI, DAI 18
-    let daiContract = await daiContractFactory.instantiate('IErc20,new', '0', 'Maker DAI', 'DAI', '18', {
+    let daiContract = await daiContractFactory.instantiate('new', '0', 'Maker DAI', 'DAI', '18', {
         gasLimit: '200000000000',
         value: '0',
-        salt: 'Maker DAI Token '
+        salt: 'Maker DAI Token'
     });
 
     console.log(
@@ -27,17 +27,6 @@ async function run() {
         daiContract.toString()
     );
     console.log('');
-
-    // const daiContract = await daiContractFactory.deployed('new', '0', 'Maker DAI', 'DAI', '18', {
-    //   gasLimit: '200000000000',
-    //   value: '0',
-    //   salt: 'Maker DAI Token'
-    // });
-    // console.log(
-    //   'Deploy dai successfully. The contract address: ',
-    //   daiContract.address.toString()
-    // );
-    // console.log('');
 
     const contract = await contractFactory.deployed('new', daiContract, {
         gasLimit: '200000000000',
@@ -49,7 +38,6 @@ async function run() {
         contract.address.toString()
     );
 
-    // @ts-ignore
     const dcontract = new Contract(
         daiContract,
         daiContractFactory.abi,
