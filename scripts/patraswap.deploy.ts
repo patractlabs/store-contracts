@@ -16,9 +16,9 @@ async function run() {
 
     const exchangeFactory = await getContractFactory('exchange', signer);
     await exchangeFactory.deployed('new',
-        '3e7hitVykGr2EyVdh81cph6CTRu5Y5VMEGQPSTtakRP32TE3',
-        '3e7hitVykGr2EyVdh81cph6CTRu5Y5VMEGQPSTtakRP32TE3',
-        '3e7hitVykGr2EyVdh81cph6CTRu5Y5VMEGQPSTtakRP32TE3', {
+        '111111111111111111111111111111111HC1',
+        '111111111111111111111111111111111HC1',
+        '111111111111111111111111111111111HC1', {
             gasLimit: '200000000000',
             value: '0',
             salt: 'PatraSwap'
@@ -28,8 +28,8 @@ async function run() {
 
     const exchange2Factory = await getContractFactory('exchange2', signer);
     await exchange2Factory.deployed('new',
-        '3e7hitVykGr2EyVdh81cph6CTRu5Y5VMEGQPSTtakRP32TE3',
-        '3e7hitVykGr2EyVdh81cph6CTRu5Y5VMEGQPSTtakRP32TE3', {
+        '111111111111111111111111111111111HC1',
+        '111111111111111111111111111111111HC1', {
             gasLimit: '200000000000',
             value: '0',
             salt: 'PatraSwap'
