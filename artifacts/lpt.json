@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x1b1fc8cfa40ea0fdefac74b78601615616213c4a3ebe0571f8b8621762096d1a",
-    "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.55.0-nightly"
+    "hash": "0x3325f98a96d5db5398f61cbb820cba3aa2475afe1e54602d9890a080c7d02fc9",
+    "language": "ink! 3.0.0-rc4",
+    "compiler": "rustc 1.56.0-nightly"
   },
   "contract": {
     "name": "lpt",

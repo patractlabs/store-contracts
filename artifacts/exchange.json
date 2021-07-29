@@ -1,9 +1,9 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x497d8720644c2bac06b5a2c9cb677eebce14158ddccd4da818511d24f583559c",
-    "language": "ink! 3.0.0-rc3",
-    "compiler": "rustc 1.55.0-nightly"
+    "hash": "0x0bdb3436c99eb77148aff7041d41b23665e87d84975b784fd122b4fbc01bf066",
+    "language": "ink! 3.0.0-rc4",
+    "compiler": "rustc 1.56.0-nightly"
   },
   "contract": {
     "name": "exchange",
