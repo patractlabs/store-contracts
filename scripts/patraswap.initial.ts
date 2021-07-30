@@ -15,12 +15,12 @@ async function run() {
     const balance = await api.query.system.account(signer.address);
     console.log('Balance: ', balance.toHuman());
 
-    const usdt = api.createType('AccountId', "13vTbmbUoXXt1QDfRqny1n7Yxm7gsaZqVqa3X48gWqTH1iPc");
-    const dai = api.createType('AccountId', "14oZHYiuo6G9SrvjhKg24MCbFjhHMuxhd4ZFvqSBmy12JqSu");
-    const eth = api.createType('AccountId', "128WkLU8zYUVT3XPSooYwZE7xUYUbHuMQGPZrGcf4VHARNUu");
-    const btc = api.createType('AccountId', "12GPiDqSWJr4JFuuZuvG9oskdSnnH1ukE83WaeEExJRjAAxC");
+    const usdt = api.createType('AccountId', "3faReJaqfwFLsEzozvJwRxGEwN17y3AyLzJChPdbBtktAc6o");
+    const btc = api.createType('AccountId', "3dKmLie6EcEDJPyn1UEnKdZCBysNsmv2NNu2FzAAntkYYrVB");
+    const eth = api.createType('AccountId', "3btyVk6ahBJS7syGu4GYAWmyfZAVHMrUeRLdL1kadKerv4i6");
+    const dai = api.createType('AccountId', "3h2crvKgDDbtQGHACsfrpFp2pF959dkQptGqw1rGrfqSeQcF");
 
-    const swap = api.createType('AccountId', "1vtPXR3PHVZDFUoyvRVfGreDZ9G6uKYj8dTWhLuMZ7N1VQp")
+    const swap = api.createType('AccountId', "3d6zXxdiHUXFwg958yS5BeugwYSFxxR8xEBXGUqtqLfR5jfm")
 
     const contract = new Contract(
         swap,
